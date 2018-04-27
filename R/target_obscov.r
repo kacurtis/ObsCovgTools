@@ -51,6 +51,6 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.5) {
   with(simsum, plot(100*simpoc, 100*qcv, xlab="Observer Coverage (%)", ylab=paste(q*100,"th Percentile CV (%)", sep="")))
   abline(h=targetcv, col=2)
   # get minimum required observer coverage
-  targetoc <- simsum %>% dplyr::filter(qcv < targetcv/100) %>% dplyr::select(simpoc) %>% dplyr::unlist() %>% min()
+  targetoc <- simsum %>% dplyr::filter(qcv < targetcv/100) %>% dplyr::select(simpoc) %>% unlist() %>% min()
   return(targetoc*100)
 }
