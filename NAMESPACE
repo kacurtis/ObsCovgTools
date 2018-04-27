@@ -1,0 +1,4 @@
+## export functions
+export(sim_obscov_cv)
+export(plot_obscov_cv)
+importFrom(magrittr,"%>%")
