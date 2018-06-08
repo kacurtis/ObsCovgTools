@@ -13,26 +13,31 @@
 # Simulate CV response to observer coverage
 #
 # Arguments: 
-# te:    total effort in fishery (should add option to use landings instead)
+# te:    total effort in fishery
 # bpue:  bycatch per unit effort
 # d:     dispersion (>=1)
 #
 # Value:
 # a data frame containing summarized results for each simulation
 #
-sim_obscov_cv <- function(te, bpue, d=2) {  
-  nsim = 1000
-  simpoc <- rep(c(seq(0.01,0.05,0.01), seq(0.10,0.95,0.05)), each=nsim)   # proportion observer coverage 
-  simdat <- tibble::tibble(simpoc, nobsets = round(simpoc * te)) %>% 
-    dplyr::rowwise() %>% 
-    dplyr::mutate(obsets = list(if(d==1) rpois(nobsets, bpue) else rnbinom(nobsets, size=(bpue/(d-1)), mu=bpue)), 
-           ob=sum(obsets), obvar=var(obsets)) %>%  
-    dplyr::filter(ob>0 & ob<nobsets) %>% 
-    dplyr::mutate(xsim = ob/nobsets, sesim = sqrt(obvar/nobsets), cvsim = sesim/xsim) %>% 
-    dplyr::select(-obsets) %>% 
-    dplyr::ungroup()
-  return(simdat)
+sim_obscov_cv <- function(te, bpue, d=2) {
+  nsim <- 1000
+  obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
+  simdat <- tibble::tibble(simpoc = rep(obscov, each=nsim), 
+                           nobsets = round(simpoc * te)) %>% 
+    dplyr::filter(nobsets > 1) %>% dplyr::mutate(ob=NA, obvar=NA)   # need nobsets > 1 to calculate a variance
+  
+  for (i in 1:nrow(simdat)) {
+    obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
+              else Runuran::urnbinom(simdat$nobsets[i], size=(bpue/(d-1)), prob=1/d)
+    simdat$ob[i] <- sum(obsets)
+    simdat$obvar[i] <- var(obsets)
   }
+  
+  simdat <- simdat %>% 
+    dplyr::mutate(xsim=ob/nobsets, fpc=1-nobsets/te, sesim=sqrt(fpc*obvar/nobsets), cvsim=sesim/xsim)
+  return(simdat)
+}
 
 
 # Plot CV response to observer coverage
@@ -44,13 +49,39 @@ sim_obscov_cv <- function(te, bpue, d=2) {
 # Value:
 # a scalar estimate of minimum observer coverage (percentage) required to meet target CV
 
-plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.5) {
-  simsum <- simdat %>% dplyr::group_by(simpoc) %>% 
-    dplyr::summarize( nsim=n(), meanob=mean(ob), nobsets=mean(nobsets), qcv=quantile(cvsim,q,na.rm=T), min=min(ob), max=max(ob))
-  # plot 
-  with(simsum, plot(100*simpoc, 100*qcv, ylim=c(0,min(100,max(100*qcv))), xlab="Observer Coverage (%)", ylab=paste(q*100,"th Percentile CV (%)", sep="")))
+plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
+  simsum <- simdat %>% 
+    dplyr::filter(ob>0) %>% 
+    dplyr::group_by(simpoc) %>% 
+    dplyr::summarize(nsim=n(), meanob=mean(ob), nobsets=mean(nobsets), qcv=quantile(cvsim,q,na.rm=T), 
+                     q50=quantile(cvsim,0.5,na.rm=T), q80=quantile(cvsim,0.8,na.rm=T),
+                     q90=quantile(cvsim,0.9,na.rm=T), q95=quantile(cvsim,0.95,na.rm=T),
+                     min=min(ob), max=max(ob))
+  
+  # plot CV vs. observer coverage
+  opar <- par()
+  par(mfrow=c(2,1))
+  layout(matrix(1:2,2,1))
+  with(simsum, plot(100*simpoc, 100*qcv, ylim=c(0,100), 
+                    xlab="Observer Coverage (%)", ylab=paste(q*100,"th Percentile CV (%)", sep=""),
+                    main="Bycatch Estimate CV with Observer Coverage"))
+  with(simsum, lines(100*simpoc, 100*qcv))
   abline(h=targetcv, col=2)
-  # get minimum required observer coverage
-  targetoc <- simsum %>% dplyr::filter(qcv < targetcv/100) %>% dplyr::select(simpoc) %>% unlist() %>% min()
-  return(targetoc*100)
+  # get (and plot) minimum required observer coverage
+  targetoc <- simsum %>% dplyr::filter(qcv < targetcv/100) %>% dplyr::filter(simpoc==min(simpoc))
+  points(targetoc$simpoc*100, targetoc$qcv*100, pch=8, lwd=2, col=2)
+  legend("topright", lty=c(1,0,0), pch=c(NA,8,NA), lwd=2, col=2, legend=c("target CV", "minimum observer","coverage needed"))
+  
+  # plot probability of zero (observed and total) bycatch vs observer coverage
+  nd <- simdat %>% 
+    dplyr::group_by(simpoc) %>% 
+    dplyr::summarize(n=n(), ndp = sum(ob==0)/n)
+  with(nd, plot(100*simpoc, 100*ndp, ylim=c(0,100), yaxs="i",
+                xlab="Observer Coverage (%)", ylab="Probability of Zero Bycatch (%)",
+                main="Annual Probability of Zero Bycatch"))
+  abline(h=tail(nd$ndp,1)*100,col=2)
+  legend("topright", lty=c(0,1), pch=c(1,NA), lwd=1, col=c(1,2), legend=c("in observed effort","in total effort"))
+  
+  par <- opar
+  return(targetoc$simpoc*100)
 }
