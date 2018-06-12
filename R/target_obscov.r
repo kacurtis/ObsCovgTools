@@ -29,8 +29,10 @@ NULL
 #' of observer coverage levels, given bycatch rate, negative binomial dispersion 
 #' parameter, and total fishery effort. The function runs 1000 simulations per
 #' level of observer coverage, for observer coverage levels ranging from 0.1%
-#' or two sets/hauls, whichever is greater, to 100%. WARNING: Calls specifying 
-#' large (>10K sets/hauls) total effort may take several minutes to simulate. 
+#' or two sets/hauls, whichever is greater, to 100%. Simulated bycatch estimates
+#' use a simple mean-per-unit approach with finite population correction.
+#' WARNING: Calls specifying large (>10K sets/hauls) total effort may take 
+#' several minutes to simulate. 
 #' 
 #' @param te Integer scalar greater than 10. Total effort in fishery (sets).
 #' @param bpue Numeric greater than zero. Bycatch per unit effort.
