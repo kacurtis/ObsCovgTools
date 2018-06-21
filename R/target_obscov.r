@@ -1,20 +1,23 @@
 # Shiny notes:
 # Approximately this layout: https://shiny.rstudio.com/gallery/submitbutton-demo.html
-# Keyboard entry for te ("Total effort (e.g.., sets or hauls) in fishery", default value 500)
-# Keyboard entry for bpue ("Bycatch per unit effort", default value 0.05)
-# Keyboard entry for d ("dispersion", default value 2)
+# Keyboard entry for te; default value 500; 
+#   label: "Total effort (e.g., hauls) in fishery (larger effort takes longer: ~40 s for 50K, ~3 min for 500K)"
+# Keyboard entry for bpue; default value 0.05; label: "Bycatch per unit effort"
+# Keyboard entry for d; default value 2; label: "Dispersion (d ~ Var/Mean; usually d < 3 for bycatch of conservation concern)"
 # then an actionButton ("submit"), elicits reactive sim_obscov_cv
-# sliders for targetcv ("Target CV", 10 to 100, default at 30) and q ("Probability of achieving target CV", 0.5 to 0.95, default at 0.5)
-# interactve updating of plot of CV vs observer coverage and observer coverage recommendation based on sliders (plot_obscov_cv)
+# sliders for targetcv; from 10 to 100; default value 30; label: "Target CV for bycatch estimates"
+#   and q; from 0.5 to 0.95; default value 0.8; label: "Probability of achieving target CV"
+# Interactve updating of plot of CV vs observer coverage and observer coverage recommendation based on sliders (plot_obscov_cv)
+# Interactive updating of text under plot: 
+#   "Minimum coverage to achieve targetcv% CV with q*100% probability is x$pobscov% (x$nobsets hauls).",
+#   where targetcv and q are user-specified and x is returned from plot_obscov_cv.
 # Static plot of Probability of zero observed bycatch vs observer coverage (plot_probzeroobs)
-# text under plot with result from plot_obscov_cv: 
 # dimmed plot while recalculating
 
 # Add following limits on inputs:
-# d limits: numeric, 1 <= d (Note: var(x)/mean(x); most bycatch of conservation concern will have d between 1 and 3) 
-# bpue limits: numeric, 0 < bpue; no upper limit (Note: e.g., 0.01 if one interaction in every hundred sets/hauls)
-# te limits: integer, te >= 10 (Note: large te may take several minutes, e.g., 40 s for 50K, 3 min for 500K)
-
+# d limits: numeric, 1 <= d 
+# bpue limits: numeric, 0 < bpue; no upper limit
+# te limits: integer, te >= 10 
 
 #' @importFrom magrittr %>%
 #' @importFrom graphics abline legend points
@@ -72,14 +75,20 @@ sim_obscov_cv <- function(te, bpue, d=2) {
 
 
 #' Plot CV vs. observer coverage
+#' 
+#' \code{plot_obscov_cv} plots CV of bycatch estimates vs observer coverage for
+#'   user-specified quantile (i.e., probability of achieving CV) and several 
+#'   default quantiles, and prints minimum observer coverage needed to achieve 
+#'   user targets. 
 #'
 #' @param simdat Tibble output from sim_obscov_cv.
 #' @param targetcv Numeric, 0 < targetcv <=100. Target CV (as percentage).
 #' @param q Numeric, 0 < q <=0.95. Desired probability (as a proportion) of 
 #'   achieving at least target CV or lower.
 #'   
-#' @return Numeric scalar. Estimate of minimum observer coverage (percentage) 
-#'   required to meet target CV.
+#' @return A list with minimum observer coverage in terms of percentage ($pobscov) 
+#'   and effort ($nobsets) corresponding to user specifications.
+#' @return Returned invisibly. 
 #'   
 #' @export 
 plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
@@ -89,8 +98,7 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
     dplyr::group_by(simpoc) %>% 
     dplyr::summarize(nsim=n(), meanob=mean(ob), nobsets=mean(nobsets), qcv=quantile(cvsim,q,na.rm=T), 
                      q50=quantile(cvsim,0.5,na.rm=T), q80=quantile(cvsim,0.8,na.rm=T), 
-                     q90=quantile(cvsim,0.9,na.rm=T), q95=quantile(cvsim,0.95,na.rm=T),
-                     min=min(ob), max=max(ob))
+                     q95=quantile(cvsim,0.95,na.rm=T), min=min(ob), max=max(ob))
   # plot 
   with(simsum, plot(100*simpoc, 100*qcv, 
                     xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
@@ -98,21 +106,23 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
                     main="CV of Bycatch Estimate vs Observer Coverage"))
   with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q50,100,100),col="gray90", lty=0))
   with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q80,100,100),col="gray80", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q90,100,100),col="gray70", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q95,100,100),col="gray60", lty=0))
+  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q95,100,100),col="gray70", lty=0))
   with(simsum, points(100*simpoc, 100*qcv))
   with(simsum, lines(100*simpoc, 100*qcv))
   abline(h=targetcv, col=2, lwd=2, lty=2)
+  abline(h=100, v=100)
   # get (and add to plot) minimum required observer coverage
   targetoc <- simsum %>% dplyr::filter(qcv < targetcv/100) %>% dplyr::filter(simpoc==min(simpoc))
   points(targetoc$simpoc*100, targetoc$qcv*100, pch=8, col=2, cex=1.5, lwd=2)
-  legend("topright", lty=c(2,0,0,0,1,0,0,0,0), pch=c(NA,8,NA,NA,1,rep(15,4)), col=c(2,2,2,2,1,"gray90","gray80","gray70","gray60"), 
-         lwd=c(2,2,rep(1,7)), pt.cex=1.5,
-         legend=c("target CV", "min coverage", paste("to achieve ",targetcv,"% CV",sep=""), paste("with ",q*100,"% probability",sep=""),
-                  paste(q*100,"th Percentile", sep=""),
-                  ">50th Percentile",">80th Percentile",">90th Percentile",">95th Percentile"), y.intersp=1.1)
+  legpos <- ifelse(any(simsum$simpoc > 0.7 & simsum$q95 > 0.5), "bottomleft", "topright")
+  legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
+         lwd=c(2,2,rep(1,4)), pt.cex=1.5,
+         legend=c("target CV", "min coverage", paste(q*100,"th Percentile", sep=""),
+                  ">50th Percentile",">80th Percentile",">95th Percentile"), y.intersp=1.1)
   # return recommended minimum observer coverage
-  return(targetoc$simpoc*100)
+  cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV with ", q*100, "% probability is ", 
+            targetoc$simpoc*100, "% (", targetoc$nobsets, " hauls).", sep=""))
+  return(invisible(list(pobscov = targetoc$simpoc*100, nobsets=targetoc$nobsets)))
 }
   
 
@@ -130,7 +140,8 @@ plot_probzeroobs <- function(simdat=simdat) {
   with(nd, plot(100*simpoc, 100*ndp, 
                 xlim=c(0,100), ylim=c(0,round(max(100*ndp),-1)+10), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
                 xlab="Observer Coverage (%)", ylab="Probability of Zero Bycatch (%)",
-                main="Annual Probability of Zero Bycatch"))
+                main="Probability of Zero Bycatch"))
   abline(h=tail(nd$ndp,1)*100,col=2)
-  legend("topright", lty=c(0,1), pch=c(1,NA), lwd=1, col=c(1,2), legend=c("in observed effort","in total effort"))
+  legpos <- ifelse(any(nd$simpoc > 0.75 & nd$ndp > 0.8), "bottomleft", "topright")
+  legend(legpos, lty=c(0,1), pch=c(1,NA), lwd=1, col=c(1,2), legend=c("in observed effort","in total effort"))
 }

@@ -15,9 +15,14 @@ plot_obscov_cv(simdat = simdat, targetcv = 30, q = 0.8)
 achieving at least target CV or lower.}
 }
 \value{
-Numeric scalar. Estimate of minimum observer coverage (percentage) 
-  required to meet target CV.
+A list with minimum observer coverage in terms of percentage ($pobscov) 
+  and effort ($nobsets) corresponding to user specifications.
+
+Returned invisibly.
 }
 \description{
-Plot CV vs. observer coverage
+\code{plot_obscov_cv} plots CV of bycatch estimates vs observer coverage for
+  user-specified quantile (i.e., probability of achieving CV) and several 
+  default quantiles, and prints minimum observer coverage needed to achieve 
+  user targets.
 }
