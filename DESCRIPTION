@@ -1,14 +1,17 @@
 Package: obscov4CV
 Type: Package
 Title: Estimate fishery observer coverage required to achieve target bycatch estimation CV
-Version: 1.1
-Date: 2018-06-07
+Version: 1.2
+Date: 2018-07-02
 Depends: R (>= 3.1.2)
 Imports: 
 	dplyr,
 	magrittr,
 	Runuran,
-	tibble
+	tibble,
+	svMisc
+Suggests: 
+  shiny
 Author: Alex Curtis
 Maintainer: Alex Curtis <alex.curtis@noaa.gov>
 Description: Uses simulation to estimate observer coverage required to achieve

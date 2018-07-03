@@ -4,7 +4,7 @@
 \alias{sim_obscov_cv}
 \title{Simulate CV response to observer coverage}
 \usage{
-sim_obscov_cv(te, bpue, d = 2)
+sim_obscov_cv(te, bpue, d = 2, ...)
 }
 \arguments{
 \item{te}{Integer scalar greater than 10. Total effort in fishery (sets).}
@@ -15,6 +15,8 @@ sim_obscov_cv(te, bpue, d = 2)
 parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
 so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
 overdispersed bycatch.}
+
+\item{...}{Additional arguments for compatibility with Shiny.}
 }
 \value{
 A tibble with one row per simulation and the following fields: 

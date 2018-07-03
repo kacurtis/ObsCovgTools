@@ -1,7 +1,7 @@
 # Shiny notes:
 # Approximately this layout: https://shiny.rstudio.com/gallery/submitbutton-demo.html
 # Keyboard entry for te; default value 500; 
-#   label: "Total effort (e.g., hauls) in fishery (larger effort takes longer: ~40 s for 50K, ~3 min for 500K)"
+#   label: "Total effort (e.g., hauls) in fishery (Larger effort takes longer: ~40 s for 50K, ~3 min for 500K)"
 # Keyboard entry for bpue; default value 0.05; label: "Bycatch per unit effort"
 # Keyboard entry for d; default value 2; label: "Dispersion (d ~ Var/Mean; usually d < 3 for bycatch of conservation concern)"
 # then an actionButton ("submit"), elicits reactive sim_obscov_cv
@@ -26,6 +26,16 @@
 NULL 
 
 
+# Hidden function to execute progress bar
+progbar = function(it, total, shiny.progress=FALSE) {
+  if (shiny.progress) {
+    shiny::incProgress(500 / total)
+  } else {
+    svMisc::progress(it/total*100)
+  }
+}
+                   
+
 #' Simulate CV response to observer coverage
 #'
 #' \code{sim_obscov_cv} simulates bycatch estimation CVs resulting from a range 
@@ -42,7 +52,8 @@ NULL
 #' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
 #'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
 #'   so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-#'   overdispersed bycatch. 
+#'   overdispersed bycatch.
+#' @param ...  Additional arguments for compatibility with Shiny.
 #'   
 #' @return A tibble with one row per simulation and the following fields: 
 #'   simulated percent observer coverage (simpoc), number of observed sets 
@@ -54,7 +65,7 @@ NULL
 #'   For simulations with zero observed bycatch, cvsim will be NaN.
 #'   
 #' @export 
-sim_obscov_cv <- function(te, bpue, d=2) {
+sim_obscov_cv <- function(te, bpue, d=2, ...) {
   nsim <- 1000
   obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
   simdat <- tibble::tibble(simpoc = rep(obscov, each=nsim), 
@@ -66,6 +77,8 @@ sim_obscov_cv <- function(te, bpue, d=2) {
               else Runuran::urnbinom(simdat$nobsets[i], size=(bpue/(d-1)), prob=1/d)
     simdat$ob[i] <- sum(obsets)
     simdat$obvar[i] <- var(obsets)
+    
+    if (i %% 500 == 0) progbar(i, nrow(simdat), ...)
   }
   
   simdat <- simdat %>% 
