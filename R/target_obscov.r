@@ -7,7 +7,7 @@
 # then an actionButton ("submit"), elicits reactive sim_obscov_cv
 # sliders for targetcv; from 10 to 100; default value 30; label: "Target CV for bycatch estimates"
 #   and q; from 0.5 to 0.95; default value 0.8; label: "Probability of achieving target CV"
-# Interactive updating of plot of CV vs observer coverage and observer coverage recommendation based on sliders (plot_obscov_cv)
+# Interactve updating of plot of CV vs observer coverage and observer coverage recommendation based on sliders (plot_obscov_cv)
 # Interactive updating of text under plot: 
 #   "Minimum coverage to achieve targetcv% CV with q*100% probability is x$pobscov% (x$nobsets hauls).",
 #   where targetcv and q are user-specified and x is returned from plot_obscov_cv.
@@ -58,7 +58,7 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' @return A tibble with one row per simulation and the following fields: 
 #'   simulated percent observer coverage (simpoc), number of observed sets 
 #'   (nobsets), total observed bycatch (ob), variance of observed bycatch 
-#'   (obvar), total bycatch (tb), mean observed bycatch per unit effort (xsim), finite population 
+#'   (obvar), mean observed bycatch per unit effort (xsim), finite population 
 #'   correction (fpc), standard error of observed bycatch per unit effort 
 #'   (sesim), and CV of observed bycatch per unit effort (cvsim).
 #'    
@@ -68,23 +68,17 @@ progbar = function(it, total, shiny.progress=FALSE) {
 sim_obscov_cv <- function(te, bpue, d=2, ...) {
   nsim <- 1000
   obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
-  simdat <- tibble::tibble(simpoc = rep(obscov), 
+  simdat <- tibble::tibble(simpoc = rep(obscov, each=nsim), 
                            nobsets = round(simpoc * te)) %>% 
-    dplyr::filter(nobsets > 1) %>% dplyr::mutate(ob=NA, obvar=NA, tb=NA)
-  nobscov <- nrow(simdat)/nsim
+    dplyr::filter(nobsets > 1) %>% dplyr::mutate(ob=NA, obvar=NA)
   
-  for (si in 1:nsim) {
-    ri <- ((si-1)*nobscov+1):(si*nobscov)
-    allsets <- if(d==1) Runuran::urpois(te, bpue) 
-              else Runuran::urnbinom(te, size=(bpue/(d-1)), prob=1/d)
-    simdat$tb[ri] <- sum(allsets)
-    for (i in ri) {
-      obsetse <- sample(allsets, simdat$nobsets[i], replace=F)
-      simdat$ob[i] <- sum(obsets)
-      simdat$obvar[i] <- var(obsets)
-    }
+  for (i in 1:nrow(simdat)) {
+    obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
+              else Runuran::urnbinom(simdat$nobsets[i], size=(bpue/(d-1)), prob=1/d)
+    simdat$ob[i] <- sum(obsets)
+    simdat$obvar[i] <- var(obsets)
     
-    progbar(si, nsim, ...)
+    if (i %% 500 == 0) progbar(i, nrow(simdat), ...)
   }
   
   simdat <- simdat %>% 
@@ -145,23 +139,22 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
 }
   
 
-#' Plot probability of observing positive bycatch vs observer coverage
+#' Plot probability of observing zero bycatch vs observer coverage
 #' 
 #' @param simdat Tibble output from sim_obscov_cv.
 #' 
 #' @return None
 #' 
 #' @export 
-plot_probposobs <- function(simdat=simdat) {
-  pp <- simdat %>% 
+plot_probzeroobs <- function(simdat=simdat) {
+  nd <- simdat %>% 
     dplyr::group_by(simpoc) %>% 
-    dplyr::summarize(n=n(), ptbp=sum(tb>0)/n, pobp=sum(ob>0)/n, cpobp=sum(ob>0)/ptbp)
-  with(pp, plot(100*simpoc, 100*cpobp, lty=1
+    dplyr::summarize(n=n(), ndp = sum(ob==0)/n)
+  with(nd, plot(100*simpoc, 100*ndp, 
                 xlim=c(0,100), ylim=c(0,round(max(100*ndp),-1)+10), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
                 xlab="Observer Coverage (%)", ylab="Probability of Zero Bycatch (%)",
                 main="Probability of Zero Bycatch"))
-  with(pp, plot(100*simpoc, 100*pobp, lty=2))
-  abline(h=tail(pp$ptbp,1)*100,col=2)
-  legpos <- ifelse(any(pp$simpoc > 0.75 & pp$ndp > 0.8), "bottomleft", "topright")
+  abline(h=tail(nd$ndp,1)*100,col=2)
+  legpos <- ifelse(any(nd$simpoc > 0.75 & nd$ndp > 0.8), "bottomleft", "topright")
   legend(legpos, lty=c(0,1), pch=c(1,NA), lwd=1, col=c(1,2), legend=c("in observed effort","in total effort"))
 }
