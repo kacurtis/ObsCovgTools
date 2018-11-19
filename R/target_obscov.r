@@ -1,7 +1,7 @@
 # Shiny notes:
 # Approximately this layout: https://shiny.rstudio.com/gallery/submitbutton-demo.html
 # Keyboard entry for te; default value 500; 
-#   label: "Total effort (e.g., hauls) in fishery (Larger effort takes longer: ~40 s for 50K, ~3 min for 500K)"
+#   label: "Total effort (e.g., hauls) in fishery (Larger effort takes longer: ~45 s for 50K, ~XXX for 500K)"  ****************************EDIT**********************
 # Keyboard entry for bpue; default value 0.05; label: "Bycatch per unit effort"
 # Keyboard entry for d; default value 2; label: "Dispersion (d ~ Var/Mean; usually d < 3 for bycatch of conservation concern)"
 # then an actionButton ("submit"), elicits reactive sim_obscov_cv
@@ -68,7 +68,7 @@ progbar = function(it, total, shiny.progress=FALSE) {
 sim_obscov_cv <- function(te, bpue, d=2, ...) {
   nsim <- 1000
   obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
-  simdat <- tibble::tibble(simpoc = rep(obscov), 
+  simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
                            nobsets = round(simpoc * te)) %>% 
     dplyr::filter(nobsets > 1) %>% dplyr::mutate(ob=NA, obvar=NA, tb=NA)
   nobscov <- nrow(simdat)/nsim
@@ -79,11 +79,10 @@ sim_obscov_cv <- function(te, bpue, d=2, ...) {
               else Runuran::urnbinom(te, size=(bpue/(d-1)), prob=1/d)
     simdat$tb[ri] <- sum(allsets)
     for (i in ri) {
-      obsetse <- sample(allsets, simdat$nobsets[i], replace=F)
+      obsets <- sample(allsets, simdat$nobsets[i], replace=F)
       simdat$ob[i] <- sum(obsets)
       simdat$obvar[i] <- var(obsets)
     }
-    
     progbar(si, nsim, ...)
   }
   
@@ -156,7 +155,7 @@ plot_probposobs <- function(simdat=simdat) {
   pp <- simdat %>% 
     dplyr::group_by(simpoc) %>% 
     dplyr::summarize(n=n(), ptbp=sum(tb>0)/n, pobp=sum(ob>0)/n, cpobp=sum(ob>0)/ptbp)
-  with(pp, plot(100*simpoc, 100*cpobp, lty=1
+  with(pp, plot(100*simpoc, 100*cpobp, lty=1,
                 xlim=c(0,100), ylim=c(0,round(max(100*ndp),-1)+10), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
                 xlab="Observer Coverage (%)", ylab="Probability of Zero Bycatch (%)",
                 main="Probability of Zero Bycatch"))
