@@ -29,7 +29,7 @@ NULL
 # Hidden function to execute progress bar
 progbar = function(it, total, shiny.progress=FALSE) {
   if (shiny.progress) {
-    shiny::incProgress(500 / total)
+    shiny::incProgress(1 / total)
   } else {
     svMisc::progress(it/total*100)
   }
