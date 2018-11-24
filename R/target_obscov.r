@@ -1,8 +1,14 @@
 #' @importFrom magrittr %>%
-#' @importFrom graphics abline legend points
-#' @importFrom stats quantile var
+#' @importFrom graphics abline axis legend lines mtext par plot points
+#' @importFrom stats pnbinom ppois quantile var
 #' @importFrom utils tail
+#' @importFrom rlang .data
 NULL 
+
+
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+## and the "n" that is produced by dplyr::count() in a pipeline
+if (getRversion() >= "2.15.1") utils::globalVariables(c("n"))
 
 
 # Hidden function to execute progress bar
@@ -22,17 +28,21 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' parameter, and total fishery effort. The function runs 1000 simulations per
 #' level of observer coverage, for observer coverage levels ranging from 0.1%
 #' or two sets/hauls, whichever is greater, to 100%. Simulated bycatch estimates
-#' use a simple mean-per-unit approach with finite population correction.
-#' WARNING: Calls specifying large (>10K sets/hauls) total effort may take 
-#' several minutes to simulate. 
+#' use a simple mean-per-unit approach with finite population correction, which 
+#' assume representative observer coverage. CV estimates exclude simulations 
+#' with zero observed bycatch.
+#' WARNING: Calls specifying large (>100K sets/hauls) total effort may take 
+#' several minutes to simulate. Increasing number of simulations (nsim) from 
+#' default of 1000 will also increase execution time. 
 #' 
-#' @param te Integer scalar greater than 10. Total effort in fishery (sets).
+#' @param te Integer scalar greater than 10. Total effort in fishery (sets/hauls).
 #' @param bpue Numeric greater than zero. Bycatch per unit effort.
 #' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
 #'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
 #'   so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
 #'   overdispersed bycatch.
-#' @param nsim Integer scalar >= 1. Number of simulations.
+#' @param nsim Integer scalar greater than 0. Number of simulations on which to 
+#'   base CV estimates.
 #' @param ...  Additional arguments for compatibility with Shiny.
 #'   
 #' @return A tibble with one row per simulation and the following fields: 
@@ -48,20 +58,24 @@ progbar = function(it, total, shiny.progress=FALSE) {
 sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {  
   obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
   simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
-                           nobsets = round(simpoc * te)) %>% 
-    dplyr::filter(nobsets > 1) %>% dplyr::mutate(ob=NA, obvar=NA)
+                           nobsets = round(.data$simpoc * te)) %>% 
+    dplyr::filter(.data$nobsets > 1) %>% 
+    dplyr::mutate(ob=NA, obvar=NA)
+  set.seed(Sys.time())
   
   for (i in 1:nrow(simdat)) {
     obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
     else Runuran::urnbinom(simdat$nobsets[i], size=(bpue/(d-1)), prob=1/d)
     simdat$ob[i] <- sum(obsets)
-    simdat$obvar[i] <- var(obsets)
+    simdat$obvar[i] <- stats::var(obsets)
     
     if (i %% 500 == 0) progbar(i, nrow(simdat), ...)
   }
   
   simdat <- simdat %>% 
-    dplyr::mutate(xsim=ob/nobsets, fpc=1-nobsets/te, sesim=sqrt(fpc*obvar/nobsets), cvsim=sesim/xsim)
+    dplyr::mutate(xsim=.data$ob/.data$nobsets, fpc=1-.data$nobsets/te, 
+                  sesim=sqrt(.data$fpc*.data$obvar/.data$nobsets), 
+                  cvsim=.data$sesim/.data$xsim)
   return(simdat)
 }
 
@@ -69,8 +83,8 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 #' Plot CV vs. observer coverage
 #' 
 #' \code{plot_obscov_cv} plots CV of bycatch estimates vs observer coverage for
-#'   user-specified quantile (i.e., probability of achieving CV) and several 
-#'   default quantiles, and prints minimum observer coverage needed to achieve 
+#'   user-specified percentile (i.e., probability of achieving CV) and several 
+#'   default percentiles, and prints minimum observer coverage needed to achieve 
 #'   user targets. 
 #'
 #' @param simdat Tibble output from sim_obscov_cv.
@@ -87,11 +101,14 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
   # get quantiles of bycatch estimation CVs
   simsum <- simdat %>% 
-    dplyr::filter(ob>0) %>% 
-    dplyr::group_by(simpoc) %>% 
-    dplyr::summarize(nsim=n(), meanob=mean(ob), nobsets=mean(nobsets), qcv=quantile(cvsim,q,na.rm=T), 
-                     q50=quantile(cvsim,0.5,na.rm=T), q80=quantile(cvsim,0.8,na.rm=T), 
-                     q95=quantile(cvsim,0.95,na.rm=T), min=min(ob), max=max(ob))
+    dplyr::filter(.data$ob>0) %>% 
+    dplyr::group_by(.data$simpoc) %>% 
+    dplyr::summarize(nsim=n(), meanob=mean(.data$ob), nobsets=mean(.data$nobsets), 
+                     qcv=stats::quantile(.data$cvsim,q,na.rm=T), 
+                     q50=stats::quantile(.data$cvsim,0.5,na.rm=T), 
+                     q80=stats::quantile(.data$cvsim,0.8,na.rm=T), 
+                     q95=stats::quantile(.data$cvsim,0.95,na.rm=T), 
+                     min=min(.data$ob), max=max(.data$ob))
   # plot 
   with(simsum, plot(100*simpoc, 100*qcv, 
                     xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
@@ -107,17 +124,18 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
   # get (and add to plot) minimum required observer coverage
   if (targetcv) {
     abline(h=targetcv, col=2, lwd=2, lty=2)
-    targetoc <- simsum %>% dplyr::filter(qcv <= targetcv/100) %>% dplyr::filter(simpoc==min(simpoc))
+    targetoc <- simsum %>% dplyr::filter(.data$qcv <= targetcv/100) %>% 
+      dplyr::filter(.data$simpoc==min(.data$simpoc))
     points(targetoc$simpoc*100, targetoc$qcv*100, pch=8, col=2, cex=1.5, lwd=2)
     legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
-           lwd=c(2,2,rep(1,4)), pt.cex=1.5,
-           legend=c("target CV", "min coverage", paste(q*100,"th Percentile", sep=""),
-                    ">50th Percentile",">80th Percentile",">95th Percentile"), y.intersp=1.1)
+           lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
+           legend=c("target CV", "min coverage", paste(q*100,"th percentile", sep=""),
+                    ">50th percentile",">80th percentile",">95th percentile"))
   } else {
     legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
-           lwd=c(rep(1,4)), pt.cex=1.5,
-           legend=c(paste(q*100,"th Percentile", sep=""),
-                    ">50th Percentile",">80th Percentile",">95th Percentile"), y.intersp=1.1)
+           lwd=c(rep(1,4)), pt.cex=1.5, y.intersp=1.1,
+           legend=c(paste(q*100,"th percentile", sep=""), 
+                    ">50th percentile",">80th percentile",">95th percentile"))
   }
   # return recommended minimum observer coverage
   if (targetcv)
@@ -131,13 +149,13 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
 
 #' Get probability of zero bycatch given effort, bycatch rate, and dispersion
 #' 
-#' \code{get_probzero} Returns probability of zero bycatch in a given number of
-#' sets, calculated from the probability density of the Poisson or negative 
-#' binomial distribution given bycatch per unit effort and negative binomial
-#' dispersion parameter.
+#' \code{get_probzero} returns probability of zero bycatch in a specified number 
+#' of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
+#' parameter. Calculated from the probability density at zero of the
+#' corresponding Poisson or negative binomial distribution.
 #' 
-#' @param n Integer vector. Observed effort levels (sets) for which to calculate
-#'  probability of zero bycatch.
+#' @param n Integer vector. Observed effort levels (in terms of sets/hauls) for
+#'  which to calculate probability of zero bycatch.
 #' @param bpue Numeric greater than zero. Bycatch per unit effort.
 #' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
 #'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
@@ -149,15 +167,15 @@ plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
 #' 
 #' @export
 get_probzero <- function(n, bpue, d) {
-  pz <- if(d==1) ppois(0, bpue)^n 
-  else pnbinom(0, size=(bpue/(d-1)), prob=1/d)^n
+  pz <- if(d==1) stats::ppois(0, bpue)^n 
+  else stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d)^n
   return(invisible(pz))
 }
 
 
 #' Plot sample size for CV estimates vs observer coverage
 #' 
-#' \code{plot_samplesize} Plots sample size (simulations with positive
+#' \code{plot_samplesize_cvsim} plots sample size (simulations with positive
 #' observed bycatch) vs observer coverage level, along with probability of 
 #' observing zero bycatch based on effort and the probability density at zero
 #' given bycatch rate and negative binomial dispersion. 
@@ -172,20 +190,20 @@ get_probzero <- function(n, bpue, d) {
 #' @return None
 #' 
 #' @export 
-plot_samplesize <- function(simdat=simdat, bpue, d) {
+plot_samplesize_cvsim <- function(simdat=simdat, bpue, d) {
   s <- simdat %>% 
-    dplyr::filter(ob>0) %>% 
-    dplyr::group_by(simpoc, nobsets) %>% 
+    dplyr::filter(.data$ob>0) %>% 
+    dplyr::group_by(.data$simpoc, .data$nobsets) %>% 
     dplyr::summarize(npos=n())
   pz <- get_probzero(s$nobsets, bpue, d)
-  omar <- par()$mar
-  par(mar = c(4.1,4.1,3,4.1))
+  omar <- graphics::par()$mar
+  graphics::par(mar = c(4.1,4.1,3,4.1))
   with(s, plot(100*simpoc, npos, pch=22,
                xlim=c(0,100), ylim=c(0,round(max(npos),-1)+10), xaxs="i", yaxs="i",
                xaxp=c(0,100,10), yaxp=c(0,1000,10),
                xlab="Observer Coverage (%)", ylab="Simulations with Positive Bycatch",
                main="Sample Size for CV Estimates"))
-  par(new=T)
+  graphics::par(new=T)
   plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
        axes=F, xlab=NA, ylab=NA, col=2)
   axis(side = 4, col=2, col.axis=2)
@@ -193,13 +211,19 @@ plot_samplesize <- function(simdat=simdat, bpue, d) {
   abline(h=100*tail(pz,1), lty=3, lwd=2, col=2)
   legpos <- ifelse(any(s$simpoc > 0.7 & pz < 0.2), "right", "bottomright")
   legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
-  par(mar=omar)
+  graphics::par(mar=omar)
 }  
 
 
-#' Plot probability of positive observed bycatch vs observer coverage ### add options to this and plotcv to solve or not
+#' Plot probability of positive observed bycatch vs observer coverage
 #' 
-#' @param te Integer scalar greater than 10. Total effort in fishery (sets).
+#' \code{plot_probposobs} plots probability of observing at least one bycatch 
+#'   event vs observer coverage, given total effort in sets/hauls, bycatch per 
+#'   unit effort, and negative binomial dispersion parameter. Probabilities are
+#'   based on the probability density function for the corresponding Poisson or 
+#'   negative binomial distribution. 
+#'   
+#' @param te Integer scalar greater than 10. Total effort in fishery (sets/hauls).
 #' @param bpue Numeric greater than zero. Bycatch per unit effort.
 #' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
 #'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
@@ -217,8 +241,8 @@ plot_samplesize <- function(simdat=simdat, bpue, d) {
 plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   # percent probablity of positive observed bycatch
   oc <- tibble::tibble(obscov = c(seq(0.001,0.005,0.001), seq(0.01,1,0.01)),
-               nobsets = round(obscov * te)) %>% 
-    dplyr::filter(nobsets>0) %>% as.data.frame()
+               nobsets = round(.data$obscov * te)) %>% 
+    dplyr::filter(.data$nobsets>0) %>% as.data.frame()
   oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
   ppt <- tail(oc$pp,1)   # probability of positive bycatch in total effort
   plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
@@ -244,7 +268,7 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   if (target.ppos) {
     cat(paste("Minimum observer coverage to achieve ", target.ppos, "% probability ",
               "of observing bycatch when\ntotal bycatch is positive is ", 
-              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " hauls).\n", 
+              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n", 
               sep=""))
     return(invisible(list(pobscov=oc$obscov[itargetoc]*100, nobsets=oc$nobsets[itargetoc])))
   }

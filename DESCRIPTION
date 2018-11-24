@@ -1,12 +1,13 @@
-Package: obscov4CV
+Package: ObsCovgTools 
 Type: Package
-Title: Estimate fishery observer coverage required to achieve target bycatch estimation CV
-Version: 1.2
-Date: 2018-07-02
+Title: Estimates fishery observer coverage required to achieve specific objectives
+Version: 1.3
+Date: 2018-11-23
 Depends: R (>= 3.1.2)
 Imports: 
 	dplyr,
 	magrittr,
+	rlang,
 	Runuran,
 	tibble,
 	svMisc
@@ -14,16 +15,17 @@ Suggests:
   shiny
 Author: Alex Curtis
 Maintainer: Alex Curtis <alex.curtis@noaa.gov>
-Description: Uses simulation to estimate observer coverage required to achieve
-  a target bycatch estimation CV (coefficient of variation), given bycatch 
-  rate, negative binomial dispersion parameter, and total fishery effort. 
-  Simulated bycatch estimates use a simple mean-per-unit approach with finite 
-  population correction.Allows specification of probability of achieving target
-  CV. Produces recommended minimum observer coverage to achieve target CV for 
-  bycatch estimation, and plots of (1) CV vs observer coverage, with shaded 
-  percentiles showing distribution of CVs associated with each observer 
-  coverage level, and (2) probability of zero (observed and total) bycatch vs 
-  observer coverage.
-License: GPL-2
+Description: Estimates observer coverage required to achieve a specific
+  objective, given bycatch rate, negative binomial dispersion parameter, and
+  total fishery effort. Currently, potential objectives implemented are 
+  (1) target probability of observing a bycatch event (given that it occurred in 
+  total effort), and (2) target bycatch estimation CV (coefficient of variation). 
+  The user can also specify the desired probability of achieving the target CV. 
+  Probability of observing a bycatch event is based on the corresponding Poisson
+  or negative binomial probability distribution function. Bycatch estimation CV 
+  is based on simulated mean-per-unit bycatch estimates with finite population 
+  correction, which assume representative observer coverage. CV estimates exclude 
+  simulations with zero observed bycatch.
+License: GPL (>= 2)
 ByteCompile: TRUE
 RoxygenNote: 6.0.1

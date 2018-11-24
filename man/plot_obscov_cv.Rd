@@ -9,7 +9,8 @@ plot_obscov_cv(simdat = simdat, targetcv = 30, q = 0.8)
 \arguments{
 \item{simdat}{Tibble output from sim_obscov_cv.}
 
-\item{targetcv}{Numeric, 0 < targetcv <=100. Target CV (as percentage).}
+\item{targetcv}{Numeric, 0 < targetcv <=100. Target CV (as percentage). 
+If 0, no corresponding minimum observer coverage will be highlighted.}
 
 \item{q}{Numeric, 0 < q <=0.95. Desired probability (as a proportion) of 
 achieving at least target CV or lower.}
@@ -22,7 +23,7 @@ Returned invisibly.
 }
 \description{
 \code{plot_obscov_cv} plots CV of bycatch estimates vs observer coverage for
-  user-specified quantile (i.e., probability of achieving CV) and several 
-  default quantiles, and prints minimum observer coverage needed to achieve 
+  user-specified percentile (i.e., probability of achieving CV) and several 
+  default percentiles, and prints minimum observer coverage needed to achieve 
   user targets.
 }
