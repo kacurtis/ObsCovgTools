@@ -45,12 +45,15 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #'   base CV estimates.
 #' @param ...  Additional arguments for compatibility with Shiny.
 #'   
-#' @return A tibble with one row per simulation and the following fields: 
+#' @return A list with three elements:
+#'   $simdat, a tibble with one row per simulation and the following fields: 
 #'   simulated percent observer coverage (simpoc), number of observed sets 
 #'   (nobsets), total observed bycatch (ob), variance of observed bycatch 
 #'   (obvar), mean observed bycatch per unit effort (xsim), finite population 
 #'   correction (fpc), standard error of observed bycatch per unit effort 
-#'   (sesim), and CV of observed bycatch per unit effort (cvsim).
+#'   (sesim), and CV of observed bycatch per unit effort (cvsim);
+#'   $bpue; and
+#'   $d
 #'    
 #'   For simulations with zero observed bycatch, cvsim will be NaN.
 #'   
@@ -76,7 +79,7 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
     dplyr::mutate(xsim=.data$ob/.data$nobsets, fpc=1-.data$nobsets/te, 
                   sesim=sqrt(.data$fpc*.data$obvar/.data$nobsets), 
                   cvsim=.data$sesim/.data$xsim)
-  return(simdat)
+  return(list(simdat=simdat, bpue=bpue, d=d))
 }
 
 
@@ -87,7 +90,7 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 #'   default percentiles, and prints minimum observer coverage needed to achieve 
 #'   user targets. 
 #'
-#' @param simdat Tibble output from sim_obscov_cv.
+#' @param simlist List output from sim_obscov_cv.
 #' @param targetcv Numeric, 0 < targetcv <=100. Target CV (as percentage). 
 #'    If 0, no corresponding minimum observer coverage will be highlighted.
 #' @param q Numeric, 0 < q <=0.95. Desired probability (as a proportion) of 
@@ -98,9 +101,9 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 #' @return Returned invisibly. 
 #'   
 #' @export 
-plot_obscov_cv <- function(simdat=simdat, targetcv=30, q=0.8) {
+plot_obscov_cv <- function(simlist=simlist, targetcv=30, q=0.8) {
   # get quantiles of bycatch estimation CVs
-  simsum <- simdat %>% 
+  simsum <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
     dplyr::group_by(.data$simpoc) %>% 
     dplyr::summarize(nsim=n(), meanob=mean(.data$ob), nobsets=mean(.data$nobsets), 
@@ -180,22 +183,17 @@ get_probzero <- function(n, bpue, d) {
 #' observing zero bycatch based on effort and the probability density at zero
 #' given bycatch rate and negative binomial dispersion. 
 #' 
-#' @param simdat Tibble output from sim_obscov_cv.
-#' @param bpue Numeric greater than zero. Bycatch per unit effort.
-#' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-#'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-#'   so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-#'   overdispersed bycatch.
+#' @param simlist List output from sim_obscov_cv.
 #' 
 #' @return None
 #' 
 #' @export 
-plot_samplesize_cvsim <- function(simdat=simdat, bpue, d) {
-  s <- simdat %>% 
+plot_samplesize_cvsim <- function(simlist=simlist) {
+  s <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
     dplyr::group_by(.data$simpoc, .data$nobsets) %>% 
     dplyr::summarize(npos=n())
-  pz <- get_probzero(s$nobsets, bpue, d)
+  pz <- get_probzero(s$nobsets, simlist$bpue, simlist$d)
   omar <- graphics::par()$mar
   graphics::par(mar = c(4.1,4.1,3,4.1))
   with(s, plot(100*simpoc, npos, pch=22,

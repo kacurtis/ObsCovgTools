@@ -22,12 +22,15 @@ base CV estimates.}
 \item{...}{Additional arguments for compatibility with Shiny.}
 }
 \value{
-A tibble with one row per simulation and the following fields: 
+A list with three elements:
+  $simdat, a tibble with one row per simulation and the following fields: 
   simulated percent observer coverage (simpoc), number of observed sets 
   (nobsets), total observed bycatch (ob), variance of observed bycatch 
   (obvar), mean observed bycatch per unit effort (xsim), finite population 
   correction (fpc), standard error of observed bycatch per unit effort 
-  (sesim), and CV of observed bycatch per unit effort (cvsim).
+  (sesim), and CV of observed bycatch per unit effort (cvsim);
+  $bpue; and
+  $d
    
   For simulations with zero observed bycatch, cvsim will be NaN.
 }

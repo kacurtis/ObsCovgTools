@@ -4,17 +4,10 @@
 \alias{plot_samplesize_cvsim}
 \title{Plot sample size for CV estimates vs observer coverage}
 \usage{
-plot_samplesize_cvsim(simdat = simdat, bpue, d)
+plot_samplesize_cvsim(simlist = simlist)
 }
 \arguments{
-\item{simdat}{Tibble output from sim_obscov_cv.}
-
-\item{bpue}{Numeric greater than zero. Bycatch per unit effort.}
-
-\item{d}{Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-overdispersed bycatch.}
+\item{simlist}{List output from sim_obscov_cv.}
 }
 \value{
 None

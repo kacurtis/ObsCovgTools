@@ -4,10 +4,10 @@
 \alias{plot_obscov_cv}
 \title{Plot CV vs. observer coverage}
 \usage{
-plot_obscov_cv(simdat = simdat, targetcv = 30, q = 0.8)
+plot_obscov_cv(simlist = simlist, targetcv = 30, q = 0.8)
 }
 \arguments{
-\item{simdat}{Tibble output from sim_obscov_cv.}
+\item{simlist}{List output from sim_obscov_cv.}
 
 \item{targetcv}{Numeric, 0 < targetcv <=100. Target CV (as percentage). 
 If 0, no corresponding minimum observer coverage will be highlighted.}
