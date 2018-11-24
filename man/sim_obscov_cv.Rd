@@ -4,10 +4,10 @@
 \alias{sim_obscov_cv}
 \title{Simulate CV response to observer coverage}
 \usage{
-sim_obscov_cv(te, bpue, d = 2, ...)
+sim_obscov_cv(te, bpue, d = 2, nsim = 1000, ...)
 }
 \arguments{
-\item{te}{Integer scalar greater than 10. Total effort in fishery (sets).}
+\item{te}{Integer scalar greater than 10. Total effort in fishery (sets/hauls).}
 
 \item{bpue}{Numeric greater than zero. Bycatch per unit effort.}
 
@@ -15,6 +15,9 @@ sim_obscov_cv(te, bpue, d = 2, ...)
 parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
 so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
 overdispersed bycatch.}
+
+\item{nsim}{Integer scalar greater than 0. Number of simulations on which to 
+base CV estimates.}
 
 \item{...}{Additional arguments for compatibility with Shiny.}
 }
@@ -34,7 +37,10 @@ of observer coverage levels, given bycatch rate, negative binomial dispersion
 parameter, and total fishery effort. The function runs 1000 simulations per
 level of observer coverage, for observer coverage levels ranging from 0.1%
 or two sets/hauls, whichever is greater, to 100%. Simulated bycatch estimates
-use a simple mean-per-unit approach with finite population correction.
-WARNING: Calls specifying large (>10K sets/hauls) total effort may take 
-several minutes to simulate.
+use a simple mean-per-unit approach with finite population correction, which 
+assume representative observer coverage. CV estimates exclude simulations 
+with zero observed bycatch.
+WARNING: Calls specifying large (>100K sets/hauls) total effort may take 
+several minutes to simulate. Increasing number of simulations (nsim) from 
+default of 1000 will also increase execution time.
 }
