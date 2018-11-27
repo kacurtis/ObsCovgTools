@@ -1,8 +1,9 @@
 Package: ObsCovgTools 
 Type: Package
-Title: Estimates fishery observer coverage required to achieve specific objectives
+Title: Estimate fishery observer coverage required to achieve specific objectives
 Version: 2.0
 Date: 2018-11-26
+URL: https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.1.2)
 Imports: 
 	dplyr,
@@ -13,7 +14,7 @@ Imports:
 	svMisc
 Suggests: 
   shiny
-Author: Alex Curtis
+Author: K. Alexandra Curtis
 Maintainer: Alex Curtis <alex.curtis@noaa.gov>
 Description: Estimates observer coverage required to achieve a specific
   objective, given bycatch rate, negative binomial dispersion parameter, and
