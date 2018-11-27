@@ -23,7 +23,7 @@ progbar = function(it, total, shiny.progress=FALSE) {
 
 #' Simulate CV response to observer coverage
 #'
-#' \code{sim_obscov_cv} simulates bycatch estimation CVs resulting from a range 
+#' \code{sim_cv_obscov} simulates bycatch estimation CVs resulting from a range 
 #' of observer coverage levels, given bycatch rate, negative binomial dispersion 
 #' parameter, and total fishery effort. The function runs 1000 simulations per
 #' level of observer coverage, for observer coverage levels ranging from 0.1%
@@ -58,7 +58,7 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #'   For simulations with zero observed bycatch, cvsim will be NaN.
 #'   
 #' @export 
-sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {  
+sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {  
   obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
   simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
                            nobsets = round(.data$simpoc * te)) %>% 
@@ -85,12 +85,12 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 
 #' Plot CV vs. observer coverage
 #' 
-#' \code{plot_obscov_cv} plots CV of bycatch estimates vs observer coverage for
+#' \code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
 #'   user-specified percentile (i.e., probability of achieving CV) and several 
 #'   default percentiles, and prints minimum observer coverage needed to achieve 
 #'   user targets. 
 #'
-#' @param simlist List output from sim_obscov_cv.
+#' @param simlist List output from sim_cv_obscov.
 #' @param targetcv Numeric, 0 < targetcv <=100. Target CV (as percentage). 
 #'    If 0, no corresponding minimum observer coverage will be highlighted.
 #' @param q Numeric, 0 < q <=0.95. Desired probability (as a proportion) of 
@@ -101,7 +101,7 @@ sim_obscov_cv <- function(te, bpue, d=2, nsim=1000, ...) {
 #' @return Returned invisibly. 
 #'   
 #' @export 
-plot_obscov_cv <- function(simlist=simlist, targetcv=30, q=0.8) {
+plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
   # get quantiles of bycatch estimation CVs
   simsum <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
@@ -142,7 +142,7 @@ plot_obscov_cv <- function(simlist=simlist, targetcv=30, q=0.8) {
   }
   # return recommended minimum observer coverage
   if (targetcv)
-    cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV with ", q*100, "% probability is ", 
+    cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV or less with ", q*100, "% probability is ", 
             targetoc$simpoc*100, "% (", targetoc$nobsets, " hauls).\n", sep=""))
   cat("Note that results are simulation-based and may vary slightly with repetition.\n")
   if (targetcv) 
@@ -178,17 +178,17 @@ get_probzero <- function(n, bpue, d) {
 
 #' Plot sample size for CV estimates vs observer coverage
 #' 
-#' \code{plot_samplesize_cvsim} plots sample size (simulations with positive
+#' \code{plot_cvsim_samplesize} plots sample size (simulations with positive
 #' observed bycatch) vs observer coverage level, along with probability of 
 #' observing zero bycatch based on effort and the probability density at zero
 #' given bycatch rate and negative binomial dispersion. 
 #' 
-#' @param simlist List output from sim_obscov_cv.
+#' @param simlist List output from sim_cv_obscov.
 #' 
 #' @return None
 #' 
 #' @export 
-plot_samplesize_cvsim <- function(simlist=simlist) {
+plot_cvsim_samplesize <- function(simlist=simlist) {
   s <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
     dplyr::group_by(.data$simpoc, .data$nobsets) %>% 
@@ -264,8 +264,8 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   }
   # return recommended minimum observer coverage
   if (target.ppos) {
-    cat(paste("Minimum observer coverage to achieve ", target.ppos, "% probability ",
-              "of observing bycatch when\ntotal bycatch is positive is ", 
+    cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
+              "% probability of observing \nbycatch when total bycatch is positive is ", 
               oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n", 
               sep=""))
     return(invisible(list(pobscov=oc$obscov[itargetoc]*100, nobsets=oc$nobsets[itargetoc])))

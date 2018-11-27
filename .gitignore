@@ -24,4 +24,4 @@ vignettes/*.pdf
 *.knit.md
 .Rproj.user
 .Rbuildignore
-obscov4CV.Rproj
+ObsCovgTools.Rproj
