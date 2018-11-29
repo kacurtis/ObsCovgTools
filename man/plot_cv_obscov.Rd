@@ -23,7 +23,12 @@ Returned invisibly.
 }
 \description{
 \code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
-  user-specified percentile (i.e., probability of achieving CV) and several 
-  default percentiles, and prints minimum observer coverage needed to achieve 
-  user targets.
+user-specified percentile (i.e., probability of achieving CV) and several 
+default percentiles, and prints minimum observer coverage needed to achieve 
+user targets. 
+  
+\strong{CAVEAT:} Since \code{sim_cv_obscov} assumes representative observer coverage 
+and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
+bycatch estimation CV for a given level of observer coverage is likely to be 
+biased low relative to the real world.
 }

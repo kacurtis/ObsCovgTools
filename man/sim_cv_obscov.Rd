@@ -7,43 +7,58 @@
 sim_cv_obscov(te, bpue, d = 2, nsim = 1000, ...)
 }
 \arguments{
-\item{te}{Integer scalar greater than 10. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
 
-\item{bpue}{Numeric greater than zero. Bycatch per unit effort.}
+\item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+parameter. The dispersion parameter corresponds to the variance-to-mean 
+ratio of set-level bycatch, so \eqn{d=1} corresponds to Poisson-distributed 
+bycatch, and \eqn{d>1} corresponds to overdispersed bycatch.}
 
-\item{nsim}{Integer scalar greater than 0. Number of simulations on which to 
+\item{nsim}{a positive integer. Number of simulations on which to 
 base CV estimates.}
 
 \item{...}{Additional arguments for compatibility with Shiny.}
 }
 \value{
-A list with three elements:
-  $simdat, a tibble with one row per simulation and the following fields: 
-  simulated percent observer coverage (simpoc), number of observed sets 
-  (nobsets), total observed bycatch (ob), variance of observed bycatch 
-  (obvar), mean observed bycatch per unit effort (xsim), finite population 
-  correction (fpc), standard error of observed bycatch per unit effort 
-  (sesim), and CV of observed bycatch per unit effort (cvsim);
-  $bpue; and
-  $d
-   
-  For simulations with zero observed bycatch, cvsim will be NaN.
+A list with components:
+
+  \item{simdat}{a tibble with one row per simulation and the following fields: 
+  simulated percent observer coverage (\code{simpoc}), number of observed sets 
+  (\code{nobsets}), total observed bycatch (\code{ob}), variance of observed 
+  bycatch (\code{obvar}), mean observed bycatch per unit effort (\code{xsim}), 
+  finite population correction (\code{fpc}), standard error of observed bycatch 
+  per unit effort (\code{sesim}), and CV of observed bycatch per unit effort 
+  (\code{cvsim}). 
+  For simulations with zero observed bycatch, \code{cvsim} will be NaN.}
+  
+  \item{bpue}{the bycatch per unit effort used.}
+  
+  \item{d}{the negative binomial dispersion parameter used.}
 }
 \description{
 \code{sim_cv_obscov} simulates bycatch estimation CVs resulting from a range 
 of observer coverage levels, given bycatch rate, negative binomial dispersion 
-parameter, and total fishery effort. The function runs 1000 simulations per
-level of observer coverage, for observer coverage levels ranging from 0.1%
-or two sets/hauls, whichever is greater, to 100%. Simulated bycatch estimates
-use a simple mean-per-unit approach with finite population correction, which 
-assume representative observer coverage. CV estimates exclude simulations 
-with zero observed bycatch.
-WARNING: Calls specifying large (>100K sets/hauls) total effort may take 
-several minutes to simulate. Increasing number of simulations (nsim) from 
-default of 1000 will also increase execution time.
+parameter, and total fishery effort.
+}
+\details{
+\code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
+coverage from 0.1\% or two sets/hauls, whichever is greater, to 100\%. 
+Simulated bycatch estimates use a simple mean-per-unit approach with finite 
+population correction, which assumes representative observer coverage. CV 
+estimates exclude simulations with zero observed bycatch. Since estimating 
+variance requires at least two numbers, total effort must be at least two. 
+Note that number of sets observed is obtained by rounding observer coverage 
+times total effort to the nearest integer, leading to step-function behavior 
+at total effort less than 20.
+
+\strong{CAVEAT:} \code{sim_cv_obscov} assumes representative observer coverage and no 
+hierarchical sources of variance (e.g., vessel- or trip-level variation). As
+a result, bycatch estimation CV for a given level of observer coverage is 
+likely to be biased low relative to the real world.
+
+WARNING: Large total effort (>100K sets/hauls) may lead to simulation times
+of several minutes. Increasing \code{nsim} from the default of 1000 will 
+also increase execution time.
 }
