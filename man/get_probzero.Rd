@@ -18,13 +18,16 @@ so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
 overdispersed bycatch.}
 }
 \value{
-Vector of same length as n with probabilities of zero bycatch.
+Vector of same length as \code{n} with probabilities of zero bycatch.
 
 Returned invisibly
 }
 \description{
 \code{get_probzero} returns probability of zero bycatch in a specified number 
 of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
-parameter. Calculated from the probability density at zero of the
-corresponding Poisson or negative binomial distribution.
+parameter.
+}
+\details{
+Calculated from the probability density at zero of the corresponding Poisson
+(\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
 }

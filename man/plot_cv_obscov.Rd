@@ -7,28 +7,30 @@
 plot_cv_obscov(simlist = simlist, targetcv = 30, q = 0.8)
 }
 \arguments{
-\item{simlist}{List output from sim_cv_obscov.}
+\item{simlist}{list output from \code{sim_cv_obscov}.}
 
-\item{targetcv}{Numeric, 0 < targetcv <=100. Target CV (as percentage). 
+\item{targetcv}{a non-negative number <= 100. Target CV (as percentage). 
 If 0, no corresponding minimum observer coverage will be highlighted.}
 
-\item{q}{Numeric, 0 < q <=0.95. Desired probability (as a proportion) of 
-achieving at least target CV or lower.}
+\item{q}{a positive number <= 0.95. Custom percentile to be plotted. If 
+\eqn{targetcv > 0}, this specifies the desired probability (as a proportion) 
+of achieving the target CV or lower.}
 }
 \value{
-A list with minimum observer coverage in terms of percentage ($pobscov) 
-  and effort ($nobsets) corresponding to user specifications.
+A list with components:
+  \item{pobscov}{minimum observer coverage in terms of percentage.} 
+  \item{nobsets}{corresponding observed effort.}
 
 Returned invisibly.
 }
 \description{
 \code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
 user-specified percentile (i.e., probability of achieving CV) and several 
-default percentiles, and prints minimum observer coverage needed to achieve 
-user targets. 
+default percentiles, and returns minimum observer coverage needed to achieve 
+user-specified target CV and percentile. 
   
-\strong{CAVEAT:} Since \code{sim_cv_obscov} assumes representative observer coverage 
-and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-bycatch estimation CV for a given level of observer coverage is likely to be 
-biased low relative to the real world.
+\strong{CAVEAT:} Since \code{sim_cv_obscov} assumes representative observer 
+coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
+variation), bycatch estimation CV for a given level of observer coverage is 
+likely to be biased low relative to the real world.
 }

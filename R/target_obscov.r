@@ -28,46 +28,42 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' parameter, and total fishery effort. 
 #' 
 #' \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
-#' coverage from 0.1\% or two sets/hauls, whichever is greater, to 100\%. 
-#' Simulated bycatch estimates use a simple mean-per-unit approach with finite 
-#' population correction. CV estimates exclude simulations with zero observed 
-#' bycatch. Since estimating variance requires at least two numbers, total 
-#' effort must be at least two. Note that number of sets observed is obtained 
-#' by rounding observer coverage times total effort to the nearest integer, 
-#' leading to step-function behavior at total effort less than 20. 
+#' coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated 
+#' bycatch estimates use a simple mean-per-unit approach with finite population 
+#' correction. CV estimates exclude simulations with zero observed bycatch. 
+#' Since estimating variance requires at least two numbers, total effort must 
+#' be at least two sets/hauls. Note that number of sets observed is obtained by 
+#' rounding the product of observer coverage level and total effort to the 
+#' nearest integer, leading to step-function behavior when \eqn{te < 20}. 
 #' 
-#' \strong{CAVEAT:} \code{sim_cv_obscov} assumes representative observer coverage and no 
-#' hierarchical sources of variance (e.g., vessel- or trip-level variation). As
-#' a result, bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world.
-#' 
-#' WARNING: Large total effort (>100K sets/hauls) may require several minutes 
+#' Warning: Large total effort (>100K sets/hauls) may require several minutes 
 #' of execution time. Increasing \code{nsim} from the default of 1000 will 
 #' also increase execution time. 
+#' 
+#' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' As a result, bycatch estimation CV for a given level of observer coverage is 
+#' likely to be biased low relative to the real world.
 #' 
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Negative binomial dispersion 
 #'   parameter. The dispersion parameter corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d=1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d>1} corresponds to overdispersed bycatch.
-#' @param nsim a positive integer. Number of simulations on which to 
-#'   base CV estimates.
+#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#' @param nsim a positive integer. Number of simulations to run.
 #' @param ...  additional arguments for compatibility with Shiny.
 #'   
 #' @return A list with components:
-#' 
 #'   \item{simdat}{a tibble with one row per simulation and the following fields: 
-#'   simulated percent observer coverage (\code{simpoc}), number of observed sets 
+#'   simulated proportion observer coverage (\code{simpoc}), number of observed sets 
 #'   (\code{nobsets}), total observed bycatch (\code{ob}), variance of observed 
 #'   bycatch (\code{obvar}), mean observed bycatch per unit effort (\code{xsim}), 
 #'   finite population correction (\code{fpc}), standard error of observed bycatch 
 #'   per unit effort (\code{sesim}), and CV of observed bycatch per unit effort 
 #'   (\code{cvsim}). 
 #'   For simulations with zero observed bycatch, \code{cvsim} will be NaN.}
-#'   
 #'   \item{bpue}{the bycatch per unit effort used.}
-#'   
 #'   \item{d}{the negative binomial dispersion parameter used.}
 #'   
 #' @export 
@@ -100,27 +96,25 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' 
 #' \code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
 #' user-specified percentile (i.e., probability of achieving CV) and several 
-#' default percentiles, and prints minimum observer coverage needed to achieve 
-#' user targets. 
+#' default percentiles, and returns minimum observer coverage needed to achieve 
+#' user-specified target CV and percentile. 
 #'   
-#' \strong{CAVEAT:} Since \code{sim_cv_obscov} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-#' bycatch estimation CV for a given level of observer coverage is likely to be 
-#' biased low relative to the real world.
-#'
 #' @param simlist list output from \code{sim_cv_obscov}.
-#' @param targetcv a non-negative number <= 100. Target CV 
-#'    (as percentage). If 0, no corresponding minimum observer coverage will be 
-#'    highlighted.
-#' @param q a positive number <= 0.95. Desired probability (as a proportion) of 
-#'   achieving at least target CV or lower.
+#' @param targetcv a non-negative number <= 100. Target CV (as percentage). 
+#'   If 0, no corresponding minimum observer coverage will be highlighted.
+#' @param q a positive number <= 0.95. Custom percentile to be plotted. If 
+#'   \eqn{targetcv > 0}, this specifies the desired probability (as a proportion) 
+#'   of achieving the target CV or lower.
+#' 
+#' @details  
+#' \strong{Caveat:} Since \code{sim_cv_obscov} assumes representative observer 
+#' coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
+#' variation), bycatch estimation CV for a given level of observer coverage is 
+#' likely to be biased low relative to the real world.
 #'   
 #' @return A list with components:
-#' 
 #'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
-#'   
 #'   \item{nobsets}{corresponding observed effort.}
-#'   
 #' @return Returned invisibly. 
 #'   
 #' @export 
@@ -177,18 +171,26 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' 
 #' \code{get_probzero} returns probability of zero bycatch in a specified number 
 #' of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
-#' parameter. Calculated from the probability density at zero of the
-#' corresponding Poisson or negative binomial distribution.
+#' parameter. 
 #' 
-#' @param n Integer vector. Observed effort levels (in terms of sets/hauls) for
-#'  which to calculate probability of zero bycatch.
-#' @param bpue Numeric greater than zero. Bycatch per unit effort.
-#' @param d Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-#'   parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-#'   so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-#'   overdispersed bycatch.
+#' @param n a vector of positive integers. Observed effort levels (in terms of 
+#'   sets/hauls) for which to calculate probability of zero bycatch.
+#' @param bpue a positive number. Bycatch per unit effort.
+#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#'   parameter. The dispersion parameter corresponds to the variance-to-mean 
+#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #'   
-#' @return Vector of same length as n with probabilities of zero bycatch. 
+#' @details
+#' Calculated from the probability density at zero of the corresponding Poisson
+#' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
+#' 
+#' \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
+#' so probability of observing zero bycatch at a given level of observer coverage 
+#' is likely to be biased high relative to the real world.
+#'   
+#' @return Vector of same length as \code{n} with probabilities of zero bycatch. 
 #' @return Returned invisibly
 #' 
 #' @export
