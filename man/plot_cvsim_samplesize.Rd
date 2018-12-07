@@ -18,3 +18,10 @@ observed bycatch) vs observer coverage level, along with probability of
 observing zero bycatch based on effort and the probability density at zero
 given bycatch rate and negative binomial dispersion.
 }
+\details{
+Note that the predicted probability of observing zero bycatch assumes 
+representative observer coverage and no hierarchical sources of variance 
+(e.g., vessel- or trip-level variation), so probability of observing zero 
+bycatch at a given level of observer coverage is likely to be biased low 
+relative to the real world.
+}

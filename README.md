@@ -2,7 +2,7 @@ ObsCovgTools
 ==================================
 
 
-###Description
+### Description
 
 ObsCovgTools estimates observer coverage required to achieve a specific 
 objective, given bycatch rate, negative binomial dispersion parameter, and 
@@ -16,10 +16,13 @@ are based on simulated mean-per-unit bycatch estimates with finite population
 correction, and exclude simulations with zero observed bycatch.
 
 
-###Caveat
+### Caveat
 
 The current implementation of ObsCovgTools assumes representative observer 
 coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
 variation). This best-case scenario of information content in a given level of 
-observer coverage is likely to lead to optimistic (low) predictions of observer 
-coverage required to meet specific objectives.
+observer coverage is likely to lead to underestimates of observer coverage 
+required to meet specific objectives. More conservative estimates can be 
+obtained by using higher-level bycatch and effort information (e.g., mean 
+bycatch per trip instead of bycatch per set/haul, and number of trips instead 
+of number of sets/hauls). 

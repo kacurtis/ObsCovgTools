@@ -29,7 +29,5 @@ Returned invisibly.
 \description{
 \code{plot_probposobs} plots probability of observing at least one bycatch 
   event vs observer coverage, given total effort in sets/hauls, bycatch per 
-  unit effort, and negative binomial dispersion parameter. Probabilities are
-  based on the probability density function for the corresponding Poisson or 
-  negative binomial distribution.
+  unit effort, and negative binomial dispersion parameter.
 }

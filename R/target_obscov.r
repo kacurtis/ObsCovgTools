@@ -43,7 +43,10 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 #' As a result, bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world.
+#' likely to be biased low relative to the real world. More conservative estimates 
+#' can be obtained by using higher-level bycatch and effort information (e.g., 
+#' \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+#' \code{te} as number of trips instead of number of sets/hauls).
 #' 
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
@@ -110,7 +113,8 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' \strong{Caveat:} Since \code{sim_cv_obscov} assumes representative observer 
 #' coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
 #' variation), bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world.
+#' likely to be biased low relative to the real world. See documentation for
+#' \code{sim_obs_cov} for additional details.
 #'   
 #' @return A list with components:
 #'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
@@ -188,7 +192,10 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
 #' so probability of observing zero bycatch at a given level of observer coverage 
-#' is likely to be biased high relative to the real world.
+#' is likely to be biased low relative to the real world. More conservative 
+#' estimates can be obtained by using higher-level bycatch and effort information 
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+#' \code{n} as number of trips instead of number of sets/hauls).
 #'   
 #' @return Vector of same length as \code{n} with probabilities of zero bycatch. 
 #' @return Returned invisibly
@@ -207,6 +214,12 @@ get_probzero <- function(n, bpue, d) {
 #' observed bycatch) vs observer coverage level, along with probability of 
 #' observing zero bycatch based on effort and the probability density at zero
 #' given bycatch rate and negative binomial dispersion. 
+#' 
+#' Note that the predicted probability of observing zero bycatch assumes 
+#' representative observer coverage and no hierarchical sources of variance 
+#' (e.g., vessel- or trip-level variation), so probability of observing zero 
+#' bycatch at a given level of observer coverage is likely to be biased low 
+#' relative to the real world. 
 #' 
 #' @param simlist List output from sim_cv_obscov.
 #' 
@@ -242,9 +255,7 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' 
 #' \code{plot_probposobs} plots probability of observing at least one bycatch 
 #'   event vs observer coverage, given total effort in sets/hauls, bycatch per 
-#'   unit effort, and negative binomial dispersion parameter. Probabilities are
-#'   based on the probability density function for the corresponding Poisson or 
-#'   negative binomial distribution. 
+#'   unit effort, and negative binomial dispersion parameter. 
 #'   
 #' @param te Integer scalar greater than 10. Total effort in fishery (sets/hauls).
 #' @param bpue Numeric greater than zero. Bycatch per unit effort.
@@ -255,6 +266,22 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' @param target.ppos Numeric, 0 < target.ppos <=100. Target probability of
 #'   positive observed bycatch (as percentage), given positive bycatch in total 
 #'   effort. If 0, no corresponding minimum observer coverage will be highlighted.
+#' 
+#' @details  
+#' Probabilities are based on the probability density function for the 
+#' corresponding Poisson or negative binomial distribution. 
+#' 
+#' Note that unlike \code{plot_cv_obscov), \code{plot_probposobs} is designed 
+#' as a one-step tool, and does not take output from user calls to 
+#' \code{get_probzero}. 
+#'   
+#' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
+#' so probability of observing bycatch at a given level of observer coverage 
+#' is likely to be biased high relative to the real world. More conservative 
+#' estimates can be obtained by using higher-level bycatch and effort information 
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+#' \code{te} as number of trips instead of number of sets/hauls).
 #' 
 #' @return A list with minimum observer coverage in terms of percentage ($pobscov) 
 #'   and effort ($nobsets) corresponding to user specifications.

@@ -55,5 +55,8 @@ also increase execution time.
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 As a result, bycatch estimation CV for a given level of observer coverage is 
-likely to be biased low relative to the real world.
+likely to be biased low relative to the real world. More conservative estimates 
+can be obtained by using higher-level bycatch and effort information (e.g., 
+\code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+\code{te} as number of trips instead of number of sets/hauls).
 }

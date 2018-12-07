@@ -7,15 +7,15 @@
 get_probzero(n, bpue, d)
 }
 \arguments{
-\item{n}{Integer vector. Observed effort levels (in terms of sets/hauls) for
-which to calculate probability of zero bycatch.}
+\item{n}{a vector of positive integers. Observed effort levels (in terms of 
+sets/hauls) for which to calculate probability of zero bycatch.}
 
-\item{bpue}{Numeric greater than zero. Bycatch per unit effort.}
+\item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+parameter. The dispersion parameter corresponds to the variance-to-mean 
+ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 }
 \value{
 Vector of same length as \code{n} with probabilities of zero bycatch.
@@ -30,4 +30,12 @@ parameter.
 \details{
 Calculated from the probability density at zero of the corresponding Poisson
 (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
+
+\strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
+and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
+so probability of observing zero bycatch at a given level of observer coverage 
+is likely to be biased low relative to the real world. More conservative 
+estimates can be obtained by using higher-level bycatch and effort information 
+(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+\code{n} as number of trips instead of number of sets/hauls).
 }
