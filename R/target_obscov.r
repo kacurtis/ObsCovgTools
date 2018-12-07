@@ -271,7 +271,7 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' Probabilities are based on the probability density function for the 
 #' corresponding Poisson or negative binomial distribution. 
 #' 
-#' Note that unlike \code{plot_cv_obscov), \code{plot_probposobs} is designed 
+#' Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 #' as a one-step tool, and does not take output from user calls to 
 #' \code{get_probzero}. 
 #'   

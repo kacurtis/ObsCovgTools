@@ -31,3 +31,19 @@ Returned invisibly.
   event vs observer coverage, given total effort in sets/hauls, bycatch per 
   unit effort, and negative binomial dispersion parameter.
 }
+\details{
+Probabilities are based on the probability density function for the 
+corresponding Poisson or negative binomial distribution. 
+
+Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
+as a one-step tool, and does not take output from user calls to 
+\code{get_probzero}. 
+  
+\strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
+and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
+so probability of observing bycatch at a given level of observer coverage 
+is likely to be biased high relative to the real world. More conservative 
+estimates can be obtained by using higher-level bycatch and effort information 
+(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+\code{te} as number of trips instead of number of sets/hauls).
+}
