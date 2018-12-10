@@ -7,22 +7,24 @@
 plot_probposobs(te, bpue, d, target.ppos = 80)
 }
 \arguments{
-\item{te}{Integer scalar greater than 10. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
 
-\item{bpue}{Numeric greater than zero. Bycatch per unit effort.}
+\item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{Numeric >= 1. Negative binomial dispersion parameter. The dispersion
-parameter corresponds to the variance-to-mean ratio of set-level bycatch, 
-so d=1 corresponds to Poisson-distributed bycatch, and d>1 corresponds to
-overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+parameter. The dispersion parameter corresponds to the variance-to-mean 
+ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
-\item{target.ppos}{Numeric, 0 < target.ppos <=100. Target probability of
-positive observed bycatch (as percentage), given positive bycatch in total 
-effort. If 0, no corresponding minimum observer coverage will be highlighted.}
+\item{target.ppos}{a non-negative number less than or equal to 100. Target 
+probability of positive observed bycatch (as percentage), given positive 
+bycatch in total effort. If 0, no corresponding minimum observer coverage 
+will be highlighted.}
 }
 \value{
-A list with minimum observer coverage in terms of percentage ($pobscov) 
-  and effort ($nobsets) corresponding to user specifications.
+A list with components:
+  \item{pobscov}{minimum observer coverage in terms of percentage.} 
+  \item{nobsets}{corresponding observed effort.}
 
 Returned invisibly.
 }

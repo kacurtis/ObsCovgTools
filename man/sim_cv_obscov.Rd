@@ -7,7 +7,7 @@
 sim_cv_obscov(te, bpue, d = 2, nsim = 1000, ...)
 }
 \arguments{
-\item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than 2. Total effort in fishery (sets/hauls).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
@@ -44,9 +44,7 @@ coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated
 bycatch estimates use a simple mean-per-unit approach with finite population 
 correction. CV estimates exclude simulations with zero observed bycatch. 
 Since estimating variance requires at least two numbers, total effort must 
-be at least two sets/hauls. Note that number of sets observed is obtained by 
-rounding the product of observer coverage level and total effort to the 
-nearest integer, leading to step-function behavior when \eqn{te < 20}.
+be at least three sets/hauls to evaluate observer coverage less than 100\%.
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
