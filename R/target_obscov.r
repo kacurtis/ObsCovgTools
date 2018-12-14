@@ -166,7 +166,8 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
   # return recommended minimum observer coverage
   if (targetcv)
     cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV or less with ", q*100, "% probability is ", 
-            round(targetoc$simpoc*100), "% (", targetoc$nobsets, " hauls).\n", sep=""))
+            round(targetoc$simpoc*100), "% (", targetoc$nobsets, " hauls).\n", 
+            "Please review the caveats in the associated documentation.\n", sep=""))
   cat("Note that results are simulation-based and may vary slightly with repetition.\n")
   if (targetcv) 
     return(invisible(list(pobscov = targetoc$simpoc*100, nobsets=targetoc$nobsets)))
@@ -326,8 +327,8 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   if (target.ppos) {
     cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
               "% probability of observing \nbycatch when total bycatch is positive is ", 
-              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n", 
-              sep=""))
+              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n",
+              "Please review the caveats in the associated documentation.\n", sep=""))
     return(invisible(list(pobscov=oc$obscov[itargetoc]*100, nobsets=oc$nobsets[itargetoc])))
   }
 }
