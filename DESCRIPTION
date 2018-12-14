@@ -23,4 +23,5 @@ Description: Estimates observer coverage required to achieve a specific
   probability of achieving the target CV. 
 License: GPL (>= 2)
 ByteCompile: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
