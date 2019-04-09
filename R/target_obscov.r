@@ -42,7 +42,7 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 #' As a result, bycatch estimation CV for a given level of observer coverage is 
 #' likely to be biased low relative to the real world. More conservative estimates 
-#' can be obtained by using higher-level bycatch and effort information (e.g., 
+#' can be obtained by using higher-level units of effort (e.g., 
 #' \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
 #' 
@@ -196,7 +196,7 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
 #' so probability of observing zero bycatch at a given level of observer coverage 
 #' is likely to be biased low relative to the real world. More conservative 
-#' estimates can be obtained by using higher-level bycatch and effort information 
+#' estimates can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{n} as number of trips instead of number of sets/hauls).
 #'   
@@ -273,7 +273,16 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' 
 #' @details  
 #' Probabilities are based on the probability density function for the 
-#' corresponding Poisson or negative binomial distribution. 
+#' corresponding Poisson or negative binomial distribution.
+#' 
+#' The probability that any bycatch occurs in the given total effort is shown
+#' by the horizontal black dotted line. The conditional probability of observing 
+#' any bycatch if it occurs is shown by the solid black line.  The product of 
+#' these first two probabilities gives the absolute probability of observing any
+#' bycatch (dashed black line).The minimum observer coverage to achieve the target 
+#' obability of observing bycatch if it occurs (x-axis value of red star) is 
+#' where the conditional bycatch detection probability (solid black line) 
+#' intersects with the target probability (red dash-dot line).
 #' 
 #' Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 #' as a one-step tool, and does not take output from user calls to 
@@ -283,7 +292,7 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
 #' so probability of observing bycatch at a given level of observer coverage 
 #' is likely to be biased high relative to the real world. More conservative 
-#' estimates can be obtained by using higher-level bycatch and effort information 
+#' estimates can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
 #' 
@@ -295,8 +304,8 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' @export 
 plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   # percent probablity of positive observed bycatch
-  if (te<100) obscov <- 1:te/te 
-  else obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
+  if (te<1000) obscov <- 1:te/te 
+  else obscov <- seq(0.001,1,0.001)
   oc <- tibble::tibble(obscov = obscov,
                nobsets = round(.data$obscov * te)) %>% 
     dplyr::filter(.data$nobsets>0) %>% as.data.frame()
@@ -312,9 +321,9 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
   if (target.ppos) {
     abline(h=target.ppos, col=2, lwd=2, lty=4)
-    itargetoc <- which.max(100*oc$pp/ppt >= target.ppos)
+    targetoc <- log(1-(target.ppos/100)*ppt)/log(get_probzero(1,bpue,d))/te #which.max(100*oc$pp/ppt >= target.ppos)
     par(xpd=TRUE)
-    points(oc$obscov[itargetoc]*100, (oc$pp/ppt)[itargetoc]*100, pch=8, col=2, cex=1.5, lwd=2)
+    points(targetoc*100, target.ppos, pch=8, col=2, cex=1.5, lwd=2)
     par(xpd=FALSE)
     legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
            legend=c("in observed effort if total bycatch > 0", "in observed effort",
@@ -327,8 +336,8 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   if (target.ppos) {
     cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
               "% probability of observing \nbycatch when total bycatch is positive is ", 
-              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n",
+              signif(targetoc*100,3), "% (", ceiling(targetoc*te), " sets).\n",
               "Please review the caveats in the associated documentation.\n", sep=""))
-    return(invisible(list(pobscov=oc$obscov[itargetoc]*100, nobsets=oc$nobsets[itargetoc])))
+    return(invisible(list(pobscov=round(targetoc*100,1), nobsets=ceiling(targetoc*te))))
   }
 }
