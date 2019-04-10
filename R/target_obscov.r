@@ -80,7 +80,13 @@ my_ceiling <- function(x, s){
 #'   \item{d}{the negative binomial dispersion parameter used.}
 #'   
 #' @export 
-sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {  
+sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
+  # check input values
+  if ((ceiling(te) != floor(te)) || te<3) stop("te must be a positive integer >=3")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  if ((ceiling(nsim) != floor(nsim)) || nsim<=0) stop("nsim must be a positive integer")
+  # simulate observer coverage and bycatch estimation
   if (te<20) obscov <- 1:te/te 
   else obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
   simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
@@ -114,10 +120,10 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' to achieve user-specified target CV and percentile. 
 #'   
 #' @param simlist list output from \code{sim_cv_obscov}.
-#' @param targetcv a non-negative number less than or equal to 1. Target CV 
+#' @param targetcv a non-negative number less than 1. Target CV 
 #'   (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 #'   coverage will be highlighted.
-#' @param q a positive number less than or equal to 95. Custom percentile to 
+#' @param q a positive number less than 100. Custom percentile to 
 #'   be plotted, desired probability of achieving the target CV or lower. 
 #'   Ignored if \eqn{targetcv = 0}.
 #' 
@@ -135,6 +141,9 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #'   
 #' @export 
 plot_cv_obscov <- function(simlist=simlist, targetcv=0.3, q=80) {
+  # check input values
+  if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
+  if(q<=0 || q>=100) stop("q must be > 0 and < 100")
   # get quantiles of bycatch estimation CVs
   simsum <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
@@ -176,7 +185,7 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=0.3, q=80) {
   }
   # return recommended minimum observer coverage
   if (targetcv)
-    cat(paste("Minimum observer coverage to achieve CV \U2266 ", targetcv, " with ", q, "% probability is ", 
+    cat(paste("Minimum observer coverage to achieve CV \u2264 ", targetcv, " with ", q, "% probability is ", 
             my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), " hauls).\n", 
             "Please review the caveats in the associated documentation.\n", sep=""))
   cat(paste("Note that results are interpolated from simulation-based projections and may vary slightly \n",
@@ -217,6 +226,11 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=0.3, q=80) {
 #' 
 #' @export
 get_probzero <- function(n, bpue, d) {
+  # check input values
+  if (any((ceiling(n) != floor(n)) | n<1)) stop("n must be a vector of positive integers")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  # calculate probability of observing zero bycatch in n sets
   pz <- if(d==1) stats::ppois(0, bpue)^n 
   else stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d)^n
   return(invisible(pz))
@@ -319,7 +333,12 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' @return Returned invisibly. 
 #' 
 #' @export 
-plot_probposobs <- function(te, bpue, d, target.ppos=80) {
+plot_probposobs <- function(te, bpue, d=2, target.ppos=80) {
+  # check input values
+  if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
   # percent probablity of positive observed bycatch
   if (te<1000) obscov <- 1:te/te 
   else obscov <- seq(0.001,1,0.001)

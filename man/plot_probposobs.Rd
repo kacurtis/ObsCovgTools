@@ -4,7 +4,7 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive observed bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d, target.ppos = 80)
+plot_probposobs(te, bpue, d = 2, target.ppos = 80)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}

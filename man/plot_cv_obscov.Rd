@@ -9,11 +9,11 @@ plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80)
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
 
-\item{targetcv}{a non-negative number less than or equal to 1. Target CV 
+\item{targetcv}{a non-negative number less than 1. Target CV 
 (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 coverage will be highlighted.}
 
-\item{q}{a positive number less than or equal to 95. Custom percentile to 
+\item{q}{a positive number less than 100. Custom percentile to 
 be plotted, desired probability of achieving the target CV or lower. 
 Ignored if \eqn{targetcv = 0}.}
 }
