@@ -33,9 +33,9 @@ Calculated from the probability density at zero of the corresponding Poisson
 
 \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-Violating these assumptions will likely result in underestimates of the 
-probability of observing zero bycatch at a given level of observer coverage. 
-More conservative estimates can be obtained by using higher-level units of effort 
+Violating these assumptions will likely result in negatively biased projections 
+of the probability of observing zero bycatch at a given level of observer coverage. 
+More conservative projections can be obtained by using higher-level units of effort 
 (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 \code{n} as number of trips instead of number of sets/hauls).
 }

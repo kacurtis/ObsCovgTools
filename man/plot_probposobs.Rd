@@ -52,9 +52,9 @@ as a one-step tool, and does not take output from user calls to
   
 \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-Violating these assumptions will likely result in overestimates of the probability 
-of observing bycatch at a given level of observer coverage. More conservative 
-estimates can be obtained by using higher-level units of effort 
+Violating these assumptions will likely result in positively biased projections 
+of the probability of observing bycatch at a given level of observer coverage. 
+More conservative projections can be obtained by using higher-level units of effort 
 (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 \code{te} as number of trips instead of number of sets/hauls).
 }

@@ -2,9 +2,9 @@
 % Please edit documentation in R/target_obscov.r
 \name{plot_cv_obscov}
 \alias{plot_cv_obscov}
-\title{Plot CV vs. observer coverage}
+\title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 0.8)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
@@ -13,9 +13,9 @@ plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 0.8)
 (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 coverage will be highlighted.}
 
-\item{q}{a positive number less than or equal to 0.95. Custom percentile to 
-be plotted, desired probability (as a proportion) of achieving the target 
-CV or lower. Ignored if \eqn{targetcv = 0}.}
+\item{q}{a positive number less than or equal to 95. Custom percentile to 
+be plotted, desired probability of achieving the target CV or lower. 
+Ignored if \eqn{targetcv = 0}.}
 }
 \value{
 A list with components:
@@ -25,15 +25,15 @@ A list with components:
 Returned invisibly.
 }
 \description{
-\code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
-user-specified percentile (i.e., probability of achieving CV) and several 
-default percentiles, and returns minimum observer coverage needed to achieve 
-user-specified target CV and percentile.
+\code{plot_cv_obscov} plots projected bycatch estimation CVs vs observer 
+coverage for user-specified percentile (i.e., probability of achieving CV) 
+and several default percentiles, and returns minimum observer coverage needed 
+to achieve user-specified target CV and percentile.
 }
 \details{
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
 coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
-variation). Violating these assumptions will likely result in underestimates of 
-bycatch estimation CV for a given level of observer coverage. See documentation for                
-\code{sim_obs_cov} for additional details.
+variation). Violating these assumptions will likely result in negatively biased 
+projections of bycatch estimation CV for a given level of observer coverage. 
+See documentation for \code{sim_obs_cov} for additional details.
 }

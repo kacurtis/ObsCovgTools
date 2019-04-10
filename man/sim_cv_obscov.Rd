@@ -42,9 +42,10 @@ parameter, and total fishery effort.
 \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
 coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated 
 bycatch estimates use a simple mean-per-unit approach with finite population 
-correction. CV estimates exclude simulations with zero observed bycatch. 
-Since estimating variance requires at least two numbers, total effort must 
-be at least three sets/hauls to evaluate observer coverage less than 100\%.
+correction. Projections of bycatch estimation CV exclude simulations with 
+zero observed bycatch. Since estimating variance requires at least two numbers, 
+total effort must be at least three sets/hauls to evaluate observer coverage 
+less than 100\%.
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
@@ -52,9 +53,9 @@ also increase execution time.
 
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-Violating these assumptions will likely result in underestimates of bycatch 
-estimation CV for a given level of observer coverage. More conservative estimates 
-can be obtained by using higher-level units of effort (e.g., 
+Violating these assumptions will likely result in negatively biased projections of 
+bycatch estimation CV for a given level of observer coverage. More conservative 
+projections can be obtained by using higher-level units of effort (e.g., 
 \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 \code{te} as number of trips instead of number of sets/hauls).
 }
