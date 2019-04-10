@@ -4,13 +4,13 @@
 \alias{plot_cv_obscov}
 \title{Plot CV vs. observer coverage}
 \usage{
-plot_cv_obscov(simlist = simlist, targetcv = 30, q = 0.8)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 0.8)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
 
-\item{targetcv}{a non-negative number less than or equal to 100. Target CV 
-(as percentage). If \eqn{targetcv = 0}, no corresponding minimum observer 
+\item{targetcv}{a non-negative number less than or equal to 1. Target CV 
+(as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 coverage will be highlighted.}
 
 \item{q}{a positive number less than or equal to 0.95. Custom percentile to 
@@ -31,9 +31,9 @@ default percentiles, and returns minimum observer coverage needed to achieve
 user-specified target CV and percentile.
 }
 \details{
-\strong{Caveat:} Since \code{sim_cv_obscov} assumes representative observer 
+\strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
 coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
-variation), bycatch estimation CV for a given level of observer coverage is 
-likely to be biased low relative to the real world. See documentation for
+variation). Violating these assumptions will likely result in underestimates of 
+bycatch estimation CV for a given level of observer coverage. See documentation for                
 \code{sim_obs_cov} for additional details.
 }

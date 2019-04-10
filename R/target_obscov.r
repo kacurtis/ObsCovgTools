@@ -1,12 +1,12 @@
 #' @importFrom magrittr %>%
 #' @importFrom graphics abline axis legend lines mtext par plot points
-#' @importFrom stats pnbinom ppois quantile var
+#' @importFrom stats pnbinom ppois quantile var approx
 #' @importFrom utils tail
 #' @importFrom rlang .data
 NULL 
 
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
+## Quiets concerns of R CMD check re: the .'s that appear in pipelines
 ## and the "n" that is produced by dplyr::count() in a pipeline
 if (getRversion() >= "2.15.1") utils::globalVariables(c("n"))
 
@@ -16,10 +16,21 @@ progbar = function(it, total, shiny.progress=FALSE) {
   if (shiny.progress) {
     shiny::incProgress(500 / total)
   } else {
-    svMisc::progress(it/total*100)
+    svMisc::progress(it/total*100, progress.bar=T, gui=F)
   }
 }
 
+
+# Hidden function to round up to specified significant digits
+# Extended from code by JasonWang on stackoverflow at 
+# https://stackoverflow.com/questions/37583715/round-up-values-to-a-specific-significant-figure-in-r
+my_ceiling <- function(x, s){
+     num_string <- format(x, scientific=TRUE)
+     n <- strsplit(num_string, "e")
+     n1 <- sapply(n, function(x) as.numeric(x[1]))
+     n2 <- sapply(n, function(x) as.numeric(x[2]))
+     ceiling(n1*10^(s-1))/(10^(s-1)) * 10^(n2)
+}
 
 #' Simulate CV response to observer coverage
 #'
@@ -40,8 +51,8 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' 
 #' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' As a result, bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world. More conservative estimates 
+#' Violating these assumptions will likely result in underestimates of bycatch 
+#' estimation CV for a given level of observer coverage. More conservative estimates 
 #' can be obtained by using higher-level units of effort (e.g., 
 #' \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
@@ -90,7 +101,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     dplyr::mutate(xsim=.data$ob/.data$nobsets, fpc=1-.data$nobsets/te, 
                   sesim=sqrt(.data$fpc*.data$obvar/.data$nobsets), 
                   cvsim=.data$sesim/.data$xsim)
-  return(list(simdat=simdat, bpue=bpue, d=d))
+  return(list(simdat=simdat, te=te, bpue=bpue, d=d))
 }
 
 
@@ -102,18 +113,18 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' user-specified target CV and percentile. 
 #'   
 #' @param simlist list output from \code{sim_cv_obscov}.
-#' @param targetcv a non-negative number less than or equal to 100. Target CV 
-#'   (as percentage). If \eqn{targetcv = 0}, no corresponding minimum observer 
+#' @param targetcv a non-negative number less than or equal to 1. Target CV 
+#'   (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 #'   coverage will be highlighted.
 #' @param q a positive number less than or equal to 0.95. Custom percentile to 
 #'   be plotted, desired probability (as a proportion) of achieving the target 
 #'   CV or lower. Ignored if \eqn{targetcv = 0}.
 #' 
 #' @details  
-#' \strong{Caveat:} Since \code{sim_cv_obscov} assumes representative observer 
+#' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
 #' coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
-#' variation), bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world. See documentation for
+#' variation). Violating these assumptions will likely result in underestimates of 
+#' bycatch estimation CV for a given level of observer coverage. See documentation for                
 #' \code{sim_obs_cov} for additional details.
 #'   
 #' @return A list with components:
@@ -122,7 +133,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' @return Returned invisibly. 
 #'   
 #' @export 
-plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
+plot_cv_obscov <- function(simlist=simlist, targetcv=0.3, q=0.8) {
   # get quantiles of bycatch estimation CVs
   simsum <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
@@ -134,24 +145,25 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
                      q95=stats::quantile(.data$cvsim,0.95,na.rm=T), 
                      min=min(.data$ob), max=max(.data$ob))
   # plot 
-  with(simsum, plot(100*simpoc, 100*qcv, 
-                    xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
-                    xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate (%)",
+  with(simsum, plot(100*simpoc, qcv, 
+                    xlim=c(0,100), ylim=c(0,1), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,1,10),
+                    xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate",
                     main="CV of Bycatch Estimate vs Observer Coverage"))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q50,100,100),col="gray90", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q80,100,100),col="gray80", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q95,100,100),col="gray70", lty=0))
-  with(simsum, points(100*simpoc, 100*qcv))
-  with(simsum, lines(100*simpoc, 100*qcv))
-  abline(h=100, v=100)
+  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q50,1,1),col="gray90", lty=0))
+  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q80,1,1),col="gray80", lty=0))
+  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q95,1,1),col="gray70", lty=0))
+  with(simsum, points(100*simpoc, qcv))
+  with(simsum, lines(100*simpoc, qcv))
+  abline(h=1, v=100)
   legpos <- ifelse(any(simsum$simpoc > 0.7 & simsum$q95 > 0.5), "bottomleft", "topright")
   # get (and add to plot) minimum required observer coverage
   if (targetcv) {
     abline(h=targetcv, col=2, lwd=2, lty=2)
-    targetoc <- simsum %>% dplyr::filter(.data$qcv <= targetcv/100) %>% 
-      dplyr::filter(.data$simpoc==min(.data$simpoc))
+    targetoc <- approx(simsum$qcv, simsum$simpoc, targetcv)$y       #dplyr::filter(.data$qcv <= targetcv) %>% 
+      #dplyr::filter(.data$simpoc==min(.data$simpoc))
     par(xpd=TRUE)
-    points(targetoc$simpoc*100, targetoc$qcv*100, pch=8, col=2, cex=1.5, lwd=2)
+    #points(targetoc$simpoc*100, targetoc$qcv, pch=8, col=2, cex=1.5, lwd=2)
+    points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
     par(xpd=FALSE)
     legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
            lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
@@ -165,12 +177,12 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
   }
   # return recommended minimum observer coverage
   if (targetcv)
-    cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV or less with ", q*100, "% probability is ", 
-            round(targetoc$simpoc*100), "% (", targetoc$nobsets, " hauls).\n", 
+    cat(paste("Minimum observer coverage to achieve CV <= ", targetcv, " with ", q*100, "% probability is ", 
+            my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), " hauls).\n", 
             "Please review the caveats in the associated documentation.\n", sep=""))
-  cat("Note that results are simulation-based and may vary slightly with repetition.\n")
+  cat("Note that results are interpolated from simulation-based estimates and may vary slightly with repetition.\n")
   if (targetcv) 
-    return(invisible(list(pobscov = targetoc$simpoc*100, nobsets=targetoc$nobsets)))
+    return(invisible(list(pobscov = my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*simlist$te,2))))
 }
 
 
@@ -193,10 +205,10 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
 #' 
 #' \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-#' so probability of observing zero bycatch at a given level of observer coverage 
-#' is likely to be biased low relative to the real world. More conservative 
-#' estimates can be obtained by using higher-level units of effort 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in underestimates of the 
+#' probability of observing zero bycatch at a given level of observer coverage. 
+#' More conservative estimates can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{n} as number of trips instead of number of sets/hauls).
 #'   
@@ -213,16 +225,21 @@ get_probzero <- function(n, bpue, d) {
 
 #' Plot sample size for CV estimates vs observer coverage
 #' 
-#' \code{plot_cvsim_samplesize} plots sample size (simulations with positive
-#' observed bycatch) vs observer coverage level, along with probability of 
-#' observing zero bycatch based on effort and the probability density at zero
-#' given bycatch rate and negative binomial dispersion. 
+#' \code{plot_cvsim_samplesize} plots (1) the number of simulations with positive
+#' observed bycatch underlying each estimate of bycatch estimation CV vs 
+#' observer coverage level, which is inversely proprtional to (2) the probability 
+#' of no bycatch being observed (based on effort and the probability density at zero,
+#' given bycatch rate and negative binomial dispersion). The latter includes the 
+#' probability of no bycatch occurring in the given total effort. The smaller the sample size, 
+#' the less precise the estimate (the more it will vary among repeated runs of the 
+#' simulator). Small sample sizes can be countered by increasing the number of 
+#' simulations in \code{sim_cv_obscov}. 
 #' 
 #' Note that the predicted probability of observing zero bycatch assumes 
 #' representative observer coverage and no hierarchical sources of variance 
-#' (e.g., vessel- or trip-level variation), so probability of observing zero 
-#' bycatch at a given level of observer coverage is likely to be biased low 
-#' relative to the real world. 
+#' (e.g., vessel- or trip-level variation). Violating these assumptions will
+#' likely result in underestimates of the probability of observing zero 
+#' bycatch at a given level of observer coverage. 
 #' 
 #' @param simlist List output from sim_cv_obscov.
 #' 
@@ -241,7 +258,7 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
                xlim=c(0,100), ylim=c(0,round(max(npos),-1)+10), xaxs="i", yaxs="i",
                xaxp=c(0,100,10), yaxp=c(0,1000,10),
                xlab="Observer Coverage (%)", ylab="Simulations with Positive Bycatch",
-               main="Sample Size for CV Estimates"))
+               main="Sample Sizes for CV Estimates"))
   graphics::par(new=T)
   plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
        axes=F, xlab=NA, ylab=NA, col=2)
@@ -289,9 +306,9 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' \code{get_probzero}. 
 #'   
 #' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-#' so probability of observing bycatch at a given level of observer coverage 
-#' is likely to be biased high relative to the real world. More conservative 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in overestimates of the probability 
+#' of observing bycatch at a given level of observer coverage. More conservative 
 #' estimates can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
@@ -336,8 +353,8 @@ plot_probposobs <- function(te, bpue, d, target.ppos=80) {
   if (target.ppos) {
     cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
               "% probability of observing \nbycatch when total bycatch is positive is ", 
-              signif(targetoc*100,3), "% (", ceiling(targetoc*te), " sets).\n",
+              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets).\n",
               "Please review the caveats in the associated documentation.\n", sep=""))
-    return(invisible(list(pobscov=round(targetoc*100,1), nobsets=ceiling(targetoc*te))))
+    return(invisible(list(pobscov=my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*te,2))))
   }
 }

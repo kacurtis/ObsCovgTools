@@ -26,3 +26,10 @@ required to meet specific objectives. More conservative estimates can be
 obtained by using higher-level bycatch and effort information (e.g., mean 
 bycatch per trip instead of bycatch per set/haul, and number of trips instead 
 of number of sets/hauls). 
+
+
+### Shiny app
+
+This package has been implemented as a Shiny app, coauthored by Howard Coleman,
+which can be accessed at https://kacurtis.shinyapps.io/obscov/
+

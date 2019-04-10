@@ -13,15 +13,20 @@ plot_cvsim_samplesize(simlist = simlist)
 None
 }
 \description{
-\code{plot_cvsim_samplesize} plots sample size (simulations with positive
-observed bycatch) vs observer coverage level, along with probability of 
-observing zero bycatch based on effort and the probability density at zero
-given bycatch rate and negative binomial dispersion.
+\code{plot_cvsim_samplesize} plots (1) the number of simulations with positive
+observed bycatch underlying each estimate of bycatch estimation CV vs 
+observer coverage level, which is inversely proprtional to (2) the probability 
+of no bycatch being observed (based on effort and the probability density at zero,
+given bycatch rate and negative binomial dispersion). The latter includes the 
+probability of no bycatch occurring in the given total effort. The smaller the sample size, 
+the less precise the estimate (the more it will vary among repeated runs of the 
+simulator). Small sample sizes can be countered by increasing the number of 
+simulations in \code{sim_cv_obscov}.
 }
 \details{
 Note that the predicted probability of observing zero bycatch assumes 
 representative observer coverage and no hierarchical sources of variance 
-(e.g., vessel- or trip-level variation), so probability of observing zero 
-bycatch at a given level of observer coverage is likely to be biased low 
-relative to the real world.
+(e.g., vessel- or trip-level variation). Violating these assumptions will
+likely result in underestimates of the probability of observing zero 
+bycatch at a given level of observer coverage.
 }
