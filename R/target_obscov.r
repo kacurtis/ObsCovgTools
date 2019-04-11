@@ -1,7 +1,4 @@
 #' @importFrom magrittr %>%
-#' @importFrom graphics abline axis legend lines mtext par plot points
-#' @importFrom stats pnbinom ppois quantile var approx
-#' @importFrom utils tail
 #' @importFrom rlang .data
 NULL 
 
@@ -11,12 +8,10 @@ NULL
 if (getRversion() >= "2.15.1") utils::globalVariables(c("n"))
 
 
-# Hidden function to execute progress bar
-progbar = function(it, total, shiny.progress=FALSE) {
+# Hidden function to execute progress bar in Shiny
+progbar = function(total, shiny.progress=FALSE) {
   if (shiny.progress) {
     shiny::incProgress(500 / total)
-  } else {
-    svMisc::progress(it/total*100, progress.bar=T, gui=F)
   }
 }
 
@@ -94,6 +89,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     dplyr::filter(.data$nobsets > 1) %>% 
     dplyr::mutate(ob=NA, obvar=NA)
   set.seed(Sys.time())
+  if (!exists("shiny.progress")) pb <- progress::progress_bar$new(total = nrow(simdat)/500)
   
   for (i in 1:nrow(simdat)) {
     obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
@@ -101,7 +97,10 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     simdat$ob[i] <- sum(obsets)
     simdat$obvar[i] <- stats::var(obsets)
 
-    if (i %% 500 == 0) progbar(i, nrow(simdat), ...)
+    if (i %% 500 == 0) {
+      if (!exists("shiny.progress")) pb$tick() 
+      else progbar(nrow(simdat), ...)
+    }
   }
   
   simdat <- simdat %>% 
@@ -155,41 +154,41 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=0.3, q=80) {
                      q95=stats::quantile(.data$cvsim,0.95,na.rm=T), 
                      min=min(.data$ob), max=max(.data$ob))
   # plot 
-  with(simsum, plot(100*simpoc, qcv, 
+  with(simsum, graphics::plot(100*simpoc, qcv, 
                     xlim=c(0,100), ylim=c(0,1), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,1,10),
                     xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate",
                     main="CV of Bycatch Estimate vs Observer Coverage"))
   with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q50,1,1),col="gray90", lty=0))
   with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q80,1,1),col="gray80", lty=0))
   with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q95,1,1),col="gray70", lty=0))
-  with(simsum, points(100*simpoc, qcv))
-  with(simsum, lines(100*simpoc, qcv))
-  abline(h=1, v=100)
+  with(simsum, graphics::points(100*simpoc, qcv))
+  with(simsum, graphics::lines(100*simpoc, qcv))
+  graphics::abline(h=1, v=100)
   legpos <- ifelse(any(simsum$simpoc > 0.7 & simsum$q95 > 0.5), "bottomleft", "topright")
   # get (and add to plot) minimum required observer coverage
   if (targetcv) {
-    abline(h=targetcv, col=2, lwd=2, lty=2)
-    targetoc <- approx(simsum$qcv, simsum$simpoc, targetcv)$y
-    par(xpd=TRUE)
-    points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
-    par(xpd=FALSE)
-    legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
+    graphics::abline(h=targetcv, col=2, lwd=2, lty=2)
+    targetoc <- stats::approx(simsum$qcv, simsum$simpoc, targetcv)$y
+    graphics::par(xpd=TRUE)
+    graphics::points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
+    graphics::par(xpd=FALSE)
+    graphics::legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
            lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
-           legend=c("target CV", "min coverage", paste(q,"th percentile", sep=""),
+           legend=c("target CV", "min coverage", paste0(q,"th percentile"),
                     ">50th percentile",">80th percentile",">95th percentile"))
   } else {
-    legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
+    graphics::legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
            lwd=c(rep(1,4)), pt.cex=1.5, y.intersp=1.1,
-           legend=c(paste(q,"th percentile", sep=""), 
+           legend=c(paste0(q,"th percentile"), 
                     ">50th percentile",">80th percentile",">95th percentile"))
   }
   # return recommended minimum observer coverage
   if (targetcv)
-    cat(paste("Minimum observer coverage to achieve CV \u2264 ", targetcv, " with ", q, "% probability is ", 
+    cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " with ", q, "% probability is ", 
             my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), " hauls).\n", 
-            "Please review the caveats in the associated documentation.\n", sep=""))
-  cat(paste("Note that results are interpolated from simulation-based projections and may vary slightly \n",
-            "with repetition (see plot of sample sizes underlying projections of bycatch estimation CV).\n",sep=""))
+            "Please review the caveats in the associated documentation.\n"))
+  cat(paste0("Note that results are interpolated from simulation-based projections and may vary slightly \n",
+            "with repetition (see plot of sample sizes underlying projections of bycatch estimation CV).\n"))
   if (targetcv) 
     return(invisible(list(pobscov = my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*simlist$te,2))))
 }
@@ -268,19 +267,19 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
   pz <- get_probzero(s$nobsets, simlist$bpue, simlist$d)
   omar <- graphics::par()$mar
   graphics::par(mar = c(4.1,4.1,3,4.1))
-  with(s, plot(100*simpoc, npos, pch=22,
+  with(s, graphics::plot(100*simpoc, npos, pch=22,
                xlim=c(0,100), ylim=c(0,round(max(npos),-1)+10), xaxs="i", yaxs="i",
                xaxp=c(0,100,10), yaxp=c(0,1000,10),
                xlab="Observer Coverage (%)", ylab="Simulations with Positive Bycatch",
                main="Sample Sizes Underlying Projections of Bycatch Estimation CV"))
   graphics::par(new=T)
-  plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
+  graphics::plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
        axes=F, xlab=NA, ylab=NA, col=2)
-  axis(side = 4, col=2, col.axis=2)
-  mtext(side = 4, line = 3, "Probability of Zero Bycatch (%)", col=2)
-  abline(h=100*tail(pz,1), lty=3, lwd=2, col=2)
+  graphics::axis(side = 4, col=2, col.axis=2)
+  graphics::mtext(side = 4, line = 3, "Probability of Zero Bycatch (%)", col=2)
+  graphics::abline(h=100*utils::tail(pz,1), lty=3, lwd=2, col=2)
   legpos <- ifelse(any(s$simpoc > 0.7 & pz < 0.2), "right", "bottomright")
-  legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
+  graphics::legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
   graphics::par(mar=omar)
 }  
 
@@ -346,34 +345,34 @@ plot_probposobs <- function(te, bpue, d=2, target.ppos=80) {
                nobsets = round(.data$obscov * te)) %>% 
     dplyr::filter(.data$nobsets>0) %>% as.data.frame()
   oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
-  ppt <- tail(oc$pp,1)   # probability of positive bycatch in total effort
-  plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
+  ppt <- utils::tail(oc$pp,1)   # probability of positive bycatch in total effort
+  graphics::plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
        xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
        xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
        main="Probability of Positive Bycatch")
-  abline(h=100*ppt,lwd=2, lty=3)
-  lines(100*oc$obscov, 100*oc$pp, lwd=2, lty=2)
-  lines(100*oc$obscov, 100*(oc$pp/ppt), lwd=2)
+  graphics::abline(h=100*ppt,lwd=2, lty=3)
+  graphics::lines(100*oc$obscov, 100*oc$pp, lwd=2, lty=2)
+  graphics::lines(100*oc$obscov, 100*(oc$pp/ppt), lwd=2)
   legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
   if (target.ppos) {
-    abline(h=target.ppos, col=2, lwd=2, lty=4)
+    graphics::abline(h=target.ppos, col=2, lwd=2, lty=4)
     targetoc <- log(1-(target.ppos/100)*ppt)/log(get_probzero(1,bpue,d))/te
-    par(xpd=TRUE)
-    points(targetoc*100, target.ppos, pch=8, col=2, cex=1.5, lwd=2)
-    par(xpd=FALSE)
-    legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
+    graphics::par(xpd=TRUE)
+    graphics::points(targetoc*100, target.ppos, pch=8, col=2, cex=1.5, lwd=2)
+    graphics::par(xpd=FALSE)
+    graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
            legend=c("in observed effort if total bycatch > 0", "in observed effort",
                     "in total effort", "in target observer coverage", "min coverage"))
   } else {
-    legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
+    graphics::legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
            legend=c("in observed effort if total bycatch > 0","in observed effort","in total effort"))
   }
   # return recommended minimum observer coverage
   if (target.ppos) {
-    cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
+    cat(paste0("Minimum observer coverage to achieve at least ", target.ppos, 
               "% probability of observing \nbycatch when total bycatch is positive is ", 
               my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets).\n",
-              "Please review the caveats in the associated documentation.\n", sep=""))
+              "Please review the caveats in the associated documentation.\n"))
     return(invisible(list(pobscov=my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*te,2))))
   }
 }

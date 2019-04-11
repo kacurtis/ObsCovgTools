@@ -8,10 +8,10 @@ Depends: R (>= 3.1.2)
 Imports: 
 	dplyr,
 	magrittr,
+	progress,
 	rlang,
 	Runuran,
-	tibble,
-	svMisc
+	tibble
 Suggests: 
   shiny
 Author: K. Alexandra Curtis
