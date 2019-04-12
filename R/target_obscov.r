@@ -8,10 +8,19 @@ NULL
 if (getRversion() >= "2.15.1") utils::globalVariables(c("n"))
 
 
-# Hidden function to execute progress bar in Shiny
-progbar = function(total, shiny.progress=FALSE) {
+# Hidden functions to execute progress bar in Shiny
+progress_init <- function(shiny.progress=FALSE) {
+  if (shiny.progress) return(NULL)
+  else return(utils::txtProgressBar(style=3))
+} 
+  
+progbar <-  function(i, total, pb, shiny.progress=FALSE) {
   if (shiny.progress) {
     shiny::incProgress(500 / total)
+    return(NULL)
+  } else {
+    utils::setTxtProgressBar(pb, i/total)
+    return(pb)
   }
 }
 
@@ -26,6 +35,7 @@ my_ceiling <- function(x, s){
      n2 <- sapply(n, function(x) as.numeric(x[2]))
      ceiling(n1*10^(s-1))/(10^(s-1)) * 10^(n2)
 }
+
 
 #' Simulate CV response to observer coverage
 #'
@@ -89,7 +99,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     dplyr::filter(.data$nobsets > 1) %>% 
     dplyr::mutate(ob=NA, obvar=NA)
   set.seed(Sys.time())
-  if (!exists("shiny.progress")) pb <- progress::progress_bar$new(total = nrow(simdat)/500)
+  pb <- progress_init(...)
   
   for (i in 1:nrow(simdat)) {
     obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
@@ -98,8 +108,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     simdat$obvar[i] <- stats::var(obsets)
 
     if (i %% 500 == 0) {
-      if (!exists("shiny.progress")) pb$tick() 
-      else progbar(nrow(simdat), ...)
+      pb <- progbar(i, nrow(simdat), pb, ...)
     }
   }
   
