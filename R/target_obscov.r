@@ -338,6 +338,7 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #' @return A list with components:
 #'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
 #'   \item{nobsets}{corresponding observed effort.}
+#'   \item{ppos.te}{probability of any bycatch occurring in total effort}
 #' @return Returned invisibly. 
 #' 
 #' @export 
@@ -380,8 +381,11 @@ plot_probposobs <- function(te, bpue, d=2, target.ppos=80) {
   if (target.ppos) {
     cat(paste0("Minimum observer coverage to achieve at least ", target.ppos, 
               "% probability of observing \nbycatch when total bycatch is positive is ", 
-              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets).\n",
+              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets). The probability\n",
+              "that any bycatch occurs in the given total effort is ", signif(100*ppt,2), "%.\n",
               "Please review the caveats in the associated documentation.\n"))
-    return(invisible(list(pobscov=my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*te,2))))
+    return(invisible(list(pobscov=my_ceiling(targetoc*100,2), 
+                          nobsets=my_ceiling(targetoc*te,2),
+                          ppos.te=signif(100*ppt,2))))
   }
 }

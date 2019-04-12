@@ -25,6 +25,7 @@ will be highlighted.}
 A list with components:
   \item{pobscov}{minimum observer coverage in terms of percentage.} 
   \item{nobsets}{corresponding observed effort.}
+  \item{ppos.te}{probability of any bycatch occurring in total effort}
 
 Returned invisibly.
 }
