@@ -1,23 +1,39 @@
 #' @importFrom magrittr %>%
-#' @importFrom graphics abline axis legend lines mtext par plot points
-#' @importFrom stats pnbinom ppois quantile var
-#' @importFrom utils tail
 #' @importFrom rlang .data
 NULL 
 
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
+## Quiets concerns of R CMD check re: the .'s that appear in pipelines
 ## and the "n" that is produced by dplyr::count() in a pipeline
 if (getRversion() >= "2.15.1") utils::globalVariables(c("n"))
 
 
-# Hidden function to execute progress bar
-progbar = function(it, total, shiny.progress=FALSE) {
+# Hidden functions to execute progress bar in Shiny
+progress_init <- function(shiny.progress = FALSE) {
+  if (shiny.progress) return(NULL)
+  else return(utils::txtProgressBar(style=3))
+} 
+  
+progbar <-  function(i, total, pb, shiny.progress = FALSE) {
   if (shiny.progress) {
     shiny::incProgress(500 / total)
+    return(NULL)
   } else {
-    svMisc::progress(it/total*100)
+    utils::setTxtProgressBar(pb, i/total)
+    return(pb)
   }
+}
+
+
+# Hidden function to round up to specified significant digits
+# Extended from code by JasonWang on stackoverflow at 
+# https://stackoverflow.com/questions/37583715/round-up-values-to-a-specific-significant-figure-in-r
+my_ceiling <- function(x, s){
+     num_string <- format(x, scientific=TRUE)
+     n <- strsplit(num_string, "e")
+     n1 <- sapply(n, function(x) as.numeric(x[1]))
+     n2 <- sapply(n, function(x) as.numeric(x[2]))
+     ceiling(n1*10^(s-1))/(10^(s-1)) * 10^(n2)
 }
 
 
@@ -30,9 +46,10 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
 #' coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated 
 #' bycatch estimates use a simple mean-per-unit approach with finite population 
-#' correction. CV estimates exclude simulations with zero observed bycatch. 
-#' Since estimating variance requires at least two numbers, total effort must 
-#' be at least three sets/hauls to evaluate observer coverage less than 100\%. 
+#' correction. Projections of bycatch estimation CV exclude simulations with 
+#' zero observed bycatch. Since estimating variance requires at least two numbers, 
+#' total effort must be at least three sets/hauls to evaluate observer coverage 
+#' less than 100\%. 
 #' 
 #' Warning: Large total effort (>100K sets/hauls) may require several minutes 
 #' of execution time. Increasing \code{nsim} from the default of 1000 will 
@@ -40,9 +57,9 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #' 
 #' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' As a result, bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world. More conservative estimates 
-#' can be obtained by using higher-level bycatch and effort information (e.g., 
+#' Violating these assumptions will likely result in negatively biased projections of 
+#' bycatch estimation CV for a given level of observer coverage. More conservative 
+#' projections can be obtained by using higher-level units of effort (e.g., 
 #' \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
 #' 
@@ -68,7 +85,13 @@ progbar = function(it, total, shiny.progress=FALSE) {
 #'   \item{d}{the negative binomial dispersion parameter used.}
 #'   
 #' @export 
-sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {  
+sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
+  # check input values
+  if ((ceiling(te) != floor(te)) || te<3) stop("te must be a positive integer >=3")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  if ((ceiling(nsim) != floor(nsim)) || nsim<=0) stop("nsim must be a positive integer")
+  # simulate observer coverage and bycatch estimation
   if (te<20) obscov <- 1:te/te 
   else obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
   simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
@@ -76,6 +99,7 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     dplyr::filter(.data$nobsets > 1) %>% 
     dplyr::mutate(ob=NA, obvar=NA)
   set.seed(Sys.time())
+  pb <- progress_init(...)
   
   for (i in 1:nrow(simdat)) {
     obsets <- if(d==1) Runuran::urpois(simdat$nobsets[i], bpue) 
@@ -83,38 +107,42 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
     simdat$ob[i] <- sum(obsets)
     simdat$obvar[i] <- stats::var(obsets)
 
-    if (i %% 500 == 0) progbar(i, nrow(simdat), ...)
+    if (i %% 500 == 0) {
+      pb <- progbar(i, nrow(simdat), pb, ...)
+    }
   }
   
   simdat <- simdat %>% 
     dplyr::mutate(xsim=.data$ob/.data$nobsets, fpc=1-.data$nobsets/te, 
                   sesim=sqrt(.data$fpc*.data$obvar/.data$nobsets), 
                   cvsim=.data$sesim/.data$xsim)
-  return(list(simdat=simdat, bpue=bpue, d=d))
+  return(list(simdat=simdat, te=te, bpue=bpue, d=d))
 }
 
 
-#' Plot CV vs. observer coverage
+#' Plot bycatch estimation CV vs. observer coverage
 #' 
-#' \code{plot_cv_obscov} plots CV of bycatch estimates vs observer coverage for
-#' user-specified percentile (i.e., probability of achieving CV) and several 
-#' default percentiles, and returns minimum observer coverage needed to achieve 
-#' user-specified target CV and percentile. 
+#' \code{plot_cv_obscov} plots projected bycatch estimation CVs vs observer 
+#' coverage for user-specified percentile (i.e., probability of achieving CV) 
+#' and several default percentiles, and returns minimum observer coverage needed 
+#' to achieve user-specified target CV and percentile. 
 #'   
 #' @param simlist list output from \code{sim_cv_obscov}.
-#' @param targetcv a non-negative number less than or equal to 100. Target CV 
-#'   (as percentage). If \eqn{targetcv = 0}, no corresponding minimum observer 
+#' @param targetcv a non-negative number less than 1. Target CV 
+#'   (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 #'   coverage will be highlighted.
-#' @param q a positive number less than or equal to 0.95. Custom percentile to 
-#'   be plotted, desired probability (as a proportion) of achieving the target 
-#'   CV or lower. Ignored if \eqn{targetcv = 0}.
+#' @param q a positive number less than 100. Custom percentile to 
+#'   be plotted, desired probability of achieving the target CV or lower. 
+#'   Ignored if \eqn{targetcv = 0}.
+#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
+#' @param showplot logical. If plot = FALSE, plotting is suppressed.
 #' 
 #' @details  
-#' \strong{Caveat:} Since \code{sim_cv_obscov} assumes representative observer 
+#' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
 #' coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
-#' variation), bycatch estimation CV for a given level of observer coverage is 
-#' likely to be biased low relative to the real world. See documentation for
-#' \code{sim_obs_cov} for additional details.
+#' variation). Violating these assumptions will likely result in negatively biased 
+#' projections of bycatch estimation CV for a given level of observer coverage. 
+#' See documentation for \code{sim_obs_cov} for additional details.
 #'   
 #' @return A list with components:
 #'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
@@ -122,55 +150,66 @@ sim_cv_obscov <- function(te, bpue, d=2, nsim=1000, ...) {
 #' @return Returned invisibly. 
 #'   
 #' @export 
-plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
+plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, q = 80, 
+                           showplot = TRUE, silent = FALSE) {
+  # check input values
+  if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
+  if(q<=0 || q>=100) stop("q must be > 0 and < 100")
   # get quantiles of bycatch estimation CVs
   simsum <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
     dplyr::group_by(.data$simpoc) %>% 
     dplyr::summarize(nsim=n(), meanob=mean(.data$ob), nobsets=mean(.data$nobsets), 
-                     qcv=stats::quantile(.data$cvsim,q,na.rm=T), 
+                     qcv=stats::quantile(.data$cvsim,q/100,na.rm=T), 
                      q50=stats::quantile(.data$cvsim,0.5,na.rm=T), 
                      q80=stats::quantile(.data$cvsim,0.8,na.rm=T), 
                      q95=stats::quantile(.data$cvsim,0.95,na.rm=T), 
                      min=min(.data$ob), max=max(.data$ob))
+  # get minimum required observer coverage
+  if (targetcv)
+    targetoc <- stats::approx(simsum$qcv, simsum$simpoc, targetcv)$y
   # plot 
-  with(simsum, plot(100*simpoc, 100*qcv, 
-                    xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
-                    xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate (%)",
-                    main="CV of Bycatch Estimate vs Observer Coverage"))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q50,100,100),col="gray90", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q80,100,100),col="gray80", lty=0))
-  with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(100,100*q95,100,100),col="gray70", lty=0))
-  with(simsum, points(100*simpoc, 100*qcv))
-  with(simsum, lines(100*simpoc, 100*qcv))
-  abline(h=100, v=100)
-  legpos <- ifelse(any(simsum$simpoc > 0.7 & simsum$q95 > 0.5), "bottomleft", "topright")
-  # get (and add to plot) minimum required observer coverage
-  if (targetcv) {
-    abline(h=targetcv, col=2, lwd=2, lty=2)
-    targetoc <- simsum %>% dplyr::filter(.data$qcv <= targetcv/100) %>% 
-      dplyr::filter(.data$simpoc==min(.data$simpoc))
-    par(xpd=TRUE)
-    points(targetoc$simpoc*100, targetoc$qcv*100, pch=8, col=2, cex=1.5, lwd=2)
-    par(xpd=FALSE)
-    legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
-           lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
-           legend=c("target CV", "min coverage", paste(q*100,"th percentile", sep=""),
-                    ">50th percentile",">80th percentile",">95th percentile"))
-  } else {
-    legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
-           lwd=c(rep(1,4)), pt.cex=1.5, y.intersp=1.1,
-           legend=c(paste(q*100,"th percentile", sep=""), 
-                    ">50th percentile",">80th percentile",">95th percentile"))
+  if (showplot) {
+    with(simsum, graphics::plot(100*simpoc, qcv, 
+                      xlim=c(0,100), ylim=c(0,1), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,1,10),
+                      xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate",
+                      main="CV of Bycatch Estimate vs Observer Coverage"))
+    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q50,1,1),col="gray90", lty=0))
+    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q80,1,1),col="gray80", lty=0))
+    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q95,1,1),col="gray70", lty=0))
+    with(simsum, graphics::points(100*simpoc, qcv))
+    with(simsum, graphics::lines(100*simpoc, qcv))
+    graphics::abline(h=1, v=100)
+    legpos <- ifelse(any(simsum$simpoc > 0.7 & simsum$q95 > 0.5), "bottomleft", "topright")
+    # add minimum required observer coverage
+    if (targetcv) {
+      graphics::abline(h=targetcv, col=2, lwd=2, lty=2)
+      graphics::par(xpd=TRUE)
+      graphics::points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
+      graphics::par(xpd=FALSE)
+      graphics::legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
+             lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
+             legend=c("target CV", "min coverage", paste0(q,"th percentile"),
+                      ">50th percentile",">80th percentile",">95th percentile"))
+    } else {
+      graphics::legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
+             lwd=c(rep(1,4)), pt.cex=1.5, y.intersp=1.1,
+             legend=c(paste0(q,"th percentile"), 
+                      ">50th percentile",">80th percentile",">95th percentile"))
+    }
   }
   # return recommended minimum observer coverage
-  if (targetcv)
-    cat(paste("Minimum observer coverage to achieve ", targetcv, "% CV or less with ", q*100, "% probability is ", 
-            round(targetoc$simpoc*100), "% (", targetoc$nobsets, " hauls).\n", 
-            "Please review the caveats in the associated documentation.\n", sep=""))
-  cat("Note that results are simulation-based and may vary slightly with repetition.\n")
+  if (!silent) {
+    if (targetcv)  {
+      cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " with ", q, "% probability is ", 
+              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), " hauls).\n", 
+              "Please review the caveats in the associated documentation.\n"))
+    }
+    cat(paste0("Note that results are interpolated from simulation-based projections and may vary slightly \n",
+              "with repetition (see plot of sample sizes underlying projections of bycatch estimation CV).\n"))
+  }
   if (targetcv) 
-    return(invisible(list(pobscov = targetoc$simpoc*100, nobsets=targetoc$nobsets)))
+    return(invisible(list(pobscov = my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*simlist$te,2))))
 }
 
 
@@ -193,10 +232,10 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
 #' 
 #' \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-#' so probability of observing zero bycatch at a given level of observer coverage 
-#' is likely to be biased low relative to the real world. More conservative 
-#' estimates can be obtained by using higher-level bycatch and effort information 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in negatively biased projections 
+#' of the probability of observing zero bycatch at a given level of observer coverage. 
+#' More conservative projections can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{n} as number of trips instead of number of sets/hauls).
 #'   
@@ -205,52 +244,62 @@ plot_cv_obscov <- function(simlist=simlist, targetcv=30, q=0.8) {
 #' 
 #' @export
 get_probzero <- function(n, bpue, d) {
+  # check input values
+  if (any((ceiling(n) != floor(n)) | n<1)) stop("n must be a vector of positive integers")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  # calculate probability of observing zero bycatch in n sets
   pz <- if(d==1) stats::ppois(0, bpue)^n 
   else stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d)^n
   return(invisible(pz))
 }
 
 
-#' Plot sample size for CV estimates vs observer coverage
+#' Plot sample sizes underlying projections of bycatch estimation CV
 #' 
-#' \code{plot_cvsim_samplesize} plots sample size (simulations with positive
-#' observed bycatch) vs observer coverage level, along with probability of 
-#' observing zero bycatch based on effort and the probability density at zero
-#' given bycatch rate and negative binomial dispersion. 
+#' \code{plot_cvsim_samplesize} plots (1) the number of simulations with positive
+#' observed bycatch underlying each projected bycatch estimation CV vs corresponding
+#' observer coverage level, which is inversely proprtional to (2) the probability 
+#' of no bycatch being observed (based on effort and the probability density at zero,
+#' given bycatch rate and negative binomial dispersion). The latter includes the 
+#' probability of no bycatch occurring in the given total effort. The smaller the 
+#' sample size, the less precise the projection (the more it will vary among repeated 
+#' runs of the simulator). Small sample sizes can be countered by increasing the 
+#' number of simulations in \code{sim_cv_obscov}. 
 #' 
-#' Note that the predicted probability of observing zero bycatch assumes 
+#' Note that the projected probability of observing zero bycatch assumes 
 #' representative observer coverage and no hierarchical sources of variance 
-#' (e.g., vessel- or trip-level variation), so probability of observing zero 
-#' bycatch at a given level of observer coverage is likely to be biased low 
-#' relative to the real world. 
+#' (e.g., vessel- or trip-level variation). Violating these assumptions will
+#' likely result negatively biased projections of the probability of observing zero 
+#' bycatch at a given level of observer coverage. 
 #' 
 #' @param simlist List output from sim_cv_obscov.
 #' 
 #' @return None
 #' 
 #' @export 
-plot_cvsim_samplesize <- function(simlist=simlist) {
+plot_cvsim_samplesize <- function(simlist = simlist) {
   s <- simlist$simdat %>% 
     dplyr::filter(.data$ob>0) %>% 
     dplyr::group_by(.data$simpoc, .data$nobsets) %>% 
     dplyr::summarize(npos=n())
   pz <- get_probzero(s$nobsets, simlist$bpue, simlist$d)
   omar <- graphics::par()$mar
-  graphics::par(mar = c(4.1,4.1,3,4.1))
-  with(s, plot(100*simpoc, npos, pch=22,
+  #graphics::par(mar = c(4.1,4.1,3,4.1))
+  with(s, graphics::plot(100*simpoc, npos, pch=22,
                xlim=c(0,100), ylim=c(0,round(max(npos),-1)+10), xaxs="i", yaxs="i",
                xaxp=c(0,100,10), yaxp=c(0,1000,10),
                xlab="Observer Coverage (%)", ylab="Simulations with Positive Bycatch",
-               main="Sample Size for CV Estimates"))
+               main="Sample Sizes Underlying Projections of Bycatch Estimation CV"))
   graphics::par(new=T)
-  plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
+  graphics::plot(100*s$simpoc, 100*pz, type="l", lwd=2, xaxs="i", yaxs="i", xlim=c(0,100), ylim=c(0,100),
        axes=F, xlab=NA, ylab=NA, col=2)
-  axis(side = 4, col=2, col.axis=2)
-  mtext(side = 4, line = 3, "Probability of Zero Bycatch (%)", col=2)
-  abline(h=100*tail(pz,1), lty=3, lwd=2, col=2)
+  graphics::axis(side = 4, col=2, col.axis=2)
+  graphics::mtext(side = 4, line = 3, "Probability of Zero Bycatch (%)", col=2)
+  graphics::abline(h=100*utils::tail(pz,1), lty=3, lwd=2, col=2)
   legpos <- ifelse(any(s$simpoc > 0.7 & pz < 0.2), "right", "bottomright")
-  legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
-  graphics::par(mar=omar)
+  graphics::legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
+  #graphics::par(mar=omar)
 }  
 
 
@@ -270,65 +319,91 @@ plot_cvsim_samplesize <- function(simlist=simlist) {
 #'   probability of positive observed bycatch (as percentage), given positive 
 #'   bycatch in total effort. If 0, no corresponding minimum observer coverage 
 #'   will be highlighted.
+#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
+#' @param showplot logical. If plot = FALSE, plotting is suppressed.
 #' 
 #' @details  
 #' Probabilities are based on the probability density function for the 
-#' corresponding Poisson or negative binomial distribution. 
+#' corresponding Poisson or negative binomial distribution.
+#' 
+#' The probability that any bycatch occurs in the given total effort is shown
+#' by the horizontal black dotted line. The conditional probability of observing 
+#' any bycatch if it occurs is shown by the solid black line.  The product of 
+#' these first two probabilities gives the absolute probability of observing any
+#' bycatch (dashed black line).The minimum observer coverage to achieve the target 
+#' obability of observing bycatch if it occurs (x-axis value of red star) is 
+#' where the conditional bycatch detection probability (solid black line) 
+#' intersects with the target probability (red dash-dot line).
 #' 
 #' Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 #' as a one-step tool, and does not take output from user calls to 
 #' \code{get_probzero}. 
 #'   
 #' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-#' so probability of observing bycatch at a given level of observer coverage 
-#' is likely to be biased high relative to the real world. More conservative 
-#' estimates can be obtained by using higher-level bycatch and effort information 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in positively biased projections 
+#' of the probability of observing bycatch at a given level of observer coverage. 
+#' More conservative projections can be obtained by using higher-level units of effort 
 #' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 #' \code{te} as number of trips instead of number of sets/hauls).
 #' 
 #' @return A list with components:
 #'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
 #'   \item{nobsets}{corresponding observed effort.}
+#'   \item{ppos.te}{probability of any bycatch occurring in total effort}
 #' @return Returned invisibly. 
 #' 
 #' @export 
-plot_probposobs <- function(te, bpue, d, target.ppos=80) {
+plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE, 
+                            silent = FALSE) {
+  # check input values
+  if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
   # percent probablity of positive observed bycatch
-  if (te<100) obscov <- 1:te/te 
-  else obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05))
+  if (te<1000) obscov <- 1:te/te 
+  else obscov <- seq(0.001,1,0.001)
   oc <- tibble::tibble(obscov = obscov,
                nobsets = round(.data$obscov * te)) %>% 
     dplyr::filter(.data$nobsets>0) %>% as.data.frame()
   oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
-  ppt <- tail(oc$pp,1)   # probability of positive bycatch in total effort
-  plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
-       xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
-       xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
-       main="Probability of Positive Bycatch")
-  abline(h=100*ppt,lwd=2, lty=3)
-  lines(100*oc$obscov, 100*oc$pp, lwd=2, lty=2)
-  lines(100*oc$obscov, 100*(oc$pp/ppt), lwd=2)
-  legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
-  if (target.ppos) {
-    abline(h=target.ppos, col=2, lwd=2, lty=4)
-    itargetoc <- which.max(100*oc$pp/ppt >= target.ppos)
-    par(xpd=TRUE)
-    points(oc$obscov[itargetoc]*100, (oc$pp/ppt)[itargetoc]*100, pch=8, col=2, cex=1.5, lwd=2)
-    par(xpd=FALSE)
-    legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
-           legend=c("in observed effort if total bycatch > 0", "in observed effort",
-                    "in total effort", "in target observer coverage", "min coverage"))
-  } else {
-    legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
-           legend=c("in observed effort if total bycatch > 0","in observed effort","in total effort"))
+  ppt <- utils::tail(oc$pp,1)   # probability of positive bycatch in total effort
+  targetoc <- log(1-(target.ppos/100)*ppt)/log(get_probzero(1,bpue,d))/te   # target observer coverage
+  # plot
+  if (showplot) {
+    graphics::plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
+         xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
+         xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
+         main="Probability of Positive Bycatch")
+    graphics::abline(h=100*ppt,lwd=2, lty=3)
+    graphics::lines(100*oc$obscov, 100*oc$pp, lwd=2, lty=2)
+    graphics::lines(100*oc$obscov, 100*(oc$pp/ppt), lwd=2)
+    legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
+    if (target.ppos) {
+      graphics::abline(h=target.ppos, col=2, lwd=2, lty=4)
+      graphics::par(xpd=TRUE)
+      graphics::points(targetoc*100, target.ppos, pch=8, col=2, cex=1.5, lwd=2)
+      graphics::par(xpd=FALSE)
+      graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
+             legend=c("in observed effort if total bycatch > 0", "in observed effort",
+                      "in total effort", "in target observer coverage", "min coverage"))
+    } else {
+      graphics::legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
+             legend=c("in observed effort if total bycatch > 0","in observed effort","in total effort"))
+    }
   }
   # return recommended minimum observer coverage
   if (target.ppos) {
-    cat(paste("Minimum observer coverage to achieve at least ", target.ppos, 
-              "% probability of observing \nbycatch when total bycatch is positive is ", 
-              oc$obscov[itargetoc]*100, "% (", oc$nobsets[itargetoc], " sets).\n",
-              "Please review the caveats in the associated documentation.\n", sep=""))
-    return(invisible(list(pobscov=oc$obscov[itargetoc]*100, nobsets=oc$nobsets[itargetoc])))
+    if (!silent) {
+      cat(paste0("Minimum observer coverage to achieve at least ", target.ppos, 
+                "% probability of observing \nbycatch when total bycatch is positive is ", 
+                my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets). The probability\n",
+                "that any bycatch occurs in the given total effort is ", signif(100*ppt,2), "%.\n",
+                "Please review the caveats in the associated documentation.\n"))
+    }
+    return(invisible(list(pobscov=my_ceiling(targetoc*100,2), 
+                          nobsets=my_ceiling(targetoc*te,2),
+                          ppos.te=signif(100*ppt,2))))
   }
 }

@@ -4,7 +4,8 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive observed bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d, target.ppos = 80)
+plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
@@ -20,11 +21,16 @@ bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 probability of positive observed bycatch (as percentage), given positive 
 bycatch in total effort. If 0, no corresponding minimum observer coverage 
 will be highlighted.}
+
+\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+
+\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
 }
 \value{
 A list with components:
   \item{pobscov}{minimum observer coverage in terms of percentage.} 
   \item{nobsets}{corresponding observed effort.}
+  \item{ppos.te}{probability of any bycatch occurring in total effort}
 
 Returned invisibly.
 }
@@ -35,17 +41,26 @@ Returned invisibly.
 }
 \details{
 Probabilities are based on the probability density function for the 
-corresponding Poisson or negative binomial distribution. 
+corresponding Poisson or negative binomial distribution.
+
+The probability that any bycatch occurs in the given total effort is shown
+by the horizontal black dotted line. The conditional probability of observing 
+any bycatch if it occurs is shown by the solid black line.  The product of 
+these first two probabilities gives the absolute probability of observing any
+bycatch (dashed black line).The minimum observer coverage to achieve the target 
+obability of observing bycatch if it occurs (x-axis value of red star) is 
+where the conditional bycatch detection probability (solid black line) 
+intersects with the target probability (red dash-dot line).
 
 Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 as a one-step tool, and does not take output from user calls to 
 \code{get_probzero}. 
   
 \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
-and no hierarchical sources of variance (e.g., vessel- or trip-level variation), 
-so probability of observing bycatch at a given level of observer coverage 
-is likely to be biased high relative to the real world. More conservative 
-estimates can be obtained by using higher-level bycatch and effort information 
+and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+Violating these assumptions will likely result in positively biased projections 
+of the probability of observing bycatch at a given level of observer coverage. 
+More conservative projections can be obtained by using higher-level units of effort 
 (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
 \code{te} as number of trips instead of number of sets/hauls).
 }
