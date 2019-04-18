@@ -4,7 +4,8 @@
 \alias{plot_cv_obscov}
 \title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80,
+  showplot = TRUE, silent = FALSE)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
@@ -16,6 +17,10 @@ coverage will be highlighted.}
 \item{q}{a positive number less than 100. Custom percentile to 
 be plotted, desired probability of achieving the target CV or lower. 
 Ignored if \eqn{targetcv = 0}.}
+
+\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+
+\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
 }
 \value{
 A list with components:

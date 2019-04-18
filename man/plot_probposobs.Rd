@@ -4,7 +4,8 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive observed bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d = 2, target.ppos = 80)
+plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
@@ -20,6 +21,10 @@ bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 probability of positive observed bycatch (as percentage), given positive 
 bycatch in total effort. If 0, no corresponding minimum observer coverage 
 will be highlighted.}
+
+\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+
+\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
 }
 \value{
 A list with components:
