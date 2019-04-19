@@ -285,7 +285,7 @@ plot_cvsim_samplesize <- function(simlist = simlist) {
     dplyr::summarize(npos=n())
   pz <- get_probzero(s$nobsets, simlist$bpue, simlist$d)
   omar <- graphics::par()$mar
-  #graphics::par(mar = c(4.1,4.1,3,4.1))
+  graphics::par(mar = c(5.1,4.1,4.1,4.1))
   with(s, graphics::plot(100*simpoc, npos, pch=22,
                xlim=c(0,100), ylim=c(0,round(max(npos),-1)+10), xaxs="i", yaxs="i",
                xaxp=c(0,100,10), yaxp=c(0,1000,10),
@@ -299,7 +299,7 @@ plot_cvsim_samplesize <- function(simlist = simlist) {
   graphics::abline(h=100*utils::tail(pz,1), lty=3, lwd=2, col=2)
   legpos <- ifelse(any(s$simpoc > 0.7 & pz < 0.2), "right", "bottomright")
   graphics::legend(legpos, lty=c(1,3), col=2, lwd=2, text.col=2, bty="n", legend=c("in observed effort","in total effort"))
-  #graphics::par(mar=omar)
+  graphics::par(mar=omar)
 }  
 
 
