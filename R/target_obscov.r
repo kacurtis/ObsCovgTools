@@ -175,8 +175,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, q = 80,
                       xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate",
                       main="CV of Bycatch Estimate vs Observer Coverage"))
     with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q50,1,1),col="gray90", lty=0))
-    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q80,1,1),col="gray80", lty=0))
-    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q95,1,1),col="gray70", lty=0))
+    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q80,1,1),col="gray75", lty=0))
+    with(simsum, polygon(c(100*simsum$simpoc[1],100*simsum$simpoc,100,0), c(1,q95,1,1),col="gray60", lty=0))
     with(simsum, graphics::points(100*simpoc, qcv))
     with(simsum, graphics::lines(100*simpoc, qcv))
     graphics::abline(h=1, v=100)
@@ -187,12 +187,12 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, q = 80,
       graphics::par(xpd=TRUE)
       graphics::points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
-      graphics::legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray80","gray70"), 
+      graphics::legend(legpos, lty=c(2,0,1,0,0,0), pch=c(NA,8,1,rep(15,3)), col=c(2,2,1,"gray90","gray75","gray60"), 
              lwd=c(2,2,rep(1,4)), pt.cex=1.5, y.intersp=1.1,
              legend=c("target CV", "min coverage", paste0(q,"th percentile"),
                       ">50th percentile",">80th percentile",">95th percentile"))
     } else {
-      graphics::legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray80","gray70"), 
+      graphics::legend(legpos, lty=c(1,0,0,0), pch=c(1,rep(15,3)), col=c(1,"gray90","gray75","gray60"), 
              lwd=c(rep(1,4)), pt.cex=1.5, y.intersp=1.1,
              legend=c(paste0(q,"th percentile"), 
                       ">50th percentile",">80th percentile",">95th percentile"))
@@ -387,7 +387,7 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
       graphics::par(xpd=FALSE)
       graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
              legend=c("in observed effort if total bycatch > 0", "in observed effort",
-                      "in total effort", "in target observer coverage", "min coverage"))
+                      "in total effort", "in target coverage if total bycatch > 0", "min coverage"))
     } else {
       graphics::legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
              legend=c("in observed effort if total bycatch > 0","in observed effort","in total effort"))

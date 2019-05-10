@@ -1,8 +1,8 @@
 Package: ObsCovgTools 
 Type: Package
 Title: Estimate fishery observer coverage required to achieve specific objectives
-Version: 2.1.0
-Date: 2019-04-18
+Version: 2.1.1
+Date: 2019-05-10
 URL: https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.1.2)
 Imports: 
