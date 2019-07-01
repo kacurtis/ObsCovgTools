@@ -13,7 +13,7 @@ plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
 \item{d}{a number greater than or equal to 1. Negative binomial dispersion 
-parameter. The dispersion parameter corresponds to the variance-to-mean 
+index. The dispersion index corresponds to the variance-to-mean 
 ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
@@ -37,7 +37,7 @@ Returned invisibly.
 \description{
 \code{plot_probposobs} plots probability of observing at least one bycatch 
   event vs observer coverage, given total effort in sets/hauls, bycatch per 
-  unit effort, and negative binomial dispersion parameter.
+  unit effort, and negative binomial dispersion index.
 }
 \details{
 Probabilities are based on the probability density function for the 

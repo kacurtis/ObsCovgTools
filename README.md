@@ -5,7 +5,7 @@ ObsCovgTools
 ### Description
 
 ObsCovgTools estimates observer coverage required to achieve a specific 
-objective, given mean bycatch rate, negative binomial dispersion parameter 
+objective, given mean bycatch rate, negative binomial dispersion index 
 (characterizing variance in the bycatch rate), and total fishery effort in 
 user-defined units (e.g., trips, sets, or hooks). Currently, potential 
 objectives implemented are (1) a target probability of observing a bycatch 

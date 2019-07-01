@@ -41,7 +41,7 @@ my_ceiling <- function(x, s){
 #'
 #' \code{sim_cv_obscov} simulates bycatch estimation CVs resulting from a range 
 #' of observer coverage levels, given bycatch rate, negative binomial dispersion 
-#' parameter, and total fishery effort. 
+#' index, and total fishery effort. 
 #' 
 #' \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
 #' coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated 
@@ -66,7 +66,7 @@ my_ceiling <- function(x, s){
 #' @param te an integer greater than 2. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Negative binomial dispersion 
-#'   parameter. The dispersion parameter corresponds to the variance-to-mean 
+#'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #' @param nsim a positive integer. Number of simulations to run.
@@ -82,7 +82,7 @@ my_ceiling <- function(x, s){
 #'   (\code{cvsim}). 
 #'   For simulations with zero observed bycatch, \code{cvsim} will be NaN.}
 #'   \item{bpue}{the bycatch per unit effort used.}
-#'   \item{d}{the negative binomial dispersion parameter used.}
+#'   \item{d}{the negative binomial dispersion index used.}
 #'   
 #' @export 
 sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
@@ -217,13 +217,13 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, q = 80,
 #' 
 #' \code{get_probzero} returns probability of zero bycatch in a specified number 
 #' of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
-#' parameter. 
+#' index. 
 #' 
 #' @param n a vector of positive integers. Observed effort levels (in terms of 
 #'   sets/hauls) for which to calculate probability of zero bycatch.
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Negative binomial dispersion 
-#'   parameter. The dispersion parameter corresponds to the variance-to-mean 
+#'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #'   
@@ -307,12 +307,12 @@ plot_cvsim_samplesize <- function(simlist = simlist) {
 #' 
 #' \code{plot_probposobs} plots probability of observing at least one bycatch 
 #'   event vs observer coverage, given total effort in sets/hauls, bycatch per 
-#'   unit effort, and negative binomial dispersion parameter. 
+#'   unit effort, and negative binomial dispersion index. 
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Negative binomial dispersion 
-#'   parameter. The dispersion parameter corresponds to the variance-to-mean 
+#'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #' @param target.ppos a non-negative number less than or equal to 100. Target 
