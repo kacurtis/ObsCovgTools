@@ -1,0 +1,63 @@
+<div class="aboutexp">
+<p>
+The observer coverage simulator is based on the ObsCovgTools R package. 
+ObsCovgTools estimates observer coverage required to achieve a specific 
+objective, given mean bycatch rate, negative binomial dispersion index 
+(characterizing variance in the bycatch rate), and total fishery effort in 
+user-defined units (e.g., trips, sets, or hooks). Currently, potential 
+objectives implemented are (1) a target probability of observing a bycatch 
+event (given that it occurred in total effort), and (2) a target bycatch 
+estimation CV (coefficient of variation). The user can also specify the desired 
+probability of achieving the target CV. Probability of observing at least one 
+bycatch event, and of any bycatch occurring in a given amount of total effort, 
+is based on the corresponding Poisson or negative binomial probability 
+distribution function. Bycatch estimation CVs are based on simulated 
+mean-per-unit bycatch estimates with finite population correction, and exclude 
+simulations with zero observed bycatch.
+</p>
+<h4>
+Caveat
+</h4>
+<p>
+The current implementation of ObsCovgTools assumes observer coverage is 
+representative of the fishery, and does not account for hierarchical sources of 
+variance (e.g., vessel- or trip-level variation). Violating these assumptions 
+will likely to result negatively biased projections of observer coverage 
+required to meet specific objectives. More conservative estimates can be 
+obtained by using higher-level units of effort (e.g., mean bycatch per trip 
+instead of bycatch per set/haul, and number of trips instead of number of 
+sets/hauls). 
+</p>
+</div>
+<h4>
+Contributors and Code Access
+</h4>
+<p>
+The observer coverage simulator is based on the ObsCovgTools R package, written by
+</p>
+<p>
+Alex Curtis<br/>
+Contractor with Ocean Associates, Inc.<br/>
+Marine Mammal and Turtle Division<br/>
+Southwest Fisheries Science Center<br/>
+NOAA National Marine Fisheries Service<br/>
+La Jolla, California, U.S.A.<br/>
+</p>
+<p>
+and adapted as a Shiny application by Alex Curtis and
+</p>
+<p>
+Howard Coleman<br/>
+Contractor with Ocean Associates, Inc.<br/>
+Northwest Fisheries Science Center<br/>
+Conservation Biology Division<br/>
+NOAA National Marine Fisheries Service<br/>
+Seattle, Washington, U.S.A.<br/>
+</p>
+<p>
+The current version of the ObsCovgTools R package is available for download at
+https://github.com/kacurtis/ObsCovgTools
+</p>
+<p>
+Please direct any comments or questions to Alex (dot) Curtis at noaa-dot-gov.
+</p>
