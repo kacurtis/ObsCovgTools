@@ -2,6 +2,10 @@
 #' 
 #' \code{run_shiny} runs a shiny application for the main functions in ObsCovgTools.
 #'   
+#' @details  
+#' Note: Estimated run times in Bycatch Estimation CV tab only apply to execution
+#' on shinyapps.io server (see README)
+#' 
 #' @return None 
 #' 
 #' @export
