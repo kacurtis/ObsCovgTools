@@ -1,8 +1,8 @@
 Package: ObsCovgTools 
 Type: Package
 Title: Estimate fishery observer coverage required to achieve specific objectives
-Version: 2.2
-Date: 2019-11-30
+Version: 2.3
+Date: 2019-12-1
 URL: https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.1.2)
 Imports: 
@@ -18,8 +18,7 @@ Maintainer: Alex Curtis <alex.curtis@noaa.gov>
 Description: Estimates observer coverage required to achieve a specific
   objective, including (1) a target probability of observing a bycatch event 
   (given that it occurred in total effort), and (2) a target bycatch estimation 
-  CV (coefficient of variation). The user can also specify the desired 
-  probability of achieving the target CV. 
+  CV (coefficient of variation). 
 License: GPL (>= 2)
 ByteCompile: TRUE
 RoxygenNote: 6.1.1

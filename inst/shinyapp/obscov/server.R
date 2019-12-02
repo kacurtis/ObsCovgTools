@@ -1,9 +1,7 @@
 #.libPaths(c("/usr/lib64/R/shiny_library",.libPaths()))
 library(ObsCovgTools)
 
-total.effort.msg.cv <- paste("Total effort should be a positive integer",
-                          "greater than 2.")
-total.effort.msg.ppos <- paste("Total effort should be a positive integer",
+total.effort.msg <- paste("Total effort should be a positive integer",
                           "greater than 1.")
 total.effort.title <- "Total effort value"
 
@@ -25,7 +23,7 @@ check.te.ppos <- function(input) {
   if (is.na(as.numeric(input)) || 
       ((as.numeric(input)) <= 1) ||
       (input != as.integer(input)) )
-    total.effort.msg.ppos
+    total.effort.msg
   else NULL
 }
 
@@ -101,10 +99,10 @@ server <- function(input, output, session) {
         ## validation of user inputs
         
         if (is.na(as.numeric(input$te)) ||
-              ((te <- as.numeric(input$te)) < 3) ||
+              ((te <- as.numeric(input$te)) < 2) ||
               (te != as.integer(te))) {
           showModal(modalDialog(title=total.effort.title,
-                                 total.effort.msg.cv,
+                                 total.effort.msg,
                                  easyClose=TRUE))
           return()
         }
@@ -145,7 +143,6 @@ server <- function(input, output, session) {
     if (!is.null(simlist())) {
       plot_cv_obscov(simlist = simlist(),
                      targetcv = as.numeric(input$targetcv),
-                     q = as.numeric(input$qcv),
                      silent = TRUE)
     }
   })
@@ -156,41 +153,25 @@ server <- function(input, output, session) {
     } else {
       oc.cv.out <- plot_cv_obscov(simlist = simlist(),
                                   targetcv = as.numeric(input$targetcv),
-                                  q = as.numeric(input$qcv),
                                   silent = TRUE)
       if (as.logical(input$targetcv)) {
-        rec <- paste0("Minimum observer coverage to achieve CV <= ",
-                      input$targetcv, " with ", input$qcv, "% probability",
-                      " is ",oc.cv.out$pobscov,"% (",oc.cv.out$nobsets,
-                      " hauls).")
+        if (!is.na(oc.cv.out$pobscov)) {
+          rec <- paste0("Minimum observer coverage to achieve CV <= ",
+                      input$targetcv, " is ",oc.cv.out$pobscov,"% (",
+                      oc.cv.out$nobsets, " hauls).")
+        } else {
+          rec <- paste0("Simulated observer coverage levels do not include ", 
+                        "range corresponding to minimum observer coverage to ",
+                        "achieve CV <= ", input$targetcv, ".\n")
+        }
       } else rec <- ""
-      HTML(paste0("<p></p>",rec," Shaded percentiles show distribution of ",
-                  "simulated CVs associated with each observer coverage ",
-                  "level. Results are interpolated from ",
+      HTML(paste0("<p></p>",rec," Results are interpolated from ",
                   "simulation-based projections and may vary slightly",
                   " with repetition. Please review the caveats in the",
                   " About tab."))
     }
   })
 
-  output$cv_samplesize_plot <- renderPlot({
-    if (!is.null(simlist())) {
-      plot_cvsim_samplesize(simlist=simlist())
-    }
-  })
-
-  output$cv_samplesize_plot_label <- renderText({
-    if (!is.null(simlist())) {
-      HTML(paste0("<p></p>Number of simulations (out of 1000 total; black squares) ",
-                  "with positive observed bycatch underlying each projection of bycatch",
-                  " estimation CV. The smaller the sample size, the less precise ",
-                  "the projection (the more it will vary among repeated runs of the ",
-                  "simulator). Sample size is inversely proportional to the probability",
-                  " of no bycatch being observed (solid red line), which includes the ",
-                  "probability of no bycatch occurring in the given total effort ",
-                  "(horizontal dotted red line)."))
-    }
-  })
   
   output$plotsavailable <- reactive(
     !is.null(simlist())

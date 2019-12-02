@@ -10,13 +10,11 @@ objective, given mean bycatch rate, negative binomial dispersion index
 user-defined units (e.g., trips, sets, or hooks). Currently, potential 
 objectives implemented are (1) a target probability of observing a bycatch 
 event (given that it occurred in total effort), and (2) a target bycatch 
-estimation CV (coefficient of variation). The user can also specify the desired 
-probability of achieving the target CV. Probability of observing a bycatch 
+estimation CV (coefficient of variation). Probability of observing a bycatch 
 event, and of any bycatch occurring in a given amount of total effort, is based 
-on the corresponding Poisson or negative binomial probability distribution 
-function. Bycatch estimation CVs are based on simulated mean-per-unit bycatch 
-estimates with finite population correction, and exclude simulations with zero 
-observed bycatch.
+on the corresponding Poisson or negative binomial probability mass function. 
+Bycatch estimation CVs are based on simulated bycatch in total and observed 
+effort.
 
 
 ### Caveat

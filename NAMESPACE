@@ -2,7 +2,6 @@
 
 export(get_probzero)
 export(plot_cv_obscov)
-export(plot_cvsim_samplesize)
 export(plot_probposobs)
 export(run_shiny)
 export(sim_cv_obscov)

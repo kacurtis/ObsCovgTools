@@ -7,7 +7,7 @@
 sim_cv_obscov(te, bpue, d = 2, nsim = 1000, ...)
 }
 \arguments{
-\item{te}{an integer greater than 2. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than one. Total effort in fishery (sets/hauls).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
@@ -20,32 +20,17 @@ bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
 \item{...}{additional arguments for compatibility with Shiny.}
 }
-\value{
-A list with components:
-  \item{simdat}{a tibble with one row per simulation and the following fields: 
-  simulated proportion observer coverage (\code{simpoc}), number of observed sets 
-  (\code{nobsets}), total observed bycatch (\code{ob}), variance of observed 
-  bycatch (\code{obvar}), mean observed bycatch per unit effort (\code{xsim}), 
-  finite population correction (\code{fpc}), standard error of observed bycatch 
-  per unit effort (\code{sesim}), and CV of observed bycatch per unit effort 
-  (\code{cvsim}). 
-  For simulations with zero observed bycatch, \code{cvsim} will be NaN.}
-  \item{bpue}{the bycatch per unit effort used.}
-  \item{d}{the negative binomial dispersion index used.}
-}
 \description{
-\code{sim_cv_obscov} simulates bycatch estimation CVs resulting from a range 
+\code{sim_cv_obscov} simulates bycatch estimation CVs for a range 
 of observer coverage levels, given bycatch rate, negative binomial dispersion 
 index, and total fishery effort.
 }
 \details{
 \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
-coverage, from the larger of 0.1\% or two sets/hauls to 100\%. Simulated 
-bycatch estimates use a simple mean-per-unit approach with finite population 
-correction. Projections of bycatch estimation CV exclude simulations with 
-zero observed bycatch. Since estimating variance requires at least two numbers, 
-total effort must be at least three sets/hauls to evaluate observer coverage 
-less than 100\%.
+coverage, from the larger of 0.1\% or one set/haul to 100\%. Simulated 
+bycatch estimates are calculated as mean observed bycatch per unit effort. 
+CV at each observer coverage level is calculated as the square root of mean 
+square estimation error divided by "true" bycatch (\code{bpue}).
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 

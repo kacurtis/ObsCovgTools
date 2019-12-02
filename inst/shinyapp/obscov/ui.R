@@ -6,7 +6,7 @@ ui <- fluidPage(
     includeCSS("www/style.css")
   ),
   ## appFrameHeaderFixed(),
-  titlePanel(title="Observer coverage simulator - 2.1.2",
+  titlePanel(title="Observer coverage simulator - 2.3",
              windowTitle="Observer coverage simulator"),
   tabsetPanel(id="alltabs",
               tabPanel("Objective: Probability of Observing Bycatch", value="ppos", 
@@ -49,11 +49,11 @@ ui <- fluidPage(
       textInput(inputId="te",
                 label=HTML(paste("Total effort in fishery (e.g., hauls)",
                                  "<div class='extext'>",
-                                 "(Larger effort takes longer: ~30s for 50K,",
-                                 "~2 min for 500K)",
+                                 "(Larger effort takes longer: ~30s for 5K,",
+                                 "~10 min for 500K)",
                                  "</div>")),
                 value="500",
-                placeholder="Integer > 2"),
+                placeholder="Integer > 1"),
       textInput(inputId="bpue", label="Bycatch per Unit Effort (BPUE)",
                 value="0.01",
                 placeholder="Number > 0"),
@@ -75,18 +75,10 @@ ui <- fluidPage(
                                                     "<div class='extext'>",
                                                     "(Set to zero to omit.)",
                                                     "</div>")),
-                                   min=0, max=.99, value=0.30, step=0.01)),
-      conditionalPanel(condition="output.plotsavailable && input.targetcv>0",
-                       sliderInput(inputId="qcv",
-                                   label="Probability of achieving target CV",
-                                   min=50, max=95, value=80, step=1)
-                       ))),
+                                   min=0, max=.99, value=0.30, step=0.01)))),
     column(8,
       plotOutput("cv_obscov_plot", width=700, height = 400),
-      htmlOutput("cv_obscov_plot_label"),
-      hr(),
-      plotOutput("cv_samplesize_plot", width=675, height=300),
-      htmlOutput("cv_samplesize_plot_label")
+      htmlOutput("cv_obscov_plot_label")
     )
   )
   ),

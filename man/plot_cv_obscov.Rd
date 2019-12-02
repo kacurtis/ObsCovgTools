@@ -4,8 +4,8 @@
 \alias{plot_cv_obscov}
 \title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80,
-  showplot = TRUE, silent = FALSE)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
@@ -13,10 +13,6 @@ plot_cv_obscov(simlist = simlist, targetcv = 0.3, q = 80,
 \item{targetcv}{a non-negative number less than 1. Target CV 
 (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
 coverage will be highlighted.}
-
-\item{q}{a positive number less than 100. Custom percentile to 
-be plotted, desired probability of achieving the target CV or lower. 
-Ignored if \eqn{targetcv = 0}.}
 
 \item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
 
@@ -31,9 +27,8 @@ Returned invisibly.
 }
 \description{
 \code{plot_cv_obscov} plots projected bycatch estimation CVs vs observer 
-coverage for user-specified percentile (i.e., probability of achieving CV) 
-and several default percentiles, and returns minimum observer coverage needed 
-to achieve user-specified target CV and percentile.
+coverage, and returns minimum observer coverage needed to achieve 
+user-specified target CV and percentile.
 }
 \details{
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
