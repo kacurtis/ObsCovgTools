@@ -4,17 +4,19 @@ ObsCovgTools
 
 ### Description
 
-ObsCovgTools estimates observer coverage required to achieve a specific 
-objective, given mean bycatch rate, negative binomial dispersion index 
+ObsCovgTools provides tools for evaluating fishery observer coverage, 
+particularly with respect to documenting and estimating rare bycatch. Current 
+functionality includes (1) estimating probabilities of observing a bycatch event 
+as a function of observer coverage and of any bycatch occurrring in total
+effort, given mean bycatch rate, negative binomial dispersion index 
 (characterizing variance in the bycatch rate), and total fishery effort in 
-user-defined units (e.g., trips, sets, or hooks). Currently, potential 
-objectives implemented are (1) a target probability of observing a bycatch 
-event (given that it occurred in total effort), and (2) a target bycatch 
-estimation CV (coefficient of variation). Probability of observing a bycatch 
-event, and of any bycatch occurring in a given amount of total effort, is based 
+user-defined units (e.g., trips, sets, or hooks); and (2) estimating bycatch 
+estimation CV (coefficient of variation) as a function of observer coverage, 
+given bycatch rate, negative binomial dispersion index, and total fishery effort. 
+Probability of at least one bycatch event occurring or being observed is based 
 on the corresponding Poisson or negative binomial probability mass function. 
-Bycatch estimation CVs are based on simulated bycatch in total and observed 
-effort.
+Bycatch estimation CVs are based on the standardized root mean square error of 
+bycatch rate based on simulated bycatch in total and observed effort.
 
 
 ### Caveat

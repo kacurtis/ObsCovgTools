@@ -9,7 +9,7 @@ ui <- fluidPage(
   titlePanel(title="Observer coverage simulator - 2.3",
              windowTitle="Observer coverage simulator"),
   tabsetPanel(id="alltabs",
-              tabPanel("Objective: Probability of Observing Bycatch", value="ppos", 
+              tabPanel("Objective: Probability of Positive Bycatch", value="ppos", 
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te.ppos",

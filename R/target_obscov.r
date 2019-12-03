@@ -74,12 +74,12 @@ my_ceiling <- function(x, s){
 #'   \item{simsum}{a tibble with one row per observer coverage level and the 
 #'   following fields: simulated proportion observer coverage (\code{simpoc}), 
 #'   number of observed sets (\code{nobsets}), and bycatch estimation CV 
-#'   (\code{cvsim}). 
+#'   (\code{cvsim}).} 
 #'   \item{simdat}{a tibble with one row per simulation and the following fields: 
 #'   simulated proportion observer coverage (\code{simpoc}), number of observed 
 #'   sets (\code{nobsets}), true (realized) bycatch per unit effort (\code{tbpue}), 
 #'   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
-#'   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}). 
+#'   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
 #'   \item{bpue}{the bycatch per unit effort used.}
 #'   \item{d}{the negative binomial dispersion index used.}
 #'   
@@ -236,11 +236,12 @@ get_probzero <- function(n, bpue, d) {
 }
 
 
-#' Plot probability of positive observed bycatch vs observer coverage
+#' Plot probability of positive bycatch vs observer coverage
 #' 
-#' \code{plot_probposobs} plots probability of observing at least one bycatch 
-#'   event vs observer coverage, given total effort in sets/hauls, bycatch per 
-#'   unit effort, and negative binomial dispersion index. 
+#' \code{plot_probposobs} plots (1) probability of observing at least one bycatch
+#'   event vs observer coverage and (2) probability of any bycatch occurring in 
+#'   total effort, given total effort in sets/hauls, bycatch per unit effort, and 
+#'   negative binomial dispersion index. 
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
@@ -329,14 +330,23 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
   # return recommended minimum observer coverage
   if (target.ppos) {
     if (!silent) {
-      cat(paste0("Minimum observer coverage to achieve at least ", target.ppos, 
+      cat(paste0("The probability that any bycatch occurs in the given total effort is ", 
+                signif(100*ppt,2), "%.\n",
+                "Minimum observer coverage to achieve at least ", target.ppos, 
                 "% probability of observing \nbycatch when total bycatch is positive is ", 
-                my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets). The probability\n",
-                "that any bycatch occurs in the given total effort is ", signif(100*ppt,2), "%.\n",
+                my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets).\n",
                 "Please review the caveats in the associated documentation.\n"))
     }
     return(invisible(list(pobscov=my_ceiling(targetoc*100,2), 
                           nobsets=my_ceiling(targetoc*te,2),
                           ppos.te=signif(100*ppt,2))))
+  } else {
+    if (!silent) {
+      cat(paste0("The probability that any bycatch occurs in the given total effort",
+                 " is ", signif(100*ppt,2), "%.\n",
+                 "Please review the caveats in the associated documentation.\n"))
+    }
+    return(invisible(list(pobscov=NA, nobsets=NA,
+                           ppos.te=signif(100*ppt,2))))
   }
 }

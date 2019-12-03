@@ -76,18 +76,21 @@ server <- function(input, output, session) {
                     silent = TRUE)
     
     if (as.logical(input$target.ppos)) {
-      rec <- paste0("Minimum observer coverage to achieve at least ", 
+      rec <- paste0("The probability that any bycatch occurs in the given total ",
+                    "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
+                    "%. Minimum observer coverage to achieve at least ", 
                     input$target.ppos, "% probability of observing bycatch when",
                     " total bycatch is positive is ", oc.ppos.out$pobscov, "% (", 
                     oc.ppos.out$nobsets, " sets). ")
-    } else rec <- ""
+    } else rec <- paste0("The probability that any bycatch occurs in the given total ",
+                         "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
+                         "%.")
     HTML(paste0(rec,
                 "The conditional probability of observing any bycatch if it occurs ", 
                 "(solid black line) is obtained by dividing the absolute probability",
                 " of observing any bycatch (black dashed line) by the probability ",
-                "that any bycatch occurs in the given total effort (horizontal black",
-                " dotted line at ",oc.ppos.out$ppos.te, "%). Please review the caveats",
-                " in the About tab."))
+                "that any bycatch occurs in the given total effort. Please review",
+                " the caveat in the About tab."))
   })
     
   plotlabels.cv <- reactiveValues(cv = '')

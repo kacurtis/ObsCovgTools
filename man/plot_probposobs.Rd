@@ -2,10 +2,16 @@
 % Please edit documentation in R/target_obscov.r
 \name{plot_probposobs}
 \alias{plot_probposobs}
-\title{Plot probability of positive observed bycatch vs observer coverage}
+\title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
-  silent = FALSE)
+plot_probposobs(
+  te,
+  bpue,
+  d = 2,
+  target.ppos = 80,
+  showplot = TRUE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
@@ -35,9 +41,10 @@ A list with components:
 Returned invisibly.
 }
 \description{
-\code{plot_probposobs} plots probability of observing at least one bycatch 
-  event vs observer coverage, given total effort in sets/hauls, bycatch per 
-  unit effort, and negative binomial dispersion index.
+\code{plot_probposobs} plots (1) probability of observing at least one bycatch
+  event vs observer coverage and (2) probability of any bycatch occurring in 
+  total effort, given total effort in sets/hauls, bycatch per unit effort, and 
+  negative binomial dispersion index.
 }
 \details{
 Probabilities are based on the probability density function for the 
