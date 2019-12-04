@@ -296,11 +296,10 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
   if (d<1) stop("d must be >= 1")
   if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
   # percent probablity of positive observed bycatch
-  if (te<1000) { obscov <- 1:te/te 
-  } else { obscov <- seq(0.001,1,0.001) }
-  oc <- tibble::tibble(obscov = obscov,
-               nobsets = round(.data$obscov * te)) %>% 
-    dplyr::filter(.data$nobsets>0) %>% as.data.frame()
+  if (te<1000) { oc <- data.frame(obscov = 1:te/te , nobsets = 1:te)
+  } else { oc <- data.frame(obscov = seq(0.001,1,0.001), 
+                      nobsets = round(seq(0.001,1,0.001)*te)) 
+  }
   oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
   ppt <- utils::tail(oc$pp,1)   # probability of positive bycatch in total effort
   targetoc <- log(1-(target.ppos/100)*ppt)/log(get_probzero(1,bpue,d))/te   # target observer coverage
