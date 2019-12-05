@@ -152,7 +152,9 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
   # get minimum required observer coverage
   if (targetcv)
-    targetoc <- stats::approx(simlist$simsum$cvsim, simlist$simsum$simpoc, targetcv)$y
+    targetoc <- ifelse(simlist$te <= 20,
+                       with(simlist$simsum, simpoc[min(which(cvsim<=targetcv))]),
+                       stats::approx(simlist$simsum$cvsim, simlist$simsum$simpoc, targetcv)$y)
   # plot 
   if (showplot) {
     with(simlist$simsum, graphics::plot(100*simpoc, cvsim, xlim=c(0,100), ylim=c(0,1), 
@@ -296,27 +298,32 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
   if (d<1) stop("d must be >= 1")
   if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
   # percent probablity of positive observed bycatch
-  if (te<1000) { oc <- data.frame(obscov = 1:te/te , nobsets = 1:te)
-  } else { oc <- data.frame(obscov = seq(0.001,1,0.001), 
-                      nobsets = round(seq(0.001,1,0.001)*te)) 
+  if (te<1000) { oc <- data.frame(nobsets = 1:te, obscov = (1:te)/te)
+  } else { oc <- data.frame(nobsets = round(seq(0.001,1,0.001)*te), 
+                            obscov = round(seq(0.001,1,0.001)*te)/te)
   }
   oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
   ppt <- utils::tail(oc$pp,1)   # probability of positive bycatch in total effort
-  targetoc <- log(1-(target.ppos/100)*ppt)/log(get_probzero(1,bpue,d))/te   # target observer coverage
+  oc$ppc <- oc$pp/ppt
+  itarget <- min(which(oc$ppc >= target.ppos/100))
+  targetoc <- oc$obscov[itarget]
+  targetnos <- oc$nobsets[itarget]
   # plot
   if (showplot) {
-    graphics::plot(100*oc$obscov, 100*(oc$pp/ppt), type="l", lty=1, lwd=2,
+    opar <- graphics::par(no.readonly = TRUE)
+    graphics::par(xpd=TRUE)
+    graphics::plot(100*oc$obscov, 100*(oc$ppc), type="l", lty=1, lwd=2,
          xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
          xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
          main="Probability of Positive Bycatch")
-    graphics::abline(h=100*ppt,lwd=2, lty=3)
-    graphics::lines(100*oc$obscov, 100*oc$pp, lwd=2, lty=2)
-    graphics::lines(100*oc$obscov, 100*(oc$pp/ppt), lwd=2)
+    graphics::lines(x=c(0,100),y=rep(100*ppt,2),lwd=3, lty=3)
+    graphics::lines(100*oc$obscov, 100*oc$pp, lwd=3, lty=2)
+    graphics::lines(100*oc$obscov, 100*oc$ppc, lwd=2)
     legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
     if (target.ppos) {
-      graphics::abline(h=target.ppos, col=2, lwd=2, lty=4)
+      graphics::lines(c(0,100),rep(target.ppos,2), col=2, lwd=2, lty=4)
       graphics::par(xpd=TRUE)
-      graphics::points(targetoc*100, target.ppos, pch=8, col=2, cex=1.5, lwd=2)
+      graphics::points(targetoc*100, 100*oc$ppc[itarget], pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
       graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
              legend=c("in observed effort if total bycatch > 0", "in observed effort",
@@ -325,20 +332,21 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
       graphics::legend(legpos, lty=c(1,2,3), lwd=2, col=1, 
              legend=c("in observed effort if total bycatch > 0","in observed effort","in total effort"))
     }
+    graphics::par(opar)
   }
   # return recommended minimum observer coverage
   if (target.ppos) {
     if (!silent) {
       cat(paste0("The probability that any bycatch occurs in the given total effort is ", 
-                signif(100*ppt,2), "%.\n",
+                signif(100*ppt,3), "%.\n",
                 "Minimum observer coverage to achieve at least ", target.ppos, 
                 "% probability of observing \nbycatch when total bycatch is positive is ", 
-                my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*te,2), " sets).\n",
+                my_ceiling(targetoc*100,3), "% (", targetnos, " sets).\n",
                 "Please review the caveats in the associated documentation.\n"))
     }
-    return(invisible(list(pobscov=my_ceiling(targetoc*100,2), 
-                          nobsets=my_ceiling(targetoc*te,2),
-                          ppos.te=signif(100*ppt,2))))
+    return(invisible(list(pobscov=my_ceiling(targetoc*100,3), 
+                          nobsets=my_ceiling(targetoc*te,3),
+                          ppos.te=signif(100*ppt,3))))
   } else {
     if (!silent) {
       cat(paste0("The probability that any bycatch occurs in the given total effort",
@@ -346,6 +354,6 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
                  "Please review the caveats in the associated documentation.\n"))
     }
     return(invisible(list(pobscov=NA, nobsets=NA,
-                           ppos.te=signif(100*ppt,2))))
+                           ppos.te=signif(100*ppt,3))))
   }
 }
