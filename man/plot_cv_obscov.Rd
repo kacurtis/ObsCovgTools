@@ -4,12 +4,8 @@
 \alias{plot_cv_obscov}
 \title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv_obscov(
-  simlist = simlist,
-  targetcv = 0.3,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
@@ -24,8 +20,8 @@ coverage will be highlighted.}
 }
 \value{
 A list with components:
-  \item{pobscov}{minimum observer coverage in terms of percentage.} 
-  \item{nobsets}{corresponding observed effort.}
+  \item{pobs}{minimum observer coverage in terms of percentage.} 
+  \item{nobs}{corresponding observed effort.}
 
 Returned invisibly.
 }

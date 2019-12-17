@@ -4,14 +4,8 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(
-  te,
-  bpue,
-  d = 2,
-  target.ppos = 80,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
@@ -34,8 +28,8 @@ will be highlighted.}
 }
 \value{
 A list with components:
-  \item{pobscov}{minimum observer coverage in terms of percentage.} 
-  \item{nobsets}{corresponding observed effort.}
+  \item{pobs}{minimum observer coverage in terms of percentage.} 
+  \item{nobs}{corresponding observed effort.}
   \item{ppos.te}{probability of any bycatch occurring in total effort}
 
 Returned invisibly.
@@ -61,7 +55,7 @@ intersects with the target probability (red dash-dot line).
 
 Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 as a one-step tool, and does not take output from user calls to 
-\code{get_probzero}. 
+\code{probnzeros}. 
   
 \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 

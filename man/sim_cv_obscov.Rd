@@ -23,12 +23,12 @@ bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 \value{
 A list with components:
   \item{simsum}{a tibble with one row per observer coverage level and the 
-  following fields: simulated proportion observer coverage (\code{simpoc}), 
-  number of observed sets (\code{nobsets}), and bycatch estimation CV 
+  following fields: simulated proportion observer coverage (\code{pobs}), 
+  number of observed trips/sets (\code{nobs}), and bycatch estimation CV 
   (\code{cvsim}).} 
   \item{simdat}{a tibble with one row per simulation and the following fields: 
-  simulated proportion observer coverage (\code{simpoc}), number of observed 
-  sets (\code{nobsets}), true (realized) bycatch per unit effort (\code{tbpue}), 
+  simulated proportion observer coverage (\code{pobs}), number of observed 
+  sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
   \item{bpue}{the bycatch per unit effort used.}
@@ -48,7 +48,7 @@ square estimation error divided by "true" bycatch (\code{bpue}).
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
-also increase execution time. 
+also increase execution time.
 
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 

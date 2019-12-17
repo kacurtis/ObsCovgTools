@@ -80,8 +80,8 @@ server <- function(input, output, session) {
                     "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
                     "%. Minimum observer coverage to achieve at least ", 
                     input$target.ppos, "% probability of observing bycatch when",
-                    " total bycatch is positive is ", oc.ppos.out$pobscov, "% (", 
-                    oc.ppos.out$nobsets, " sets). ")
+                    " total bycatch is positive is ", oc.ppos.out$pobs, "% (", 
+                    oc.ppos.out$nobs, " sets). ")
     } else rec <- paste0("The probability that any bycatch occurs in the given total ",
                          "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
                          "%.")
@@ -158,10 +158,10 @@ server <- function(input, output, session) {
                                   targetcv = as.numeric(input$targetcv),
                                   silent = TRUE)
       if (as.logical(input$targetcv)) {
-        if (!is.na(oc.cv.out$pobscov)) {
+        if (!is.na(oc.cv.out$pobs)) {
           rec <- paste0("Minimum observer coverage to achieve CV <= ",
-                      input$targetcv, " is ",oc.cv.out$pobscov,"% (",
-                      oc.cv.out$nobsets, " hauls).")
+                      input$targetcv, " is ",oc.cv.out$pobs,"% (",
+                      oc.cv.out$nobs, " hauls).")
         } else {
           rec <- paste0("Simulated observer coverage levels do not include ", 
                         "range corresponding to minimum observer coverage to ",

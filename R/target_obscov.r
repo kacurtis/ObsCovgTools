@@ -72,12 +72,12 @@ my_ceiling <- function(x, s){
 #'   
 #' @return A list with components:
 #'   \item{simsum}{a tibble with one row per observer coverage level and the 
-#'   following fields: simulated proportion observer coverage (\code{simpoc}), 
-#'   number of observed sets (\code{nobsets}), and bycatch estimation CV 
+#'   following fields: simulated proportion observer coverage (\code{pobs}), 
+#'   number of observed trips/sets (\code{nobs}), and bycatch estimation CV 
 #'   (\code{cvsim}).} 
 #'   \item{simdat}{a tibble with one row per simulation and the following fields: 
-#'   simulated proportion observer coverage (\code{simpoc}), number of observed 
-#'   sets (\code{nobsets}), true (realized) bycatch per unit effort (\code{tbpue}), 
+#'   simulated proportion observer coverage (\code{pobs}), number of observed 
+#'   sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
 #'   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
 #'   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
 #'   \item{bpue}{the bycatch per unit effort used.}
@@ -91,11 +91,11 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
   if (d<1) stop("d must be >= 1")
   if ((ceiling(nsim) != floor(nsim)) || nsim<=0) stop("nsim must be a positive integer")
   # simulate observer coverage and bycatch estimation
-  if (te<20) { obscov <- 1:te/te 
-  } else { obscov <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05)) }
-  simdat <- tibble::tibble(simpoc = rep(obscov, nsim), 
-                           nobsets = round(.data$simpoc * te)) %>% 
-    dplyr::filter(.data$nobsets > 0) %>% 
+  if (te<20) { oc <- 1:te/te 
+  } else { oc <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05)) }
+  simdat <- tibble::tibble(pobs = rep(oc, nsim), 
+                           nobs = round(.data$pobs * te)) %>% 
+    dplyr::filter(.data$nobs > 0) %>% 
     dplyr::mutate(tbpue=NA, obpue=NA, oberr=NA)
   set.seed(Sys.time())
   pb <- progress_init(...)
@@ -103,7 +103,7 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
   for (i in 1:nrow(simdat)) {
     sets <- if(d==1) { Runuran::urpois(te, bpue) 
     } else { Runuran::urnbinom(te, size=(bpue/(d-1)), prob=1/d) }
-    obsets <- sample(sets, simdat$nobsets[i])
+    obsets <- sample(sets, simdat$nobs[i])
     simdat$tbpue[i] <- mean(sets)
     simdat$obpue[i] <- mean(obsets)
     simdat$oberr[i] <- simdat$obpue[i] - simdat$tbpue[i]
@@ -113,8 +113,8 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
     }
   }
   
-  simsum <- simdat %>% dplyr::group_by(.data$simpoc) %>% 
-    dplyr::summarize(nobsets=unique(.data$nobsets),
+  simsum <- simdat %>% dplyr::group_by(.data$pobs) %>% 
+    dplyr::summarize(nobs=unique(.data$nobs),
                      cvsim=sqrt(mean(.data$oberr^2))/bpue)
   return(list(simsum=simsum, simdat=simdat, te=te, bpue=bpue, d=d))
 }
@@ -141,8 +141,8 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
 #' See documentation for \code{sim_obs_cov} for additional details.
 #'   
 #' @return A list with components:
-#'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
-#'   \item{nobsets}{corresponding observed effort.}
+#'   \item{pobs}{minimum observer coverage in terms of percentage.} 
+#'   \item{nobs}{corresponding observed effort.}
 #' @return Returned invisibly. 
 #'   
 #' @export 
@@ -153,16 +153,16 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   # get minimum required observer coverage
   if (targetcv)
     targetoc <- ifelse(simlist$te <= 20,
-                       with(simlist$simsum, simpoc[min(which(cvsim<=targetcv))]),
-                       stats::approx(simlist$simsum$cvsim, simlist$simsum$simpoc, targetcv)$y)
+                       with(simlist$simsum, pobs[min(which(cvsim<=targetcv))]),
+                       stats::approx(simlist$simsum$cvsim, simlist$simsum$pobs, targetcv)$y)
   # plot 
   if (showplot) {
-    with(simlist$simsum, graphics::plot(100*simpoc, cvsim, xlim=c(0,100), ylim=c(0,1), 
+    with(simlist$simsum, graphics::plot(100*pobs, cvsim, xlim=c(0,100), ylim=c(0,1), 
                       xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,1,10),
                       xlab="Observer Coverage (%)", ylab="CV of Bycatch Estimate",
                       main="CV of Bycatch Estimate vs Observer Coverage"))
-    #with(simsum, graphics::points(100*simpoc, qcv))
-    with(simlist$simsum, graphics::lines(100*simpoc, cvsim))
+    #with(simsum, graphics::points(100*pobs, qcv))
+    with(simlist$simsum, graphics::lines(100*pobs, cvsim))
     graphics::abline(h=1, v=100)
     # add minimum required observer coverage
     if (targetcv) {
@@ -170,7 +170,7 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
       graphics::par(xpd=TRUE)
       graphics::points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
-      legpos <- ifelse(any(simlist$simsum$simpoc > 0.7 & simlist$simsum$cvsim > 0.5), 
+      legpos <- ifelse(any(simlist$simsum$pobs > 0.7 & simlist$simsum$cvsim > 0.5), 
                        "bottomleft", "topright")
       graphics::legend(legpos, lty=c(2,0), pch=c(NA,8), col=c(2,2), lwd=c(2,2), 
                        pt.cex=1.5, y.intersp=1.1, legend=c("target CV", "min coverage"))
@@ -192,13 +192,51 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
               "with repetition.\n"))
   }
   if (targetcv) 
-    return(invisible(list(pobscov = my_ceiling(targetoc*100,2), nobsets=my_ceiling(targetoc*simlist$te,2))))
+    return(invisible(list(pobs = my_ceiling(targetoc*100,2), nobs=my_ceiling(targetoc*simlist$te,2))))
 }
 
 
-#' Get probability of zero bycatch given effort, bycatch rate, and dispersion
+#' Get probability of zero bycatch in one unit of effort
 #' 
-#' \code{get_probzero} returns probability of zero bycatch in a specified number 
+#' \code{probzero} returns probability of zero bycatch in a one set/haul, given
+#' bycatch per unit effort and negative binomial dispersion index. 
+#' 
+#' @param bpue a positive number. Bycatch per unit effort.
+#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#'   index. The dispersion index corresponds to the variance-to-mean 
+#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   
+#' @details
+#' Calculated from the probability density at zero of the corresponding Poisson
+#' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
+#' 
+#' \strong{Caveat:} \code{probzero} assumes representative observer coverage 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in negatively biased projections 
+#' of the probability of observing zero bycatch at a given level of observer coverage. 
+#' More conservative projections can be obtained by using higher-level units of effort 
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
+#' \code{n} as number of trips instead of number of sets/hauls).
+#'   
+#' @return Scalar probability of zero bycatch. 
+#' @return Returned invisibly
+#' 
+#' @export
+probzero <- function(bpue, d) {
+  # check input values
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
+  # calculate probability of observing zero bycatch in n sets
+  pz <- if(d==1) { stats::ppois(0, bpue)
+  } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d) }
+  return(invisible(pz))
+}
+
+
+#' Get probability of zero bycatch given effort
+#' 
+#' \code{probnzeros} returns probability of zero bycatch in a specified number 
 #' of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
 #' index. 
 #' 
@@ -214,7 +252,7 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' Calculated from the probability density at zero of the corresponding Poisson
 #' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
 #' 
-#' \strong{Caveat:} \code{get_probzero} assumes representative observer coverage 
+#' \strong{Caveat:} \code{probnzeros} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 #' Violating these assumptions will likely result in negatively biased projections 
 #' of the probability of observing zero bycatch at a given level of observer coverage. 
@@ -226,15 +264,13 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' @return Returned invisibly
 #' 
 #' @export
-get_probzero <- function(n, bpue, d) {
+probnzeros <- function(n, bpue, d) {
   # check input values
   if (any((ceiling(n) != floor(n)) | n<1)) stop("n must be a vector of positive integers")
-  if (bpue<=0) stop("bpue must be > 0")
-  if (d<1) stop("d must be >= 1")
   # calculate probability of observing zero bycatch in n sets
-  pz <- if(d==1) { stats::ppois(0, bpue)^n 
-    } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d)^n }
-  return(invisible(pz))
+  pz <- probzero(bpue, d)
+  pnz <- pz^n 
+  return(invisible(pnz))
 }
 
 
@@ -273,7 +309,7 @@ get_probzero <- function(n, bpue, d) {
 #' 
 #' Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
 #' as a one-step tool, and does not take output from user calls to 
-#' \code{get_probzero}. 
+#' \code{probnzeros}. 
 #'   
 #' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
@@ -284,8 +320,8 @@ get_probzero <- function(n, bpue, d) {
 #' \code{te} as number of trips instead of number of sets/hauls).
 #' 
 #' @return A list with components:
-#'   \item{pobscov}{minimum observer coverage in terms of percentage.} 
-#'   \item{nobsets}{corresponding observed effort.}
+#'   \item{pobs}{minimum observer coverage in terms of percentage.} 
+#'   \item{nobs}{corresponding observed effort.}
 #'   \item{ppos.te}{probability of any bycatch occurring in total effort}
 #' @return Returned invisibly. 
 #' 
@@ -298,32 +334,33 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
   if (d<1) stop("d must be >= 1")
   if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
   # percent probablity of positive observed bycatch
-  if (te<1000) { oc <- data.frame(nobsets = 1:te, obscov = (1:te)/te)
-  } else { oc <- data.frame(nobsets = round(seq(0.001,1,0.001)*te), 
-                            obscov = round(seq(0.001,1,0.001)*te)/te)
+  if (te<1000) { oc <- 1:te 
+  } else { oc <- round(seq(0.001,1,0.001)*te) }
+  df <- data.frame(nobs = oc, pobs = oc/te)
+  df$pp <- 1-probnzeros(df$nobs, bpue, d)   # probability of positive observed bycatch
+  ppt <- utils::tail(df$pp,1)   # probability of positive bycatch in total effort
+  df$ppc <- df$pp/ppt
+  if (target.ppos) {
+    itarget <- min(which(df$ppc >= target.ppos/100))
+    targetoc <- df$pobs[itarget]
+    targetnos <- df$nobs[itarget]
   }
-  oc$pp <- 1-get_probzero(oc$nobsets, bpue, d)   # probability of positive observed bycatch
-  ppt <- utils::tail(oc$pp,1)   # probability of positive bycatch in total effort
-  oc$ppc <- oc$pp/ppt
-  itarget <- min(which(oc$ppc >= target.ppos/100))
-  targetoc <- oc$obscov[itarget]
-  targetnos <- oc$nobsets[itarget]
   # plot
   if (showplot) {
     opar <- graphics::par(no.readonly = TRUE)
     graphics::par(xpd=TRUE)
-    graphics::plot(100*oc$obscov, 100*(oc$ppc), type="l", lty=1, lwd=2,
+    graphics::plot(100*df$pobs, 100*(df$ppc), type="l", lty=1, lwd=2,
          xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
          xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
          main="Probability of Positive Bycatch")
     graphics::lines(x=c(0,100),y=rep(100*ppt,2),lwd=3, lty=3)
-    graphics::lines(100*oc$obscov, 100*oc$pp, lwd=3, lty=2)
-    graphics::lines(100*oc$obscov, 100*oc$ppc, lwd=2)
-    legpos <- ifelse(any(oc$obscov > 0.6 & oc$pp < 0.3 ), "topleft", "bottomright")
+    graphics::lines(100*df$pobs, 100*df$pp, lwd=3, lty=2)
+    graphics::lines(100*df$pobs, 100*df$ppc, lwd=2)
+    legpos <- ifelse(any(df$pobs > 0.6 & df$pp < 0.3 ), "topleft", "bottomright")
     if (target.ppos) {
       graphics::lines(c(0,100),rep(target.ppos,2), col=2, lwd=2, lty=4)
       graphics::par(xpd=TRUE)
-      graphics::points(targetoc*100, 100*oc$ppc[itarget], pch=8, col=2, cex=1.5, lwd=2)
+      graphics::points(targetoc*100, 100*df$ppc[itarget], pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
       graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
              legend=c("in observed effort if total bycatch > 0", "in observed effort",
@@ -344,16 +381,14 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
                 my_ceiling(targetoc*100,3), "% (", targetnos, " sets).\n",
                 "Please review the caveats in the associated documentation.\n"))
     }
-    return(invisible(list(pobscov=my_ceiling(targetoc*100,3), 
-                          nobsets=my_ceiling(targetoc*te,3),
-                          ppos.te=signif(100*ppt,3))))
   } else {
     if (!silent) {
       cat(paste0("The probability that any bycatch occurs in the given total effort",
                  " is ", signif(100*ppt,2), "%.\n",
                  "Please review the caveats in the associated documentation.\n"))
     }
-    return(invisible(list(pobscov=NA, nobsets=NA,
-                           ppos.te=signif(100*ppt,3))))
   }
+  return(invisible(list(pobs = ifelse(target.ppos, my_ceiling(targetoc*100,3), NA), 
+                        nobs = ifelse(target.ppos, my_ceiling(targetoc*te,3), NA),
+                        ppos.te = signif(100*ppt,3))))
 }
