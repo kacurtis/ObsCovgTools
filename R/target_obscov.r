@@ -204,47 +204,6 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 }
 
 
-#' Get probability of zero bycatch in one unit of effort
-#' 
-#' \code{probzero} returns probability of zero bycatch in a one set/haul, given
-#' bycatch per unit effort and negative binomial dispersion index. 
-#' 
-#' @param bpue a positive number. Bycatch per unit effort.
-#' @param d a number greater than or equal to 1. Negative binomial dispersion 
-#'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
-#'   
-#' @details
-#' Calculated from the probability density at zero of the corresponding Poisson
-#' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
-#' 
-#' \strong{Caveat:} \code{probzero} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' Violating these assumptions will likely result in negatively biased projections 
-#' of the probability of observing zero bycatch at a given level of observer coverage. 
-#' More conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-#' \code{n} as number of trips instead of number of sets/hauls).
-#'   
-#' @return Scalar probability of zero bycatch. 
-#' @return Returned invisibly
-#' 
-#' @export
-probzero <- function(bpue, d) {
-  
-  # check input values
-  if (bpue<=0) stop("bpue must be > 0")
-  if (d<1) stop("d must be >= 1")
-  
-  # calculate probability of observing zero bycatch in n sets
-  pz <- if(d==1) { stats::ppois(0, bpue)
-  } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d) }
-  
-  return(invisible(pz))
-}
-
-
 #' Get probability of zero bycatch given effort
 #' 
 #' \code{probnzeros} returns probability of zero bycatch in a specified number 
@@ -279,9 +238,14 @@ probnzeros <- function(n, bpue, d) {
   
   # check input values
   if (any((ceiling(n) != floor(n)) | n<1)) stop("n must be a vector of positive integers")
+  if (bpue<=0) stop("bpue must be > 0")
+  if (d<1) stop("d must be >= 1")
   
-  # calculate probability of observing zero bycatch in n sets
-  pz <- probzero(bpue, d)
+  # calculate probability of observing zero bycatch in n units of effort
+  ## one unit
+  pz <- if(d==1) { stats::ppois(0, bpue)
+  } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d) }
+  ## n units
   pnz <- pz^n 
   
   return(invisible(pnz))
@@ -418,7 +382,7 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
 # level when zero in observed
 solveucl <- function(bpue, n, a, d) {
   pz.ucl <- a^(1/n)
-  pz <- probzero(bpue, d)
+  pz <- probnzeros(1, bpue, d)
   return(abs(pz - pz.ucl))
 }
 
@@ -470,7 +434,7 @@ solveucl <- function(bpue, n, a, d) {
 #' @return Returned invisibly. 
 #' 
 #' @export 
-plot_uclnegobs <- function(te, d = 3, cl = 95, target.ucl = 0, showplot = TRUE, 
+plot_uclnegobs <- function(te, d = 2, cl = 95, target.ucl = 0, showplot = TRUE, 
                            silent = FALSE) {
   
   # check input values
@@ -480,20 +444,24 @@ plot_uclnegobs <- function(te, d = 3, cl = 95, target.ucl = 0, showplot = TRUE,
   
   # upper confidence limit of bycatch given none observed
   a <- 1 - cl/100
-  dv <- c(max(1, d-2), d, d+2) # vary d
-  if (te<1000) { oc <- 1:te 
+  dv <- c(max(1, d-1), d, d+1) # vary d
+  if (te<1000) { oc <- 1:te
   } else { oc <- round(seq(0.001,1,0.001)*te) }
   df <- data.frame(nobs = oc, pobs = oc/te)
   df$ucl <- df$ucl.dl <- df$ucl.dh <- NA
-  fpc <- sqrt((te - df$nobs)/(te-1))
-  for (i in 1:nrow(df)) {
-    df$ucl.dl[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[1], 
-                                      method="L-BFGS-B", lower=0.000001)$par
-    df$ucl[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[2], 
-                                   method="L-BFGS-B", lower=0.000001)$par
-    df$ucl.dh[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[3], 
-                                      method="L-BFGS-B", lower=0.000001)$par
-  }
+  df$fpc <- sqrt((te - df$nobs)/(te-1))
+  df$ucl.dl <- df$fpc * te * -1 * log(a)/df$nobs   # Poisson solution
+  #for (i in 1:nrow(df)) {
+    #df$ucl.dl[i] <- 
+      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[1], 
+                    #                  method="L-BFGS-B", lower=0.000001)$par
+    #df$ucl[i] <- 
+      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[2], 
+       #                            method="L-BFGS-B", lower=0.000001)$par
+    #df$ucl.dh[i] <- 
+      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[3], 
+       #                               method="L-BFGS-B", lower=0.000001)$par
+  #}
   
   # identify target observer coverage if target ucl specified
   if (target.ucl) {
@@ -505,7 +473,8 @@ plot_uclnegobs <- function(te, d = 3, cl = 95, target.ucl = 0, showplot = TRUE,
   # plot
   if (showplot) {
     graphics::plot(100*df$pobs, log10(df$ucl), type="l", lty=1, lwd=2,
-                   xlim=c(0,100), ylim=log10(c(tail(df$ucl.dl,2)[1],max(df$ucl.dh))), xaxs="i", yaxs="i", xaxp=c(0,100,10), 
+                   xlim=c(0,100), #ylim=log10(c(tail(df$ucl.dl,2)[1],max(df$ucl.dh))), 
+                   xaxs="i", yaxs="i", xaxp=c(0,100,10), 
                    xlab="Observer Coverage (%)", ylab="Log10(Upper Confidence Limit of Bycatch)",
                    main=paste0("Upper One-Tailed ", cl, "% Confidence Limit of Bycatch Given None Observed"))
     graphics::lines(100*df$pobs, log10(df$ucl.dl), lty=2, lwd=2)
@@ -547,4 +516,6 @@ plot_uclnegobs <- function(te, d = 3, cl = 95, target.ucl = 0, showplot = TRUE,
 # jumps in lines? should be fixed if get discrete ucl
 # fractional bycatch? should we draw te-n given bpue and d, and take 95th percentile of that?
 # want upper cL for total effort given all zeros in oe. Should it be discrete?
+# think of performance over years? e.g. 0.2 each year for 5 years could align with PBR
+
 # redo using geometric distribution for p(event) and then getting bpue given d?
