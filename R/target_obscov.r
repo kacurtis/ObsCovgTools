@@ -85,11 +85,13 @@ my_ceiling <- function(x, s){
 #'   
 #' @export 
 sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
+  
   # check input values
   if ((ceiling(te) != floor(te)) || te<2) stop("te must be a positive integer > 1")
   if (bpue<=0) stop("bpue must be > 0")
   if (d<1) stop("d must be >= 1")
   if ((ceiling(nsim) != floor(nsim)) || nsim<=0) stop("nsim must be a positive integer")
+  
   # simulate observer coverage and bycatch estimation
   if (te<20) { oc <- 1:te/te 
   } else { oc <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05)) }
@@ -148,13 +150,16 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
 #' @export 
 plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, 
                            showplot = TRUE, silent = FALSE) {
+  
   # check input values
   if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
+  
   # get minimum required observer coverage
   if (targetcv)
     targetoc <- ifelse(simlist$te <= 20,
                        with(simlist$simsum, pobs[min(which(cvsim<=targetcv))]),
                        stats::approx(simlist$simsum$cvsim, simlist$simsum$pobs, targetcv)$y)
+  
   # plot 
   if (showplot) {
     with(simlist$simsum, graphics::plot(100*pobs, cvsim, xlim=c(0,100), ylim=c(0,1), 
@@ -176,7 +181,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
                        pt.cex=1.5, y.intersp=1.1, legend=c("target CV", "min coverage"))
     }
   }
-  # return recommended minimum observer coverage
+  
+  # print recommended minimum observer coverage
   if (!silent) {
     if (targetcv)  {
       if (!is.na(targetoc)) {
@@ -191,6 +197,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
     cat(paste0("Note that results are interpolated from simulation-based projections and may vary slightly \n",
               "with repetition.\n"))
   }
+  
+  # return recommended minimum observer coverage
   if (targetcv) 
     return(invisible(list(pobs = my_ceiling(targetoc*100,2), nobs=my_ceiling(targetoc*simlist$te,2))))
 }
@@ -224,12 +232,15 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' 
 #' @export
 probzero <- function(bpue, d) {
+  
   # check input values
   if (bpue<=0) stop("bpue must be > 0")
   if (d<1) stop("d must be >= 1")
+  
   # calculate probability of observing zero bycatch in n sets
   pz <- if(d==1) { stats::ppois(0, bpue)
   } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d) }
+  
   return(invisible(pz))
 }
 
@@ -265,11 +276,14 @@ probzero <- function(bpue, d) {
 #' 
 #' @export
 probnzeros <- function(n, bpue, d) {
+  
   # check input values
   if (any((ceiling(n) != floor(n)) | n<1)) stop("n must be a vector of positive integers")
+  
   # calculate probability of observing zero bycatch in n sets
   pz <- probzero(bpue, d)
   pnz <- pz^n 
+  
   return(invisible(pnz))
 }
 
@@ -328,11 +342,13 @@ probnzeros <- function(n, bpue, d) {
 #' @export 
 plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE, 
                             silent = FALSE) {
+  
   # check input values
   if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
   if (bpue<=0) stop("bpue must be > 0")
   if (d<1) stop("d must be >= 1")
   if (target.ppos<0 || target.ppos>100) stop("target.ppos must be >= 0 and <= 100")
+  
   # percent probablity of positive observed bycatch
   if (te<1000) { oc <- 1:te 
   } else { oc <- round(seq(0.001,1,0.001)*te) }
@@ -345,6 +361,7 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
     targetoc <- df$pobs[itarget]
     targetnos <- df$nobs[itarget]
   }
+  
   # plot
   if (showplot) {
     opar <- graphics::par(no.readonly = TRUE)
@@ -371,7 +388,8 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
     }
     graphics::par(opar)
   }
-  # return recommended minimum observer coverage
+  
+  # print recommended minimum observer coverage
   if (target.ppos) {
     if (!silent) {
       cat(paste0("The probability that any bycatch occurs in the given total effort is ", 
@@ -388,7 +406,145 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
                  "Please review the caveats in the associated documentation.\n"))
     }
   }
+  
+  # return recommended minimum observer coverage
   return(invisible(list(pobs = ifelse(target.ppos, my_ceiling(targetoc*100,3), NA), 
                         nobs = ifelse(target.ppos, my_ceiling(targetoc*te,3), NA),
                         ppos.te = signif(100*ppt,3))))
 }
+
+
+# Hidden function to solve for upper confidence limit of bpue at given confidence 
+# level when zero in observed
+solveucl <- function(bpue, n, a, d) {
+  pz.ucl <- a^(1/n)
+  pz <- probzero(bpue, d)
+  return(abs(pz - pz.ucl))
+}
+
+
+#' Plot upper confidence limit of total bycatch for none observed
+#' 
+#' \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
+#'   observer coverage when no bycatch is observed, given total effort in 
+#'   sets/hauls, negative binomial dispersion index, and confidence level.
+#'   
+#' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
+#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#'   index. The dispersion index corresponds to the variance-to-mean 
+#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
+#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#' @param cl a non-negative number less than or equal to 100. Confidence level
+#'   for upper confidence limit of bycatch (as percentage), given no bycatch 
+#'   observed. 
+#' @param target.ucl a non-negative number. Maximum allowable upper confidence 
+#'   limit for bycatch given zero bycatch observed. If 0, no corresponding 
+#'   minimum observer coverage will be highlighted.
+#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
+#' @param showplot logical. If plot = FALSE, plotting is suppressed.
+#' 
+#' @details
+#' Upper confidence limits are based on the probability density function for the 
+#' corresponding Poisson or negative binomial distribution.
+#' 
+#' Note that unlike \code{plot_cv_obscov}, \code{plot_uclnegobs} is designed 
+#' as a one-step tool. 
+#'   
+#' \strong{Caveat:} \code{plot_uclnegobs} assumes representative observer coverage 
+#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
+#' Violating these assumptions will likely result in negatively biased projections 
+#' of the upper confidence limit of total bycatch given zero observed. More 
+#' conservative projections can be obtained by using higher-level units of effort 
+#' (e.g., \code{te} as number of trips instead of number of sets/hauls).
+#' 
+#' @return A list with components:
+#'   \item{ucldat}{a tibble with the following fields: 
+#'   proportion observer coverage (\code{pobs}), number of observed trips/sets
+#'   (\code{nobs}), and upper confidence limit of total bycatch given none 
+#'   observed (\code{ucl}).}
+#'   \item{d}{the negative binomial dispersion index used.}
+#'   \item{cl}{specified confidence level.} 
+#'   \item{target.ucl}{maximum upper confidence limit of bycatch specified.}
+#'   \item{target.oc}{minimum observer coverage for which upper confidence 
+#'   limit of bycatch is (\code{target.ucl}) when none observed.}
+#' @return Returned invisibly. 
+#' 
+#' @export 
+plot_uclnegobs <- function(te, d = 3, cl = 95, target.ucl = 0, showplot = TRUE, 
+                           silent = FALSE) {
+  
+  # check input values
+  if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
+  if (d<1) stop("d must be >= 1")
+  if (target.ucl<0) stop("target.ucl must be >= 0")
+  
+  # upper confidence limit of bycatch given none observed
+  a <- 1 - cl/100
+  dv <- c(max(1, d-2), d, d+2) # vary d
+  if (te<1000) { oc <- 1:te 
+  } else { oc <- round(seq(0.001,1,0.001)*te) }
+  df <- data.frame(nobs = oc, pobs = oc/te)
+  df$ucl <- df$ucl.dl <- df$ucl.dh <- NA
+  fpc <- sqrt((te - df$nobs)/(te-1))
+  for (i in 1:nrow(df)) {
+    df$ucl.dl[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[1], 
+                                      method="L-BFGS-B", lower=0.000001)$par
+    df$ucl[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[2], 
+                                   method="L-BFGS-B", lower=0.000001)$par
+    df$ucl.dh[i] <- fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[3], 
+                                      method="L-BFGS-B", lower=0.000001)$par
+  }
+  
+  # identify target observer coverage if target ucl specified
+  if (target.ucl) {
+    itarget <- min(which(df$ucl <= target.ucl))
+    targetoc <- df$pobs[itarget]
+    targetnos <- df$nobs[itarget]
+  }
+  
+  # plot
+  if (showplot) {
+    graphics::plot(100*df$pobs, log10(df$ucl), type="l", lty=1, lwd=2,
+                   xlim=c(0,100), ylim=log10(c(tail(df$ucl.dl,2)[1],max(df$ucl.dh))), xaxs="i", yaxs="i", xaxp=c(0,100,10), 
+                   xlab="Observer Coverage (%)", ylab="Log10(Upper Confidence Limit of Bycatch)",
+                   main=paste0("Upper One-Tailed ", cl, "% Confidence Limit of Bycatch Given None Observed"))
+    graphics::lines(100*df$pobs, log10(df$ucl.dl), lty=2, lwd=2)
+    graphics::lines(100*df$pobs, log10(df$ucl.dh), lty=3, lwd=2)
+    if (target.ucl) {
+      graphics::lines(c(0,100),log10(rep(target.ucl,2)), col=2, lwd=2, lty=4)
+      graphics::points(targetoc*100, log10(df$ucl[itarget]), pch=8, col=2, cex=1.5, lwd=2)
+      graphics::legend("topright", lty=c(2,1,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
+                       legend=c(paste0("d=",dv[1]), paste0("d=",dv[2]), paste0("d=",dv[3]),
+                                "target UCL given none obs.", "min coverage"))
+    } else {
+      graphics::legend("topright", lty=c(2,1,3), lwd=2, col=1, 
+                       legend=c(paste0("d=",dv[1]), paste0("d=",dv[2]), paste0("d=",dv[3])))
+    }
+  }
+  
+  # print recommended minimum observer coverage
+  if (target.ucl) {
+    if (!silent) {
+      cat(paste0("Minimum observer coverage to ensure that the upper confidence",
+                 " limit of ", target.ucl, " is not exceeded when no bycatch is ",
+                 "observed is ", my_ceiling(targetoc*100,3), "% (", targetnos, 
+                 " sets).\n",
+                 "Please review the caveats in the associated documentation.\n"))
+    }
+  } else {
+    if (!silent) {
+      cat(paste0("Please review the caveats in the associated documentation.\n"))
+    }
+  }
+  
+  # return recommended minimum observer coverage
+  return(invisible(list(df=df, target.ucl=ifelse(target.ucl, target.ucl, NA), 
+                        targetoc=ifelse(target.ucl, targetoc, NA), 
+                        targetnos=ifelse(target.ucl, targetnos, NA),
+                        te=te, d=d, cl=cl)))
+}
+
+# jumps in lines? should be fixed if get discrete ucl
+# fractional bycatch? should we draw te-n given bpue and d, and take 95th percentile of that?
+# want upper cL for total effort given all zeros in oe. Should it be discrete?
+# redo using geometric distribution for p(event) and then getting bpue given d?

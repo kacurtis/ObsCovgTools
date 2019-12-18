@@ -2,6 +2,7 @@
 
 export(plot_cv_obscov)
 export(plot_probposobs)
+export(plot_uclnegobs)
 export(probnzeros)
 export(probzero)
 export(run_shiny)

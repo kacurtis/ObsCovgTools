@@ -48,7 +48,7 @@ square estimation error divided by "true" bycatch (\code{bpue}).
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
-also increase execution time.
+also increase execution time. 
 
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
