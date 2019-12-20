@@ -11,7 +11,7 @@ sim_cv_obscov(te, bpue, d = 2, nsim = 1000, ...)
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+\item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
 ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
@@ -32,11 +32,11 @@ A list with components:
   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
   \item{bpue}{the bycatch per unit effort used.}
-  \item{d}{the negative binomial dispersion index used.}
+  \item{d}{the dispersion index used.}
 }
 \description{
 \code{sim_cv_obscov} simulates bycatch estimation CVs for a range 
-of observer coverage levels, given bycatch rate, negative binomial dispersion 
+of observer coverage levels, given bycatch rate, dispersion 
 index, and total fishery effort.
 }
 \details{
@@ -48,7 +48,7 @@ square estimation error divided by "true" bycatch (\code{bpue}).
 
 Warning: Large total effort (>100K sets/hauls) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
-also increase execution time. 
+also increase execution time.
 
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 

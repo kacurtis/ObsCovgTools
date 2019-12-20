@@ -40,7 +40,7 @@ my_ceiling <- function(x, s){
 #' Simulate CV response to observer coverage
 #'
 #' \code{sim_cv_obscov} simulates bycatch estimation CVs for a range 
-#' of observer coverage levels, given bycatch rate, negative binomial dispersion 
+#' of observer coverage levels, given bycatch rate, dispersion 
 #' index, and total fishery effort. 
 #' 
 #' \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
@@ -63,7 +63,7 @@ my_ceiling <- function(x, s){
 #' 
 #' @param te an integer greater than one. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
-#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
@@ -81,7 +81,7 @@ my_ceiling <- function(x, s){
 #'   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
 #'   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
 #'   \item{bpue}{the bycatch per unit effort used.}
-#'   \item{d}{the negative binomial dispersion index used.}
+#'   \item{d}{the dispersion index used.}
 #'   
 #' @export 
 sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
@@ -207,13 +207,12 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' Get probability of zero bycatch given effort
 #' 
 #' \code{probnzeros} returns probability of zero bycatch in a specified number 
-#' of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
-#' index. 
+#' of sets/hauls, given bycatch per unit effort and dispersion index. 
 #' 
 #' @param n a vector of positive integers. Observed effort levels (in terms of 
 #'   sets/hauls) for which to calculate probability of zero bycatch.
 #' @param bpue a positive number. Bycatch per unit effort.
-#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
@@ -257,11 +256,11 @@ probnzeros <- function(n, bpue, d) {
 #' \code{plot_probposobs} plots (1) probability of observing at least one bycatch
 #'   event vs observer coverage and (2) probability of any bycatch occurring in 
 #'   total effort, given total effort in sets/hauls, bycatch per unit effort, and 
-#'   negative binomial dispersion index. 
+#'   dispersion index. 
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
 #' @param bpue a positive number. Bycatch per unit effort.
-#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
@@ -378,12 +377,15 @@ plot_probposobs <- function(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
 }
 
 
-# Hidden function to solve for upper confidence limit of bpue at given confidence 
-# level when zero in observed
-solveucl <- function(bpue, n, a, d) {
-  pz.ucl <- a^(1/n)
-  pz <- probnzeros(1, bpue, d)
-  return(abs(pz - pz.ucl))
+# Hidden function to solve for upper one-tailed confidence limit (1-a) of bpue 
+# when zero in observed effort n, given overdispersion d
+solveucl <- function(a, d, n) {
+  if (d==1) {
+    bpue <- -1 * log(a)/n
+  } else {
+    bpue <- (log(a)*(d-1))/(n*log(1/(d-1)/(1/(d-1)+1)))
+  }
+  return(bpue)
 }
 
 
@@ -391,10 +393,10 @@ solveucl <- function(bpue, n, a, d) {
 #' 
 #' \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
 #'   observer coverage when no bycatch is observed, given total effort in 
-#'   sets/hauls, negative binomial dispersion index, and confidence level.
+#'   sets/hauls, dispersion index, and confidence level.
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
-#' @param d a number greater than or equal to 1. Negative binomial dispersion 
+#' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 #'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
@@ -404,12 +406,14 @@ solveucl <- function(bpue, n, a, d) {
 #' @param target.ucl a non-negative number. Maximum allowable upper confidence 
 #'   limit for bycatch given zero bycatch observed. If 0, no corresponding 
 #'   minimum observer coverage will be highlighted.
+#' @param ymax a positive number. Maximum bycatch level to display in plot.
 #' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
 #' @param showplot logical. If plot = FALSE, plotting is suppressed.
 #' 
 #' @details
-#' Upper confidence limits are based on the probability density function for the 
-#' corresponding Poisson or negative binomial distribution.
+#' Upper confidence limits are based on the probability density function for 
+#' the corresponding Poisson or negative binomial distribution. Upper confidence 
+#' limits for dispersion +/-1 are also plotted.
 #' 
 #' Note that unlike \code{plot_cv_obscov}, \code{plot_uclnegobs} is designed 
 #' as a one-step tool. 
@@ -422,46 +426,44 @@ solveucl <- function(bpue, n, a, d) {
 #' (e.g., \code{te} as number of trips instead of number of sets/hauls).
 #' 
 #' @return A list with components:
-#'   \item{ucldat}{a tibble with the following fields: 
-#'   proportion observer coverage (\code{pobs}), number of observed trips/sets
-#'   (\code{nobs}), and upper confidence limit of total bycatch given none 
-#'   observed (\code{ucl}).}
-#'   \item{d}{the negative binomial dispersion index used.}
-#'   \item{cl}{specified confidence level.} 
+#'   \item{ucldat}{a tibble with the following fields for each coverage level included: 
+#'   number of observed trips/sets (\code{nobs}), 
+#'   proportion observer coverage (\code{pobs}), 
+#'   upper confidence limit of total bycatch given none observed (\code{ucl}),
+#'   and finite population correction (\code{fpc}) used in calculating \code{ucl}.}
 #'   \item{target.ucl}{maximum upper confidence limit of bycatch specified.}
-#'   \item{target.oc}{minimum observer coverage for which upper confidence 
-#'   limit of bycatch is (\code{target.ucl}) when none observed.}
+#'   \item{targetoc}{minimum observer coverage (as proportion) for which upper 
+#'   confidence limit of bycatch is \code{target.ucl} when none observed.}
+#'   \item{targetnos}{minimum observer coverage (as effort) for which upper 
+#'   confidence limit of bycatch is \code{target.ucl} when none observed.}
+#'   \item{te}{specified total effort.}
+#'   \item{d}{specified dispersion index.}
+#'   \item{cl}{specified confidence level.} 
+#'   
 #' @return Returned invisibly. 
 #' 
 #' @export 
-plot_uclnegobs <- function(te, d = 2, cl = 95, target.ucl = 0, showplot = TRUE, 
-                           silent = FALSE) {
+plot_uclnegobs <- function(te, d = 2, cl = 95, target.ucl = 0, ymax = 100, 
+                           showplot = TRUE, silent = FALSE) {
   
   # check input values
   if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
   if (d<1) stop("d must be >= 1")
-  if (target.ucl<0) stop("target.ucl must be >= 0")
+  if (target.ucl<0) stop("target.ucl must be >= 0.")
+  if (ymax<=0) stop("ymax must be > 0")
   
   # upper confidence limit of bycatch given none observed
   a <- 1 - cl/100
-  dv <- c(max(1, d-1), d, d+1) # vary d
+  dv <- c(d-1, d, d+1) # vary d
   if (te<1000) { oc <- 1:te
   } else { oc <- round(seq(0.001,1,0.001)*te) }
   df <- data.frame(nobs = oc, pobs = oc/te)
   df$ucl <- df$ucl.dl <- df$ucl.dh <- NA
   df$fpc <- sqrt((te - df$nobs)/(te-1))
-  df$ucl.dl <- df$fpc * te * -1 * log(a)/df$nobs   # Poisson solution
-  #for (i in 1:nrow(df)) {
-    #df$ucl.dl[i] <- 
-      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[1], 
-                    #                  method="L-BFGS-B", lower=0.000001)$par
-    #df$ucl[i] <- 
-      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[2], 
-       #                            method="L-BFGS-B", lower=0.000001)$par
-    #df$ucl.dh[i] <- 
-      #fpc[i] * te * stats::optim(0.1, fn=solveucl, n=df$nobs[i], a=a, d=dv[3], 
-       #                               method="L-BFGS-B", lower=0.000001)$par
-  #}
+  
+  ucl.dl <- df$fpc * te * solveucl(a=a, d=dv[1], n=df$nobs)
+  df$ucl <- df$fpc * te * solveucl(a=a, d=dv[2], n=df$nobs)
+  ucl.dh <- df$fpc * te * solveucl(a=a, d=dv[3], n=df$nobs)
   
   # identify target observer coverage if target ucl specified
   if (target.ucl) {
@@ -473,12 +475,15 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, target.ucl = 0, showplot = TRUE,
   # plot
   if (showplot) {
     graphics::plot(100*df$pobs, log10(df$ucl), type="l", lty=1, lwd=2,
-                   xlim=c(0,100), #ylim=log10(c(tail(df$ucl.dl,2)[1],max(df$ucl.dh))), 
-                   xaxs="i", yaxs="i", xaxp=c(0,100,10), 
-                   xlab="Observer Coverage (%)", ylab="Log10(Upper Confidence Limit of Bycatch)",
+                   xlim=c(0,100), ylim=log10(c(utils::tail(ucl.dl,2)[1],min(max(ucl.dh),ymax))), 
+                   xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxt="n",
+                   xlab="Observer Coverage (%)", ylab="Upper Confidence Limit of Bycatch",
                    main=paste0("Upper One-Tailed ", cl, "% Confidence Limit of Bycatch Given None Observed"))
-    graphics::lines(100*df$pobs, log10(df$ucl.dl), lty=2, lwd=2)
-    graphics::lines(100*df$pobs, log10(df$ucl.dh), lty=3, lwd=2)
+    graphics::lines(100*df$pobs, log10(ucl.dl), lty=2, lwd=2)
+    graphics::lines(100*df$pobs, log10(df$ucl), lty=2, lwd=2)
+    graphics::lines(100*df$pobs, log10(ucl.dh), lty=3, lwd=2)
+    graphics::axis(side=2, at=log10(c(0.1, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 500, 1000, 5000, 10000)), 
+         labels=c(0.1, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 500, 1000, 5000, 10000))
     if (target.ucl) {
       graphics::lines(c(0,100),log10(rep(target.ucl,2)), col=2, lwd=2, lty=4)
       graphics::points(targetoc*100, log10(df$ucl[itarget]), pch=8, col=2, cex=1.5, lwd=2)
@@ -507,15 +512,8 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, target.ucl = 0, showplot = TRUE,
   }
   
   # return recommended minimum observer coverage
-  return(invisible(list(df=df, target.ucl=ifelse(target.ucl, target.ucl, NA), 
+  return(invisible(list(ucldat=df, target.ucl=ifelse(target.ucl, target.ucl, NA), 
                         targetoc=ifelse(target.ucl, targetoc, NA), 
                         targetnos=ifelse(target.ucl, targetnos, NA),
                         te=te, d=d, cl=cl)))
 }
-
-# jumps in lines? should be fixed if get discrete ucl
-# fractional bycatch? should we draw te-n given bpue and d, and take 95th percentile of that?
-# want upper cL for total effort given all zeros in oe. Should it be discrete?
-# think of performance over years? e.g. 0.2 each year for 5 years could align with PBR
-
-# redo using geometric distribution for p(event) and then getting bpue given d?

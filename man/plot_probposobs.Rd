@@ -4,21 +4,15 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(
-  te,
-  bpue,
-  d = 2,
-  target.ppos = 80,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
+  silent = FALSE)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+\item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
 ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
@@ -44,7 +38,7 @@ Returned invisibly.
 \code{plot_probposobs} plots (1) probability of observing at least one bycatch
   event vs observer coverage and (2) probability of any bycatch occurring in 
   total effort, given total effort in sets/hauls, bycatch per unit effort, and 
-  negative binomial dispersion index.
+  dispersion index.
 }
 \details{
 Probabilities are based on the probability density function for the 

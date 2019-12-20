@@ -12,7 +12,7 @@ sets/hauls) for which to calculate probability of zero bycatch.}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{a number greater than or equal to 1. Negative binomial dispersion 
+\item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
 ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
@@ -24,8 +24,7 @@ Returned invisibly
 }
 \description{
 \code{probnzeros} returns probability of zero bycatch in a specified number 
-of sets/hauls, given bycatch per unit effort and negative binomial dispersion 
-index.
+of sets/hauls, given bycatch per unit effort and dispersion index.
 }
 \details{
 Calculated from the probability density at zero of the corresponding Poisson
