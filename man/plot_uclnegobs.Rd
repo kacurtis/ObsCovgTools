@@ -4,8 +4,8 @@
 \alias{plot_uclnegobs}
 \title{Plot upper confidence limit of total bycatch for none observed}
 \usage{
-plot_uclnegobs(te, d = 2, cl = 95, target.ucl = 0, ymax = 100,
-  showplot = TRUE, silent = FALSE)
+plot_uclnegobs(te, d = 2, cl = 95, target.ucl = 0, fixed.oc = NA,
+  ymax = 100, showplot = TRUE, silent = FALSE)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
@@ -23,6 +23,9 @@ observed.}
 limit for bycatch given zero bycatch observed. If 0, no corresponding 
 minimum observer coverage will be highlighted.}
 
+\item{fixed.oc}{a positive number between 1 and 100. Fixed observer coverage 
+(as percentage) for which ucl value is desired.}
+
 \item{ymax}{a positive number. Maximum bycatch level to display in plot.}
 
 \item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
@@ -39,7 +42,7 @@ A list with components:
   \item{target.ucl}{maximum upper confidence limit of bycatch specified.}
   \item{targetoc}{minimum observer coverage (as proportion) for which upper 
   confidence limit of bycatch is \code{target.ucl} when none observed.}
-  \item{targetnos}{minimum observer coverage (as effort) for which upper 
+  \item{targetnoc}{minimum observer coverage (as effort) for which upper 
   confidence limit of bycatch is \code{target.ucl} when none observed.}
   \item{te}{specified total effort.}
   \item{d}{specified dispersion index.}
@@ -55,7 +58,8 @@ Returned invisibly.
 \details{
 Upper confidence limits are based on the probability density function for 
 the corresponding Poisson or negative binomial distribution. Upper confidence 
-limits for dispersion +/-1 are also plotted.
+limits for dispersion +/-1 are also plotted. If \code{fixed.oc} specified, 
+corresponding upper confidence limit is provided in printed output only.
 
 Note that unlike \code{plot_cv_obscov}, \code{plot_uclnegobs} is designed 
 as a one-step tool. 
