@@ -1,6 +1,8 @@
 #.libPaths(c("/usr/lib64/R/shiny_library",.libPaths()))
 library(ObsCovgTools)
 
+no.msg <- paste("")
+
 total.effort.msg <- paste("Total effort should be a positive integer",
                           "greater than 1.")
 total.effort.title <- "Total effort value"
@@ -11,6 +13,12 @@ bpue.title <- "Bycatch per Unit Effort (BPUE) value"
 dispersion.msg <- "Dispersion index should be a number greater than or equal to one."
 dispersion.title <- "Dispersion index value"
 
+target.ucl.msg <- "Target maximum upper confidence limit should be a number greater than or equal to zero."
+
+fixedoc.ucl.msg <- "Percent observer coverage for which to return UCL should be a number greater than or equal to zero and less than or equal to 100."
+
+ymax.ucl.msg <- "Upper limit for y-axis should be a number greater than zero."
+
 processing.title <- HTML(paste0("<center>Computing - ",
                                 "please wait...</center>"))
 processing.msg <- HTML(paste0("<center>Reload your browser to cancel processing.", 
@@ -19,25 +27,85 @@ processing.msg <- HTML(paste0("<center>Reload your browser to cancel processing.
 
 progress.caption <- "Simulation progress"
 
-check.te.ppos <- function(input) {
+check.te.inst <- function(input) {
   if (is.na(as.numeric(input)) || 
       ((as.numeric(input)) <= 1) ||
       (input != as.integer(input)) )
     total.effort.msg
   else NULL
 }
+check.te.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) || 
+      ((as.numeric(input)) <= 1) ||
+      (input != as.integer(input)) )
+    no.msg
+  else NULL
+}
 
-check.bpue.ppos <- function(input) {
+check.bpue.inst <- function(input) {
   if (is.na(as.numeric(input)) || 
       (as.numeric(input) <= 0) )
     bpue.msg
   else NULL
 }
+check.bpue.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) || 
+      (as.numeric(input) <= 0) )
+    no.msg
+  else NULL
+}
 
-check.d.ppos <- function(input) {
+check.d.inst <- function(input) {
   if (is.na(as.numeric(input)) ||
       (as.numeric(input) < 1) )
     dispersion.msg
+  else NULL
+}
+check.d.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) < 1) )
+    no.msg
+  else NULL
+}
+
+check.target.ucl.inst <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) < 0) )
+    target.ucl.msg
+  else NULL
+}
+check.target.ucl.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) < 0) )
+    no.msg
+  else NULL
+}
+
+check.fixedoc.ucl.inst <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) < 0) ||
+      (as.numeric(input) > 100) )
+    fixedoc.ucl.msg
+  else NULL
+}
+check.fixedoc.ucl.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) < 0) ||
+      (as.numeric(input) > 100) )
+    no.msg
+  else NULL
+}
+
+check.ymax.ucl.inst <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) <= 0) )
+    ymax.ucl.msg
+  else NULL
+}
+check.ymax.ucl.inst.lab <- function(input) {
+  if (is.na(as.numeric(input)) ||
+      (as.numeric(input) <= 0) )
+    no.msg
   else NULL
 }
 
@@ -52,27 +120,27 @@ server <- function(input, output, session) {
     
     ## validation of user inputs
     
-    validate(check.te.ppos(input$te.ppos), 
-             check.bpue.ppos(input$bpue.ppos), 
-             check.d.ppos(input$d.ppos))
+    validate(check.te.inst(input$te.ppos), 
+             check.bpue.inst(input$bpue.ppos), 
+             check.d.inst(input$d.ppos))
     
     plotlabels.ppos$ppos <- capture.output(
-        plot_probposobs(te=as.numeric(input$te.ppos), 
-                        bpue=as.numeric(input$bpue.ppos), 
-                        d=as.numeric(input$d.ppos),
-                        as.numeric(input$target.ppos)))
+        plot_probposobs(te = as.numeric(input$te.ppos), 
+                        bpue = as.numeric(input$bpue.ppos), 
+                        d = as.numeric(input$d.ppos),
+                        targetppos = as.numeric(input$target.ppos)))
     
   })
   
   output$ppos_obscov_plot_label <- renderText({
-    validate(check.te.ppos(input$te.ppos), 
-             check.bpue.ppos(input$bpue.ppos), 
-             check.d.ppos(input$d.ppos))
+    validate(check.te.inst.lab(input$te.ppos), 
+             check.bpue.inst.lab(input$bpue.ppos), 
+             check.d.inst.lab(input$d.ppos))
     
     oc.ppos.out <- plot_probposobs(te = as.numeric(input$te.ppos), 
                     bpue = as.numeric(input$bpue.ppos), 
                     d = as.numeric(input$d.ppos),
-                    target.ppos = as.numeric(input$target.ppos),
+                    targetppos = as.numeric(input$target.ppos),
                     silent = TRUE)
     
     if (as.logical(input$target.ppos)) {
@@ -90,9 +158,62 @@ server <- function(input, output, session) {
                 "(solid black line) is obtained by dividing the absolute probability",
                 " of observing any bycatch (black dashed line) by the probability ",
                 "that any bycatch occurs in the given total effort. Please review",
-                " the caveat in the About tab."))
+                " the caveats in the About tab."))
   })
     
+  plotlabels.ucl <- reactiveValues(ucl='')
+  
+  ## validation functions for user inputs to ppos tab
+  
+  output$ucl_obscov_plot <- renderPlot({
+    
+    ## validation of user inputs
+    
+    validate(check.te.inst(input$te.ucl), 
+             check.d.inst(input$d.ucl),
+             check.target.ucl.inst(input$target.ucl),
+             check.fixedoc.ucl.inst(input$fixedoc.ucl),
+             check.ymax.ucl.inst(input$ymax.ucl))
+    
+    plotlabels.ucl$ucl <- capture.output(
+      plot_uclnegobs(te = as.numeric(input$te.ucl), 
+                     d = as.numeric(input$d.ucl),
+                     cl = as.numeric(input$cl.ucl),
+                     targetucl = as.numeric(input$target.ucl),
+                     fixedoc = as.numeric(input$fixedoc.ucl),
+                     ymax = as.numeric(input$ymax.ucl)))
+    
+  })
+  
+  output$ucl_obscov_plot_label <- renderText({
+    validate(check.te.inst.lab(input$te.ucl), 
+             check.d.inst.lab(input$d.ucl),
+             check.target.ucl.inst.lab(input$target.ucl),
+             check.fixedoc.ucl.inst.lab(input$fixedoc.ucl),
+             check.ymax.ucl.inst.lab(input$ymax.ucl))
+    
+    oc.ucl.out <- plot_uclnegobs(te = as.numeric(input$te.ucl), 
+                                 d = as.numeric(input$d.ucl),
+                                 cl = as.numeric(input$cl.ucl),
+                                 targetucl = as.numeric(input$target.ucl),
+                                 fixedoc = as.numeric(input$fixedoc.ucl),
+                                 ymax = as.numeric(input$ymax.ucl),
+                                 silent = TRUE)
+    
+    if (as.logical(as.numeric(input$target.ucl))) {
+      rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
+                    " limit of ", input$target.ucl, " is not exceeded when no bycatch is ",
+                    " observed is ", oc.ucl.out$targetoc, "% (", 
+                    oc.ucl.out$targetnoc, " sets).\n")
+    } else { rec1 <- "" }
+    if (as.logical(as.numeric(input$fixedoc.ucl))) {
+      rec2 <- paste0("Upper confidence limit for bycatch given none observed in ",
+                     oc.ucl.out$fixedoc, "% (", oc.ucl.out$fixednoc, " sets) coverage is ",
+                     oc.ucl.out$fixedoc.ucl,".\n")
+    } else { rec2 <- "" }
+    HTML(paste0(rec1, rec2, "Please review the caveats in the About tab."))
+  })
+  
   plotlabels.cv <- reactiveValues(cv = '')
   
   simlist <- reactive({

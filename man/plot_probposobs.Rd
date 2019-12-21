@@ -4,7 +4,7 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d = 2, target.ppos = 80, showplot = TRUE,
+plot_probposobs(te, bpue, d = 2, targetppos = 80, showplot = TRUE,
   silent = FALSE)
 }
 \arguments{
@@ -17,7 +17,7 @@ index. The dispersion index corresponds to the variance-to-mean
 ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
 bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
-\item{target.ppos}{a non-negative number less than or equal to 100. Target 
+\item{targetppos}{a non-negative number less than or equal to 100. Target 
 probability of positive observed bycatch (as percentage), given positive 
 bycatch in total effort. If 0, no corresponding minimum observer coverage 
 will be highlighted.}
