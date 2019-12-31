@@ -189,7 +189,7 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
       if (!is.na(targetoc)) {
         cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " is ", 
               my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), 
-              "trips or sets).\n"))
+              " trips or sets).\n"))
       } else {
         cat(paste0("Simulated observer coverage levels do not include range corresponding to ",
                    "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n"))
@@ -484,7 +484,7 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
                    xlim=c(0,100), ylim=log10(c(utils::tail(ucl.dl,2)[1],min(max(ucl.dh),ymax))), 
                    xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxt="n",
                    xlab="Observer Coverage (%)", ylab="Upper Confidence Limit of Bycatch",
-                   main=paste0("Upper One-Tailed ", cl, "% Confidence Limit of Bycatch Given None Observed"))
+                   main=paste0("One-Tailed ", cl, "% UCL of Bycatch Given None Observed"))
     graphics::lines(100*df$pobs, log10(ucl.dl), lty=2, lwd=2)
     graphics::lines(100*df$pobs, log10(df$ucl), lty=2, lwd=2)
     graphics::lines(100*df$pobs, log10(ucl.dh), lty=3, lwd=2)
@@ -495,7 +495,7 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
       graphics::points(targetoc*100, log10(df$ucl[itarget]), pch=8, col=2, cex=1.5, lwd=2)
       graphics::legend("topright", lty=c(2,1,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
                        legend=c(paste0("d=",dv[1]), paste0("d=",dv[2]), paste0("d=",dv[3]),
-                                "target UCL given none obs.", "min coverage"))
+                                "target UCL", "min coverage"))
     } else {
       graphics::legend("topright", lty=c(2,1,3), lwd=2, col=1, 
                        legend=c(paste0("d=",dv[1]), paste0("d=",dv[2]), paste0("d=",dv[3])))
