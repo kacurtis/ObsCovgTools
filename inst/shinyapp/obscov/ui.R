@@ -6,14 +6,14 @@ ui <- fluidPage(
     includeCSS("www/style.css")
   ),
   ## appFrameHeaderFixed(),
-  titlePanel(title="Observer coverage simulator - 3.0.0",
+  titlePanel(title="Observer coverage simulator - 3.1.0",
              windowTitle="Observer coverage simulator"),
   tabsetPanel(id="alltabs",
               tabPanel("Objective: Probability of Positive Bycatch", value="ppos", 
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te.ppos",
-                                     label=HTML(paste("Total effort in fishery (e.g., hauls)")),
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)")),
                                      value="500",
                                      placeholder="Integer > 1"),
                            textInput(inputId="bpue.ppos", label="Bycatch per Unit Effort (BPUE)",
@@ -37,7 +37,7 @@ ui <- fluidPage(
                                        "(Given positive bycatch in total effort. Set to ",
                                        "zero to omit.)",
                                        "</div>")),
-                                       min=0, max=100, value=80, step=1)
+                                       min=0, max=100, value=95, step=1)
                            )),
                          column(8,
                                 plotOutput("ppos_obscov_plot", width=700, height = 400),
@@ -49,7 +49,7 @@ ui <- fluidPage(
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te.ucl",
-                                     label=HTML(paste("Total effort in fishery (e.g., hauls)")),
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)")),
                                      value="500",
                                      placeholder="Integer > 1"),
                            textInput(inputId="d.ucl",
@@ -93,7 +93,7 @@ ui <- fluidPage(
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te",
-                                     label=HTML(paste("Total effort in fishery (e.g., hauls)",
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)",
                                                       "<div class='extext'>",
                                                       "(Larger effort takes longer: ~20s for 10K,",
                                                       "~75s for 100K)",

@@ -2,18 +2,18 @@
 % Please edit documentation in R/target_obscov.r
 \name{plot_uclnegobs}
 \alias{plot_uclnegobs}
-\title{Plot upper confidence limit of total bycatch for none observed}
+\title{Plot upper confidence limit of total bycatch given none observed}
 \usage{
 plot_uclnegobs(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   ymax = 100, showplot = TRUE, silent = FALSE)
 }
 \arguments{
-\item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than 1. Total effort in fishery (trips/sets).}
 
 \item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
-ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
 \item{cl}{a non-negative number less than or equal to 100. Confidence level
 for upper confidence limit of total bycatch (as percentage), given no bycatch 
@@ -58,7 +58,7 @@ Returned invisibly.
 \description{
 \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
   observer coverage when no bycatch is observed, given total effort in 
-  sets/hauls, dispersion index, and confidence level.
+  trips/sets, dispersion index, and confidence level.
 }
 \details{
 Upper confidence limits are based on the probability density function for 
@@ -67,13 +67,10 @@ limits based on \code{d}+/-1 (as allowed by specification of d) are also plotted
 If \code{fixedoc} specified, corresponding upper confidence limit is provided 
 in printed output and returned object, but not in plot.
 
-Note that unlike \code{plot_cv_obscov}, \code{plot_uclnegobs} is designed 
-as a one-step tool. 
-  
 \strong{Caveat:} \code{plot_uclnegobs} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 Violating these assumptions will likely result in negatively biased projections 
 of the upper confidence limit of total bycatch given zero observed. More 
 conservative projections can be obtained by using higher-level units of effort 
-(e.g., \code{te} as number of trips instead of number of sets/hauls).
+(e.g., \code{te} as number of trips instead of number of trips/sets).
 }

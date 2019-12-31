@@ -1,8 +1,8 @@
 Package: ObsCovgTools 
 Type: Package
 Title: Evaluate fishery observer coverage for bycatch estimation
-Version: 3.0.0
-Date: 2019-12-20
+Version: 3.1.0
+Date: 2019-12-30
 URL: https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.1.2)
 Imports: 
@@ -16,10 +16,10 @@ Suggests:
 Author: K. Alexandra Curtis
 Maintainer: Alex Curtis <alex.curtis@noaa.gov>
 Description: Tools for evaluating observer coverage with respect to documenting
-  and estimating bycatch, including (1) probabilities of observing a bycatch 
-  event and of one occurring in total effort, (2) upper confidence limit for 
-  bycatch given none was observed, and (3) bycatch estimation CV (coefficient 
-  of variation). 
+  and estimating rare bycatch, including (1) probabilities of observing a 
+  bycatch event and of one occurring in total effort, (2) upper confidence limit 
+  for bycatch given none was observed, and (3) bycatch estimation CV 
+  (coefficient of variation). 
 License: GPL (>= 2)
 ByteCompile: TRUE
 RoxygenNote: 7.0.2

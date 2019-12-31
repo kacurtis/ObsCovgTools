@@ -7,14 +7,14 @@
 sim_cv_obscov(te, bpue, d = 2, nsim = 1000, ...)
 }
 \arguments{
-\item{te}{an integer greater than one. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than one. Total effort in fishery (trips/sets).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
 \item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
-ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
 \item{nsim}{a positive integer. Number of simulations to run.}
 
@@ -28,25 +28,26 @@ A list with components:
   (\code{cvsim}).} 
   \item{simdat}{a tibble with one row per simulation and the following fields: 
   simulated proportion observer coverage (\code{pobs}), number of observed 
-  sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
+  trips/sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
-  \item{bpue}{the bycatch per unit effort used.}
-  \item{d}{the dispersion index used.}
+  \item{bpue}{the nominal bycatch per unit effort used in the simulations.}
+  \item{d}{the dispersion index used in the simulations.}
 }
 \description{
 \code{sim_cv_obscov} simulates bycatch estimation CVs for a range 
 of observer coverage levels, given bycatch rate, dispersion 
-index, and total fishery effort.
+index, and total fishery effort. The resulting object is required by 
+\code{plot_cv_obscov} for visualization.
 }
 \details{
 \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
-coverage, from the larger of 0.1\% or one set/haul to 100\%. Simulated 
+coverage, from the larger of 0.1\% or one trip/set to 100\%. Simulated 
 bycatch estimates are calculated as mean observed bycatch per unit effort. 
 CV at each observer coverage level is calculated as the square root of mean 
 square estimation error divided by "true" bycatch (\code{bpue}).
 
-Warning: Large total effort (>100K sets/hauls) may require several minutes 
+Warning: Large total effort (>100K trips/sets) may require several minutes 
 of execution time. Increasing \code{nsim} from the default of 1000 will 
 also increase execution time.
 
@@ -55,6 +56,6 @@ and no hierarchical sources of variance (e.g., vessel- or trip-level variation).
 Violating these assumptions will likely result in negatively biased projections of 
 bycatch estimation CV for a given level of observer coverage. More conservative 
 projections can be obtained by using higher-level units of effort (e.g., 
-\code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-\code{te} as number of trips instead of number of sets/hauls).
+\code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+\code{te} as number of trips instead of number of trips/sets).
 }

@@ -4,18 +4,18 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(te, bpue, d = 2, targetppos = 80, showplot = TRUE,
+plot_probposobs(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   silent = FALSE)
 }
 \arguments{
-\item{te}{an integer greater than 1. Total effort in fishery (sets/hauls).}
+\item{te}{an integer greater than 1. Total effort in fishery (trips/sets).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
 \item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
-ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 
 \item{targetppos}{a non-negative number less than or equal to 100. Target 
 probability of positive observed bycatch (as percentage), given positive 
@@ -37,7 +37,7 @@ Returned invisibly.
 \description{
 \code{plot_probposobs} plots (1) probability of observing at least one bycatch
   event vs observer coverage and (2) probability of any bycatch occurring in 
-  total effort, given total effort in sets/hauls, bycatch per unit effort, and 
+  total effort, given total effort in trips/sets, bycatch per unit effort, and 
   dispersion index.
 }
 \details{
@@ -53,15 +53,11 @@ obability of observing bycatch if it occurs (x-axis value of red star) is
 where the conditional bycatch detection probability (solid black line) 
 intersects with the target probability (red dash-dot line).
 
-Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
-as a one-step tool, and does not take output from user calls to 
-\code{probnzeros}. 
-  
 \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
 and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 Violating these assumptions will likely result in positively biased projections 
 of the probability of observing bycatch at a given level of observer coverage. 
 More conservative projections can be obtained by using higher-level units of effort 
-(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-\code{te} as number of trips instead of number of sets/hauls).
+(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+\code{te} as number of trips instead of number of trips/sets).
 }

@@ -8,14 +8,14 @@ probnzeros(n, bpue, d)
 }
 \arguments{
 \item{n}{a vector of positive integers. Observed effort levels (in terms of 
-sets/hauls) for which to calculate probability of zero bycatch.}
+trips/sets) for which to calculate probability of zero bycatch.}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
 \item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
-ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
 }
 \value{
 Vector of same length as \code{n} with probabilities of zero bycatch.
@@ -24,7 +24,7 @@ Returned invisibly
 }
 \description{
 \code{probnzeros} returns probability of zero bycatch in a specified number 
-of sets/hauls, given bycatch per unit effort and dispersion index.
+of trips/sets, given bycatch per unit effort and dispersion index.
 }
 \details{
 Calculated from the probability density at zero of the corresponding Poisson
@@ -35,6 +35,6 @@ and no hierarchical sources of variance (e.g., vessel- or trip-level variation).
 Violating these assumptions will likely result in negatively biased projections 
 of the probability of observing zero bycatch at a given level of observer coverage. 
 More conservative projections can be obtained by using higher-level units of effort 
-(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-\code{n} as number of trips instead of number of sets/hauls).
+(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+\code{n} as number of trips instead of number of trips/sets).
 }

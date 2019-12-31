@@ -149,7 +149,7 @@ server <- function(input, output, session) {
                     "%. Minimum observer coverage to achieve at least ", 
                     input$target.ppos, "% probability of observing bycatch when",
                     " total bycatch is positive is ", oc.ppos.out$pobs, "% (", 
-                    oc.ppos.out$nobs, " sets). ")
+                    oc.ppos.out$nobs, " trips or sets). ")
     } else rec <- paste0("The probability that any bycatch occurs in the given total ",
                          "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
                          "%.")
@@ -204,12 +204,12 @@ server <- function(input, output, session) {
       rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
                     " limit of ", input$target.ucl, " is not exceeded when no bycatch is ",
                     " observed is ", oc.ucl.out$targetoc, "% (", 
-                    oc.ucl.out$targetnoc, " sets).\n")
+                    oc.ucl.out$targetnoc, " trips or sets).\n")
     } else { rec1 <- "" }
     if (as.logical(as.numeric(input$fixedoc.ucl))) {
       rec2 <- paste0("Upper confidence limit for bycatch given none observed in ",
-                     oc.ucl.out$fixedoc, "% (", oc.ucl.out$fixednoc, " sets) coverage is ",
-                     oc.ucl.out$fixedoc.ucl,".\n")
+                     oc.ucl.out$fixedoc, "% (", oc.ucl.out$fixednoc, " trips or sets)",
+                     " coverage is ", oc.ucl.out$fixedoc.ucl, ".\n")
     } else { rec2 <- "" }
     HTML(paste0(rec1, rec2, "Please review the caveats in the About tab."))
   })
@@ -282,7 +282,7 @@ server <- function(input, output, session) {
         if (!is.na(oc.cv.out$pobs)) {
           rec <- paste0("Minimum observer coverage to achieve CV <= ",
                       input$targetcv, " is ",oc.cv.out$pobs,"% (",
-                      oc.cv.out$nobs, " hauls).")
+                      oc.cv.out$nobs, " trips or sets).")
         } else {
           rec <- paste0("Simulated observer coverage levels do not include ", 
                         "range corresponding to minimum observer coverage to ",

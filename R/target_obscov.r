@@ -41,15 +41,16 @@ my_ceiling <- function(x, s){
 #'
 #' \code{sim_cv_obscov} simulates bycatch estimation CVs for a range 
 #' of observer coverage levels, given bycatch rate, dispersion 
-#' index, and total fishery effort. 
+#' index, and total fishery effort. The resulting object is required by 
+#' \code{plot_cv_obscov} for visualization.  
 #' 
 #' \code{sim_cv_obscov} runs \code{nsim} simulations per level of observer 
-#' coverage, from the larger of 0.1\% or one set/haul to 100\%. Simulated 
+#' coverage, from the larger of 0.1\% or one trip/set to 100\%. Simulated 
 #' bycatch estimates are calculated as mean observed bycatch per unit effort. 
 #' CV at each observer coverage level is calculated as the square root of mean 
 #' square estimation error divided by "true" bycatch (\code{bpue}).
 #' 
-#' Warning: Large total effort (>100K sets/hauls) may require several minutes 
+#' Warning: Large total effort (>100K trips/sets) may require several minutes 
 #' of execution time. Increasing \code{nsim} from the default of 1000 will 
 #' also increase execution time. 
 #' 
@@ -58,15 +59,15 @@ my_ceiling <- function(x, s){
 #' Violating these assumptions will likely result in negatively biased projections of 
 #' bycatch estimation CV for a given level of observer coverage. More conservative 
 #' projections can be obtained by using higher-level units of effort (e.g., 
-#' \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-#' \code{te} as number of trips instead of number of sets/hauls).
+#' \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+#' \code{te} as number of trips instead of number of trips/sets).
 #' 
-#' @param te an integer greater than one. Total effort in fishery (sets/hauls).
+#' @param te an integer greater than one. Total effort in fishery (trips/sets).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #' @param nsim a positive integer. Number of simulations to run.
 #' @param ...  additional arguments for compatibility with Shiny.
 #'   
@@ -77,11 +78,11 @@ my_ceiling <- function(x, s){
 #'   (\code{cvsim}).} 
 #'   \item{simdat}{a tibble with one row per simulation and the following fields: 
 #'   simulated proportion observer coverage (\code{pobs}), number of observed 
-#'   sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
+#'   trips/sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
 #'   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
 #'   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
-#'   \item{bpue}{the bycatch per unit effort used.}
-#'   \item{d}{the dispersion index used.}
+#'   \item{bpue}{the nominal bycatch per unit effort used in the simulations.}
+#'   \item{d}{the dispersion index used in the simulations.}
 #'   
 #' @export 
 sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
@@ -103,11 +104,11 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
   pb <- progress_init(...)
   
   for (i in 1:nrow(simdat)) {
-    sets <- if(d==1) { Runuran::urpois(te, bpue) 
+    ue <- if(d==1) { Runuran::urpois(te, bpue) 
     } else { Runuran::urnbinom(te, size=(bpue/(d-1)), prob=1/d) }
-    obsets <- sample(sets, simdat$nobs[i])
-    simdat$tbpue[i] <- mean(sets)
-    simdat$obpue[i] <- mean(obsets)
+    obs <- sample(ue, simdat$nobs[i])
+    simdat$tbpue[i] <- mean(ue)
+    simdat$obpue[i] <- mean(obs)
     simdat$oberr[i] <- simdat$obpue[i] - simdat$tbpue[i]
 
     if (i %% 500 == 0) {
@@ -187,7 +188,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
     if (targetcv)  {
       if (!is.na(targetoc)) {
         cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " is ", 
-              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), " hauls).\n"))
+              my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), 
+              "trips or sets).\n"))
       } else {
         cat(paste0("Simulated observer coverage levels do not include range corresponding to ",
                    "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n"))
@@ -207,15 +209,15 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' Get probability of zero bycatch given effort
 #' 
 #' \code{probnzeros} returns probability of zero bycatch in a specified number 
-#' of sets/hauls, given bycatch per unit effort and dispersion index. 
+#' of trips/sets, given bycatch per unit effort and dispersion index. 
 #' 
 #' @param n a vector of positive integers. Observed effort levels (in terms of 
-#'   sets/hauls) for which to calculate probability of zero bycatch.
+#'   trips/sets) for which to calculate probability of zero bycatch.
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #'   
 #' @details
 #' Calculated from the probability density at zero of the corresponding Poisson
@@ -226,8 +228,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
 #' Violating these assumptions will likely result in negatively biased projections 
 #' of the probability of observing zero bycatch at a given level of observer coverage. 
 #' More conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-#' \code{n} as number of trips instead of number of sets/hauls).
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+#' \code{n} as number of trips instead of number of trips/sets).
 #'   
 #' @return Vector of same length as \code{n} with probabilities of zero bycatch. 
 #' @return Returned invisibly
@@ -242,10 +244,10 @@ probnzeros <- function(n, bpue, d) {
   
   # calculate probability of observing zero bycatch in n units of effort
   ## one unit
-  pz <- if(d==1) { stats::ppois(0, bpue)
-  } else { stats::pnbinom(0, size=(bpue/(d-1)), prob=1/d) }
+  pz <- if(d==1) { exp(-1*bpue)
+  } else { d^(-1*bpue/(d-1)) }
   ## n units
-  pnz <- pz^n 
+  pnz <- pz^n
   
   return(invisible(pnz))
 }
@@ -255,15 +257,15 @@ probnzeros <- function(n, bpue, d) {
 #' 
 #' \code{plot_probposobs} plots (1) probability of observing at least one bycatch
 #'   event vs observer coverage and (2) probability of any bycatch occurring in 
-#'   total effort, given total effort in sets/hauls, bycatch per unit effort, and 
+#'   total effort, given total effort in trips/sets, bycatch per unit effort, and 
 #'   dispersion index. 
 #'   
-#' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
+#' @param te an integer greater than 1. Total effort in fishery (trips/sets).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #' @param targetppos a non-negative number less than or equal to 100. Target 
 #'   probability of positive observed bycatch (as percentage), given positive 
 #'   bycatch in total effort. If 0, no corresponding minimum observer coverage 
@@ -284,17 +286,13 @@ probnzeros <- function(n, bpue, d) {
 #' where the conditional bycatch detection probability (solid black line) 
 #' intersects with the target probability (red dash-dot line).
 #' 
-#' Note that unlike \code{plot_cv_obscov}, \code{plot_probposobs} is designed 
-#' as a one-step tool, and does not take output from user calls to 
-#' \code{probnzeros}. 
-#'   
 #' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 #' Violating these assumptions will likely result in positively biased projections 
 #' of the probability of observing bycatch at a given level of observer coverage. 
 #' More conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set/haul, and 
-#' \code{te} as number of trips instead of number of sets/hauls).
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
+#' \code{te} as number of trips instead of number of trips/sets).
 #' 
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 
@@ -303,7 +301,7 @@ probnzeros <- function(n, bpue, d) {
 #' @return Returned invisibly. 
 #' 
 #' @export 
-plot_probposobs <- function(te, bpue, d = 2, targetppos = 80, showplot = TRUE, 
+plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE, 
                             silent = FALSE) {
   
   # check input values
@@ -359,7 +357,7 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 80, showplot = TRUE,
     if (targetppos) 
       cat(paste0("Minimum observer coverage to achieve at least ", targetppos, 
                 "% probability of observing \nbycatch when total bycatch is positive is ", 
-                my_ceiling(targetoc*100,3), "% (", targetnoc, " sets).\n"))
+                my_ceiling(targetoc*100,3), "% (", targetnoc, " trips or sets).\n"))
     cat(paste0("Please review the caveats in the associated documentation.\n"))
   }
   
@@ -376,23 +374,23 @@ solveucl <- function(a, d, n) {
   if (d==1) {
     bpue <- -1 * log(a)/n
   } else {
-    bpue <- (log(a)*(d-1))/(n*log(1/(d-1)/(1/(d-1)+1)))
+    bpue <- -1*(d-1)*log(a)/(n*log(d))
   }
   return(bpue)
 }
 
 
-#' Plot upper confidence limit of total bycatch for none observed
+#' Plot upper confidence limit of total bycatch given none observed
 #' 
 #' \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
 #'   observer coverage when no bycatch is observed, given total effort in 
-#'   sets/hauls, dispersion index, and confidence level.
+#'   trips/sets, dispersion index, and confidence level.
 #'   
-#' @param te an integer greater than 1. Total effort in fishery (sets/hauls).
+#' @param te an integer greater than 1. Total effort in fishery (trips/sets).
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of set-level bycatch, so \eqn{d = 1} corresponds to Poisson-distributed 
-#'   bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
+#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
 #' @param cl a non-negative number less than or equal to 100. Confidence level
 #'   for upper confidence limit of total bycatch (as percentage), given no bycatch 
 #'   observed. 
@@ -412,15 +410,12 @@ solveucl <- function(a, d, n) {
 #' If \code{fixedoc} specified, corresponding upper confidence limit is provided 
 #' in printed output and returned object, but not in plot.
 #' 
-#' Note that unlike \code{plot_cv_obscov}, \code{plot_uclnegobs} is designed 
-#' as a one-step tool. 
-#'   
 #' \strong{Caveat:} \code{plot_uclnegobs} assumes representative observer coverage 
 #' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
 #' Violating these assumptions will likely result in negatively biased projections 
 #' of the upper confidence limit of total bycatch given zero observed. More 
 #' conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{te} as number of trips instead of number of sets/hauls).
+#' (e.g., \code{te} as number of trips instead of number of trips/sets).
 #' 
 #' @return A list with components:
 #'   \item{ucldat}{a tibble with the following fields for each coverage level included: 
@@ -513,11 +508,11 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
       cat(paste0("Minimum observer coverage to ensure that the upper confidence",
                  " limit of ", targetucl, " is not exceeded when no bycatch is ",
                  "observed is ", my_ceiling(targetoc*100,3), "% (", targetnoc, 
-                 " sets).\n"))
+                 " trips or sets).\n"))
     if (fixedoc)
       cat(paste0("Upper confidence limit for bycatch given none observed in ",
-                 my_ceiling(fixedoc*100,3), "% (", fixednoc, " sets) coverage is ",
-                 my_ceiling(fixedoc.ucl,3),".\n"))
+                 my_ceiling(fixedoc*100,3), "% (", fixednoc, " trips or sets)",
+                 " coverage is ", my_ceiling(fixedoc.ucl,3), ".\n"))
     cat(paste0("Please review the caveats in the associated documentation.\n"))
   }
   
