@@ -1,0 +1,46 @@
+navbar:
+  structure:
+    left:
+    - home
+    - reference
+    - sourcecode
+    - issue
+    - news
+    right: github
+    
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+
+    reference:
+      text: Functions
+      icon: far fa-file-code fa-lg
+      href: reference/index.html
+
+    sourcecode:
+      text: Source Code
+      icon: fab fa-github fa-lg
+      href: https://github.com/kacurtis/ObsCovgTools
+
+    issue:
+      text: Issues
+      icon: fas fa-question-circle fa-lg
+      href: https://github.com/kacurtis/ObsCovgTools/issues/
+
+reference:
+- title: Simulation functions
+  contents:
+  - contains("sim")
+  - contains("probnzeros")
+- title: Plot functions
+  contents:
+  - contains("plot")
+- title: Shiny functions
+  contents:
+  - contains("run")
+  
+news:
+  releases:
+  - text: "Version 3.1.1"
+    href: https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.1.1

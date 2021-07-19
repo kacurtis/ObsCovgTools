@@ -1,0 +1,16 @@
+citHeader("To cite in publications or talks, please use:")
+
+citEntry(entry = "Article",
+    title = "{ObsCovgTools}: Assessing observer coverage needed to document and estimate rare event bycatch",
+    journal = "Fisheries Research",
+    volume = "225",
+    pages = "105493",
+    author = c(person("K. Alexandra", "Curtis"),
+               person("James V.", "Carretta")),
+    year = "2020",
+    url = "https://doi.org/10.1016/j.fishres.2020.105493",
+    textVersion  = paste("Curtis, K. A. and J. V. Carretta (2020).",
+        "ObsCovgTools: Assessing observer coverage needed to document and estimate rare event bycatch.",
+        "Fisheries Research 225: 105493.",
+        "https://doi.org/10.1016/j.fishres.2020.105493")
+)

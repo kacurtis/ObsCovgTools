@@ -6,7 +6,7 @@ ui <- fluidPage(
     includeCSS("www/style.css")
   ),
   ## appFrameHeaderFixed(),
-  titlePanel(title="Observer coverage simulator - 3.1.1",
+  titlePanel(title=div(img(src="logo_120.png"), "Observer coverage simulator - 3.1.1"),
              windowTitle="Observer coverage simulator"),
   tabsetPanel(id="alltabs",
               tabPanel("Objective: Probability of Positive Bycatch", value="ppos", 
