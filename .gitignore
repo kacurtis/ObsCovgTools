@@ -20,6 +20,7 @@ vignettes/*.pdf
 .httr-oauth
 # rsconnect files
 /inst/shinyapp/obscov/rsconnect/
+/rsconnect/
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/

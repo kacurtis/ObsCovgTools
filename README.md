@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ObsCovgTools <img src="logo.png" align="right" style="padding: 10px"/>
+# ObsCovgTools <img src="logo.png" width="200" height="231" align="right" style="padding: 10px"/>
 
 <!-- badges: start -->
 
