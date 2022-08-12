@@ -6,6 +6,7 @@
 
 [![GitHub release (latest by
 date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3603464.svg)](https://doi.org/10.5281/zenodo.3603464)
 <!-- badges: end -->
 
 ### Description
@@ -46,14 +47,14 @@ by Howard Coleman, which can be accessed at
 If you use ObsCovgTools results in publications or talks, please cite
 the primary citation:
 
-K. A. Curtis and J. V. Carretta. 2020. ObsCovgTools: Assessing observer
+Curtis K. A., Carretta J. V. 2020. ObsCovgTools: Assessing observer
 coverage needed to document and estimate rare event bycatch. Fisheries
-Research 225: 105493. <https://doi.org/10.1016/j.fishres.2020.105493>
+Research, 225: 105493. <https://doi.org/10.1016/j.fishres.2020.105493>
 
 You can also cite the package, updating the version number and year if
 you use a more recent version:
 
-K. A. Curtis. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for
+Curtis K. A. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for
 Bycatch Estimation. R package version 3.1.1.
 <https://kacurtis.github.io/ObsCovgTools>
 
@@ -86,7 +87,7 @@ commercial product or activity by DOC or the United States Government.”
 
 ------------------------------------------------------------------------
 
-<img src="https://raw.githubusercontent.com/nmfs-general-modeling-tools/nmfspalette/main/man/figures/noaa-fisheries-rgb-2line-horizontal-small.png" height="75" alt="NOAA Fisheries">
+<img src="https://raw.githubusercontent.com/nmfs-general-modeling-tools/nmfspalette/main/man/figures/noaa-fisheries-rgb-2line-horizontal-small.png" width="200" style="height: 75px !important;"  alt="NOAA Fisheries">
 
 [U.S. Department of Commerce](https://www.commerce.gov/) \| [National
 Oceanographic and Atmospheric Administration](https://www.noaa.gov) \|
