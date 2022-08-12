@@ -18,13 +18,16 @@ Caveat
 </h4>
 <p>
 The current implementation of ObsCovgTools assumes observer coverage is 
-representative of the fishery, and does not account for hierarchical sources of 
-variance (e.g., vessel- or trip-level variation). Violating these assumptions 
+representative of the fishery, and that units of effort are independent sampling 
+units. Violating these assumptions (e.g., due to hierarchical sampling variance) 
 may result in negatively biased projections of observer coverage required to meet 
 specific objectives. Unless hierarchical sources of variance can be ruled out as 
 potentially important, using higher-level units of effort is advised (e.g., mean 
 bycatch per trip and number of trips, instead of mean bycatch per set and 
-number of sets). 
+number of sets). Landings (number or weight) do not represent independent 
+sampling units unless an average independent fishing effort unit such as a trip 
+lands less than or equal to one measurement unit of landings (e.g., <= one metric 
+ton per trip).
 </p>
 </div>
 <br/>
@@ -68,7 +71,7 @@ Citation
 If you use ObsCovgTools results in publications or talks, please cite:
 </p>
 <p>
-K. A. Curtis and J. V. Carretta. 2020. ObsCovgTools:  Assessing observer coverage 
+Curtis K. A., Carretta J. V. 2020. ObsCovgTools:  Assessing observer coverage 
 needed to document and estimate rare event bycatch. Fisheries Research 225: 105493. 
 https://doi.org/10.1016/j.fishres.2020.105493
 </p>
@@ -76,7 +79,7 @@ https://doi.org/10.1016/j.fishres.2020.105493
 You can also cite the R package, updating the version number and year as appropriate:
 </p>
 <p>
-K. A. Curtis. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for Bycatch 
+Curtis K. A. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for Bycatch 
 Estimation. R package version 3.1.1. https://github.com/kacurtis/ObsCovgTools
 </p>
 <br/>

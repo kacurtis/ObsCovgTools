@@ -36,8 +36,9 @@ user-specified target CV and percentile.
 }
 \details{
 \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
-coverage and no hierarchical sources of variance (e.g., vessel- or trip-level 
-variation). Violating these assumptions will likely result in negatively biased 
+coverage and independent units of effort, i.e., no hierarchical sources of 
+variance such as vessel- or trip-level variation if sets or hauls are used. 
+Violating these assumptions will likely result in negatively biased 
 projections of bycatch estimation CV for a given level of observer coverage. 
 See documentation for \code{sim_obs_cov} for additional details.
 }

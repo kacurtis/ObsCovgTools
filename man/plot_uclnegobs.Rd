@@ -16,7 +16,8 @@ plot_uclnegobs(
 )
 }
 \arguments{
-\item{te}{an integer greater than 1. Total effort in fishery (trips/sets).}
+\item{te}{an integer greater than 1. Total independent units of effort in 
+fishery (e.g., trips or sets, not landings).}
 
 \item{d}{a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
@@ -43,7 +44,7 @@ for which to return ucl value.}
 \value{
 A list with components:
   \item{ucldat}{a tibble with the following fields for each coverage level included: 
-  number of observed trips/sets (\code{nobs}), 
+  number of observed trips or sets (\code{nobs}), 
   proportion observer coverage (\code{pobs}), 
   upper confidence limit of total bycatch given none observed (\code{ucl}),
   and finite population correction (\code{fpc}) used in calculating \code{ucl}.}
@@ -65,8 +66,8 @@ Returned invisibly.
 }
 \description{
 \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
-  observer coverage when no bycatch is observed, given total effort in 
-  trips/sets, dispersion index, and confidence level.
+  observer coverage when no bycatch is observed, given total fishery effort, 
+  dispersion index, and confidence level.
 }
 \details{
 Upper confidence limits are based on the probability density function for 
@@ -76,9 +77,13 @@ If \code{fixedoc} specified, corresponding upper confidence limit is provided
 in printed output and returned object, but not in plot.
 
 \strong{Caveat:} \code{plot_uclnegobs} assumes representative observer coverage 
-and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-Violating these assumptions will likely result in negatively biased projections 
-of the upper confidence limit of total bycatch given zero observed. More 
-conservative projections can be obtained by using higher-level units of effort 
-(e.g., \code{te} as number of trips instead of number of trips/sets).
+and independent units of effort, i.e., no hierarchical sources of variance 
+such as vessel- or trip-level variation if sets or hauls are used. Violating 
+these assumptions will likely result in negatively biased projections of the 
+upper confidence limit of total bycatch given zero observed. More conservative 
+projections can be obtained by using higher-level units of effort (e.g., 
+\code{te} as number of trips instead of number of sets). Landings (number 
+or weight) do not represent independent sampling units unless an average 
+independent fishing effort unit such as a trip lands less than or equal to one 
+measurement unit of landings (e.g., <= one metric ton per trip).
 }

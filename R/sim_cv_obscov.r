@@ -16,14 +16,19 @@
 #' also increase execution time. 
 #' 
 #' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' Violating these assumptions will likely result in negatively biased projections of 
+#' and independent units of effort, i.e., no hierarchical sources of variance 
+#' such as vessel- or trip-level variation if sets or hauls are used. Violating 
+#' these assumptions will likely result in negatively biased projections of 
 #' bycatch estimation CV for a given level of observer coverage. More conservative 
 #' projections can be obtained by using higher-level units of effort (e.g., 
 #' \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
-#' \code{te} as number of trips instead of number of trips/sets).
+#' \code{te} as number of trips instead of number of trips/sets). Landings (number 
+#' or weight) do not represent independent sampling units unless an average 
+#' independent fishing effort unit such as a trip lands less than or equal to one 
+#' measurement unit of landings (e.g., <= one metric ton per trip).
 #' 
-#' @param te an integer greater than one. Total effort in fishery (trips/sets).
+#' @param te an integer greater than one. Total independent units of effort in 
+#'   fishery (e.g., trips or sets, not landings).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 

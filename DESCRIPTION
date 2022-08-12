@@ -22,5 +22,5 @@ Description: Tools for evaluating observer coverage with respect to documenting
   (coefficient of variation). 
 License: GPL-3 plus file LICENSE
 ByteCompile: TRUE
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 Encoding: UTF-8

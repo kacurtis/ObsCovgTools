@@ -8,7 +8,7 @@ probnzeros(n, bpue, d)
 }
 \arguments{
 \item{n}{a vector of positive integers. Observed effort levels (in terms of 
-trips/sets) for which to calculate probability of zero bycatch.}
+trips or sets) for which to calculate probability of zero bycatch.}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
@@ -24,7 +24,7 @@ Returned invisibly
 }
 \description{
 \code{probnzeros} returns probability of zero bycatch in a specified number 
-of trips/sets, given bycatch per unit effort and dispersion index.
+of trips or sets, given bycatch per unit effort and dispersion index.
 }
 \details{
 Calculated from the probability density at zero of the corresponding Poisson
@@ -35,6 +35,9 @@ and no hierarchical sources of variance (e.g., vessel- or trip-level variation).
 Violating these assumptions will likely result in negatively biased projections 
 of the probability of observing zero bycatch at a given level of observer coverage. 
 More conservative projections can be obtained by using higher-level units of effort 
-(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
-\code{n} as number of trips instead of number of trips/sets).
+(e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set, and 
+\code{n} as number of trips instead of number of sets). Landings (number or 
+weight) do not represent independent sampling units unless an average independent 
+fishing effort unit such as a trip lands less than or equal to one measurement 
+unit of landings (e.g., <= one metric ton per trip).
 }

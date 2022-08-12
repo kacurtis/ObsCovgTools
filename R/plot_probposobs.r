@@ -2,10 +2,11 @@
 #' 
 #' \code{plot_probposobs} plots (1) probability of observing at least one bycatch
 #'   event vs observer coverage and (2) probability of any bycatch occurring in 
-#'   total effort, given total effort in trips/sets, bycatch per unit effort, and 
-#'   dispersion index. 
+#'   total fishery effort, given total fishery effort, bycatch per unit effort, 
+#'   and dispersion index. 
 #'   
-#' @param te an integer greater than 1. Total effort in fishery (trips/sets).
+#' @param te an integer greater than 1. Total independent units of effort in fishery
+#'  (e.g., trips or sets, not landings).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
@@ -27,17 +28,21 @@
 #' any bycatch if it occurs is shown by the solid black line.  The product of 
 #' these first two probabilities gives the absolute probability of observing any
 #' bycatch (dashed black line).The minimum observer coverage to achieve the target 
-#' obability of observing bycatch if it occurs (x-axis value of red star) is 
+#' probability of observing bycatch if it occurs (x-axis value of red star) is 
 #' where the conditional bycatch detection probability (solid black line) 
 #' intersects with the target probability (red dash-dot line).
 #' 
 #' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' Violating these assumptions will likely result in positively biased projections 
-#' of the probability of observing bycatch at a given level of observer coverage. 
-#' More conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per trip/set, and 
-#' \code{te} as number of trips instead of number of trips/sets).
+#' and independent units of effort, i.e., no hierarchical sources of variance 
+#' such as vessel- or trip-level variation if sets or hauls are used. Violating 
+#' these assumptions will likely result in positively biased projections of the 
+#' probability of observing bycatch at a given level of observer coverage. More 
+#' conservative projections can be obtained by using higher-level units of effort 
+#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set, and 
+#' \code{te} as number of trips instead of number of sets). Landings (number or 
+#' weight) do not represent independent sampling units unless an average 
+#' independent fishing effort unit such as a trip lands less than or equal to one 
+#' measurement unit of landings (e.g., <= one metric ton per trip).
 #' 
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 
