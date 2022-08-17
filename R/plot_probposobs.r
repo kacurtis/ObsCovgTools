@@ -5,8 +5,8 @@
 #'   total fishery effort, given total fishery effort, bycatch per unit effort, 
 #'   and dispersion index. 
 #'   
-#' @param te an integer greater than 1. Total independent units of effort in fishery
-#'  (e.g., trips or sets, not landings).
+#' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
+#'   or sets).
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
@@ -32,17 +32,14 @@
 #' where the conditional bycatch detection probability (solid black line) 
 #' intersects with the target probability (red dash-dot line).
 #' 
-#' \strong{Caveat:} \code{plot_probposobs} assumes representative observer coverage 
-#' and independent units of effort, i.e., no hierarchical sources of variance 
-#' such as vessel- or trip-level variation if sets or hauls are used. Violating 
-#' these assumptions will likely result in positively biased projections of the 
-#' probability of observing bycatch at a given level of observer coverage. More 
-#' conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set, and 
-#' \code{te} as number of trips instead of number of sets). Landings (number or 
-#' weight) do not represent independent sampling units unless an average 
-#' independent fishing effort unit such as a trip lands less than or equal to one 
-#' measurement unit of landings (e.g., <= one metric ton per trip).
+#' \strong{Caveat:} \code{plot_probposobs} assumes that (1) observer coverage is 
+#' representative, (2) bycatch (\code{bpue}) is in terms of individuals (not 
+#' weight) per unit effort, and (3) the specified dispersion index reflects 
+#' the highest level of any hierarchical variance (e.g., using dispersion index 
+#' at trip level if greater than that at set level). Violating these assumptions 
+#' will likely result in positively biased projections of the probability of 
+#' observing bycatch at a given level of observer coverage. More conservative 
+#' projections can be obtained by using a higher dispersion index \code{d}.
 #' 
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 

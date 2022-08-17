@@ -1,10 +1,11 @@
 #' Get probability of zero bycatch given effort
 #' 
 #' \code{probnzeros} returns probability of zero bycatch in a specified number 
-#' of trips or sets, given bycatch per unit effort and dispersion index. 
+#' of effort units, given bycatch per unit effort and dispersion index. 
 #' 
 #' @param n a vector of positive integers. Observed effort levels (in terms of 
-#'   trips or sets) for which to calculate probability of zero bycatch.
+#'   effort units, e.g., trips or sets) for which to calculate probability of 
+#'   zero bycatch.
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
@@ -15,16 +16,14 @@
 #' Calculated from the probability density at zero of the corresponding Poisson
 #' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
 #' 
-#' \strong{Caveat:} \code{probnzeros} assumes representative observer coverage 
-#' and no hierarchical sources of variance (e.g., vessel- or trip-level variation). 
-#' Violating these assumptions will likely result in negatively biased projections 
-#' of the probability of observing zero bycatch at a given level of observer coverage. 
-#' More conservative projections can be obtained by using higher-level units of effort 
-#' (e.g., \code{bpue} as mean bycatch per trip instead of bycatch per set, and 
-#' \code{n} as number of trips instead of number of sets). Landings (number or 
-#' weight) do not represent independent sampling units unless an average independent 
-#' fishing effort unit such as a trip lands less than or equal to one measurement 
-#' unit of landings (e.g., <= one metric ton per trip).
+#' \strong{Caveat:} \code{probnzeros} assumes that (1) observer coverage is 
+#' representative, (2) bycatch (\code{bpue}) is in terms of individuals (not 
+#' weight) per unit effort, and (3) the specified dispersion index reflects 
+#' the highest level of any hierarchical variance (e.g., using dispersion index 
+#' at trip level if greater than that at set level). Violating these assumptions 
+#' will likely result in negatively biased projections of the probability of 
+#' observing zero bycatch at a given level of observer coverage. More conservative 
+#' projections can be obtained by using a higher dispersion index \code{d}.
 #'   
 #' @return Vector of same length as \code{n} with probabilities of zero bycatch. 
 #' @return Returned invisibly

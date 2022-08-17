@@ -11,13 +11,16 @@
 #' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
 #' @param showplot logical. If plot = FALSE, plotting is suppressed.
 #' 
-#' @details  
-#' \strong{Caveat:} \code{sim_cv_obscov} assumes representative observer 
-#' coverage and independent units of effort, i.e., no hierarchical sources of 
-#' variance such as vessel- or trip-level variation if sets or hauls are used. 
-#' Violating these assumptions will likely result in negatively biased 
-#' projections of bycatch estimation CV for a given level of observer coverage. 
-#' See documentation for \code{sim_obs_cov} for additional details.
+#' @details
+#' \strong{Caveat:} \code{plot_cv_obscov} assumes that (1) observer coverage is 
+#' representative, (2) bycatch specified for \code{sim_cv_obscov}is in terms of 
+#' individuals (not weight) per unit effort, and (3) the dispersion index 
+#' specified for \code{sim_cv_obscov} reflects the highest level of any 
+#' hierarchical variance (e.g., using dispersion index at trip level if greater 
+#' than that at set level). Violating these assumptions will likely result in 
+#' negatively biased projections of bycatch estimation CV for a given level of 
+#' observer coverage. See documentation for \code{sim_cv_obscov} for additional 
+#' details.
 #'   
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 

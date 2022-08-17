@@ -13,7 +13,7 @@ ui <- fluidPage(
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te.ppos",
-                                     label=HTML(paste("Total independent units of effort in fishery (e.g., trips, not landings)")),
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)")),
                                      value="500",
                                      placeholder="Integer > 1"),
                            textInput(inputId="bpue.ppos", label="Bycatch per Unit Effort (BPUE)",
@@ -49,7 +49,7 @@ ui <- fluidPage(
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te.ucl",
-                                     label=HTML(paste("Total independent units of effort in fishery (e.g., trips, not landings)")),
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)")),
                                      value="500",
                                      placeholder="Integer > 1"),
                            textInput(inputId="d.ucl",
@@ -93,7 +93,7 @@ ui <- fluidPage(
                        fluidRow(
                          column(3, wellPanel(
                            textInput(inputId="te",
-                                     label=HTML(paste("Total independent units of effort in fishery (e.g., trips, not landings)",
+                                     label=HTML(paste("Total effort in fishery (e.g., trips)",
                                                       "<div class='extext'>",
                                                       "(Larger effort takes longer: ~20s for 10K,",
                                                       "~75s for 100K)",

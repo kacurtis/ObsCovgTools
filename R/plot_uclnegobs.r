@@ -4,8 +4,8 @@
 #'   observer coverage when no bycatch is observed, given total fishery effort, 
 #'   dispersion index, and confidence level.
 #'   
-#' @param te an integer greater than 1. Total independent units of effort in 
-#'   fishery (e.g., trips or sets, not landings).
+#' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
+#'   or sets).
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
 #'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
@@ -29,16 +29,13 @@
 #' If \code{fixedoc} specified, corresponding upper confidence limit is provided 
 #' in printed output and returned object, but not in plot.
 #' 
-#' \strong{Caveat:} \code{plot_uclnegobs} assumes representative observer coverage 
-#' and independent units of effort, i.e., no hierarchical sources of variance 
-#' such as vessel- or trip-level variation if sets or hauls are used. Violating 
-#' these assumptions will likely result in negatively biased projections of the 
-#' upper confidence limit of total bycatch given zero observed. More conservative 
-#' projections can be obtained by using higher-level units of effort (e.g., 
-#' \code{te} as number of trips instead of number of sets). Landings (number 
-#' or weight) do not represent independent sampling units unless an average 
-#' independent fishing effort unit such as a trip lands less than or equal to one 
-#' measurement unit of landings (e.g., <= one metric ton per trip).
+#' \strong{Caveat:} \code{plot_uclnegobs} assumes that (1) observer coverage is 
+#' representative, and (2) the specified dispersion index reflects 
+#' the highest level of any hierarchical variance (e.g., using dispersion index 
+#' at trip level if greater than that at set level). Violating these assumptions 
+#' will likely result in negatively biased projections of the upper confidence 
+#' limit of total bycatch given zero observed. . More conservative projections 
+#' can be obtained by using a higher dispersion index \code{d}.
 #' 
 #' @return A list with components:
 #'   \item{ucldat}{a tibble with the following fields for each coverage level included: 
