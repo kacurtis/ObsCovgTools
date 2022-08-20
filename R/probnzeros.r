@@ -23,7 +23,9 @@
 #' at trip level if greater than that at set level). Violating these assumptions 
 #' will likely result in negatively biased projections of the probability of 
 #' observing zero bycatch at a given level of observer coverage. More conservative 
-#' projections can be obtained by using a higher dispersion index \code{d}.
+#' projections can be obtained by using a higher dispersion index \code{d}. Users 
+#' may want to explore uncertainty in dispersion index and in bycatch per unit 
+#' effort by varying those inputs.
 #'   
 #' @return Vector of same length as \code{n} with probabilities of zero bycatch. 
 #' @return Returned invisibly

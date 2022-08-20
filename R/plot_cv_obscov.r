@@ -19,8 +19,9 @@
 #' hierarchical variance (e.g., using dispersion index at trip level if greater 
 #' than that at set level). Violating these assumptions will likely result in 
 #' negatively biased projections of bycatch estimation CV for a given level of 
-#' observer coverage. See documentation for \code{sim_cv_obscov} for additional 
-#' details.
+#' observer coverage. Users may want to explore uncertainty in dispersion index 
+#' and in bycatch per unit effort by varying those inputs.See documentation for 
+#' \code{sim_cv_obscov} for additional details.
 #'   
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 

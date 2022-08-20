@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Evaluate Fishery Observer Coverage for Bycatch Estimation • ObsCovgTools </title>
+<title>Evaluate Fishery Observer Coverage for Bycatch Estimation • ObsCovgTools</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -44,7 +44,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">ObsCovgTools </a>
+        <a class="navbar-link" href="index.html">ObsCovgTools</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.1.1</span>
       </span>
     </div>
@@ -79,7 +79,7 @@
   </a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     News
      
     <span class="caret"></span>
@@ -120,6 +120,7 @@
 <div class="page-header"><h1 id="obscovgtools-">ObsCovgTools <img src="logo.png" width="200" height="231" align="right" style="padding: 10px"><a class="anchor" aria-label="anchor" href="#obscovgtools-"></a>
 </h1></div>
 <!-- badges: start -->
+
 <div class="section level3">
 <h3 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h3>
@@ -128,7 +129,7 @@
 <div class="section level3">
 <h3 id="caveat">Caveat<a class="anchor" aria-label="anchor" href="#caveat"></a>
 </h3>
-<p>The current implementation of ObsCovgTools assumes observer coverage is representative of the fishery, and that units of effort are independent sampling units. Violating these assumptions (e.g., due to hierarchical sampling variance) may result in negatively biased projections of observer coverage required to meet specific objectives. Unless hierarchical sources of variance can be ruled out as potentially important, using higher-level units of effort is advised (e.g., mean bycatch per trip and number of trips, instead of mean bycatch per set and number of sets). Landings (number or weight) do not represent independent sampling units unless an average independent fishing effort unit such as a trip lands less than or equal to one measurement unit of landings (e.g., &lt;= one metric ton per trip).</p>
+<p>The current implementation of ObsCovgTools assumes that (1) observer coverage is representative, (2) bycatch is in terms of individuals (not weight) per unit effort, and (3) the specified dispersion index reflects the highest level of any hierarchical variance (e.g., using dispersion index at trip level if greater than that at set level). Violating these assumptions may result in negatively biased projections of observer coverage required to meet specific objectives. Users may want to explore uncertainty in dispersion index and in bycatch per unit effort by varying those inputs.</p>
 </div>
 <div class="section level3">
 <h3 id="shiny-app">Shiny app<a class="anchor" aria-label="anchor" href="#shiny-app"></a>
@@ -147,7 +148,8 @@
 <h3 id="funding">Funding<a class="anchor" aria-label="anchor" href="#funding"></a>
 </h3>
 <p>Development of the ObsCovgTools package and the Shiny application was supported by a grant from the National Marine Fisheries Service (NMFS) Office of Science and Technology, through a contract to Ocean Associates, Inc. </p>
-<!-- Do not edit below. This adds the Disclaimer and NMFS footer. --><hr>
+<!-- Do not edit below. This adds the Disclaimer and NMFS footer. -->
+<hr>
 </div>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
@@ -181,7 +183,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing ObsCovgTools </a></li>
+<li><a href="authors.html#citation">Citing ObsCovgTools</a></li>
 </ul>
 </div>
 

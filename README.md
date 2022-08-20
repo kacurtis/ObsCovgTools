@@ -26,18 +26,15 @@ probability distribution.
 
 ### Caveat
 
-The current implementation of ObsCovgTools assumes observer coverage is
-representative of the fishery, and that units of effort are independent
-sampling units. Violating these assumptions (e.g., due to hierarchical
-sampling variance) may result in negatively biased projections of
-observer coverage required to meet specific objectives. Unless
-hierarchical sources of variance can be ruled out as potentially
-important, using higher-level units of effort is advised (e.g., mean
-bycatch per trip and number of trips, instead of mean bycatch per set
-and number of sets). Landings (number or weight) do not represent
-independent sampling units unless an average independent fishing effort
-unit such as a trip lands less than or equal to one measurement unit of
-landings (e.g., &lt;= one metric ton per trip).
+The current implementation of ObsCovgTools assumes that (1) observer
+coverage is representative, (2) bycatch is in terms of individuals (not
+weight) per unit effort, and (3) the specified dispersion index reflects
+the highest level of any hierarchical variance (e.g., using dispersion
+index at trip level if greater than that at set level). Violating these
+assumptions may result in negatively biased projections of observer
+coverage required to meet specific objectives. Users may want to explore
+uncertainty in dispersion index and in bycatch per unit effort by
+varying those inputs.
 
 ### Shiny app
 

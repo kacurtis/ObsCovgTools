@@ -39,7 +39,9 @@
 #' at trip level if greater than that at set level). Violating these assumptions 
 #' will likely result in positively biased projections of the probability of 
 #' observing bycatch at a given level of observer coverage. More conservative 
-#' projections can be obtained by using a higher dispersion index \code{d}.
+#' projections can be obtained by using a higher dispersion index \code{d}. Users 
+#' may want to explore uncertainty in dispersion index and in bycatch per unit 
+#' effort by varying those inputs.
 #' 
 #' @return A list with components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 

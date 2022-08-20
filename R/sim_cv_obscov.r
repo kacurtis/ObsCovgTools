@@ -22,7 +22,9 @@
 #' at trip level if greater than that at set level). Violating these assumptions 
 #' will likely result in negatively biased projections of bycatch estimation CV 
 #' for a given level of observer coverage. More conservative projections can be 
-#' obtained by using a higher dispersion index \code{d}.
+#' obtained by using a higher dispersion index \code{d}. Users may want to 
+#' explore uncertainty in dispersion index and in bycatch per unit effort by 
+#' varying those inputs.
 #' 
 #' @param te an integer greater than one. Total effort in fishery (e.g., trips 
 #'   or sets).
