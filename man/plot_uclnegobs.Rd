@@ -51,8 +51,6 @@ A list with components:
   \item{targetucl}{specified target maximum upper confidence limit of bycatch.}
   \item{targetoc}{minimum observer coverage (as percentage) for which upper 
   confidence limit of bycatch is \code{targetucl} when none observed.}
-  \item{targetnoc}{minimum observer coverage (as effort) for which upper 
-  confidence limit of bycatch is \code{targetucl} when none observed.}
   \item{fixedoc}{specified percentage observer coverage for which upper 
   confidence limit of bycatch is returned.}
   \item{fixednoc}{observer coverage (as effort) corresponding to \code{fixedoc}.}

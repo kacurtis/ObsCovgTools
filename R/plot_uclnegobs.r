@@ -49,8 +49,6 @@
 #'   \item{targetucl}{specified target maximum upper confidence limit of bycatch.}
 #'   \item{targetoc}{minimum observer coverage (as percentage) for which upper 
 #'   confidence limit of bycatch is \code{targetucl} when none observed.}
-#'   \item{targetnoc}{minimum observer coverage (as effort) for which upper 
-#'   confidence limit of bycatch is \code{targetucl} when none observed.}
 #'   \item{fixedoc}{specified percentage observer coverage for which upper 
 #'   confidence limit of bycatch is returned.}
 #'   \item{fixednoc}{observer coverage (as effort) corresponding to \code{fixedoc}.}
@@ -91,7 +89,6 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   if (targetucl) {
     itarget <- min(which(df$ucl <= targetucl))
     targetoc <- df$pobs[itarget]
-    targetnoc <- df$nobs[itarget]
   }
   
   if (fixedoc) {
@@ -130,8 +127,7 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
     if (targetucl) 
       cat(paste0("Minimum observer coverage to ensure that the upper confidence",
                  " limit of ", targetucl, " is not exceeded when no bycatch is ",
-                 "observed is ", my_ceiling(targetoc*100,3), "% (", targetnoc, 
-                 " trips or sets).\n"))
+                 "observed is ", my_ceiling(targetoc*100,3), "%.\n"))
     if (fixedoc)
       cat(paste0("Upper confidence limit for bycatch given none observed in ",
                  my_ceiling(fixedoc*100,3), "% (", fixednoc, " trips or sets)",
@@ -142,7 +138,6 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   # return recommended minimum observer coverage
   return(invisible(list(ucldat=df, targetucl=ifelse(targetucl, targetucl, NA), 
                         targetoc=ifelse(targetucl, my_ceiling(targetoc*100,3), NA), 
-                        targetnoc=ifelse(targetucl, targetnoc, NA),
                         fixedoc=ifelse(fixedoc, my_ceiling(fixedoc*100,3), NA), 
                         fixednoc=ifelse(fixedoc, fixednoc, NA),
                         fixedoc.ucl=ifelse(fixedoc, my_ceiling(fixedoc.ucl,3), NA),

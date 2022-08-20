@@ -148,13 +148,12 @@ server <- function(input, output, session) {
                     "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
                     "%. Minimum observer coverage to achieve at least ", 
                     input$target.ppos, "% probability of observing bycatch when",
-                    " total bycatch is positive is ", oc.ppos.out$pobs, "% (", 
-                    oc.ppos.out$nobs, " trips or sets). ")
+                    " total bycatch is positive is ", oc.ppos.out$pobs, "%.")
     } else rec <- paste0("The probability that any bycatch occurs in the given total ",
                          "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
                          "%.")
     HTML(paste0(rec,
-                "The conditional probability of observing any bycatch if it occurs ", 
+                " The conditional probability of observing any bycatch if it occurs ", 
                 "(solid black line) is obtained by dividing the absolute probability",
                 " of observing any bycatch (black dashed line) by the probability ",
                 "that any bycatch occurs in the given total effort. Please review",
@@ -203,8 +202,7 @@ server <- function(input, output, session) {
     if (as.logical(as.numeric(input$target.ucl))) {
       rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
                     " limit of ", input$target.ucl, " is not exceeded when no bycatch is ",
-                    " observed is ", oc.ucl.out$targetoc, "% (", 
-                    oc.ucl.out$targetnoc, " trips or sets).\n")
+                    " observed is ", oc.ucl.out$targetoc, "%.\n")
     } else { rec1 <- "" }
     if (as.logical(as.numeric(input$fixedoc.ucl))) {
       rec2 <- paste0("Upper confidence limit for bycatch given none observed in ",
@@ -281,8 +279,7 @@ server <- function(input, output, session) {
       if (as.logical(input$targetcv)) {
         if (!is.na(oc.cv.out$pobs)) {
           rec <- paste0("Minimum observer coverage to achieve CV <= ",
-                      input$targetcv, " is ",oc.cv.out$pobs,"% (",
-                      oc.cv.out$nobs, " trips or sets).")
+                      input$targetcv, " is ",oc.cv.out$pobs,"%.")
         } else {
           rec <- paste0("Simulated observer coverage levels do not include ", 
                         "range corresponding to minimum observer coverage to ",

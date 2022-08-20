@@ -23,9 +23,8 @@
 #' and in bycatch per unit effort by varying those inputs.See documentation for 
 #' \code{sim_cv_obscov} for additional details.
 #'   
-#' @return A list with components:
+#' @return A list with one component:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 
-#'   \item{nobs}{corresponding observed effort.}
 #' @return Returned invisibly. 
 #'   
 #' @export 
@@ -68,8 +67,7 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
     if (targetcv)  {
       if (!is.na(targetoc)) {
         cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " is ", 
-                   my_ceiling(targetoc*100,2), "% (", my_ceiling(targetoc*simlist$te,2), 
-                   " trips or sets).\n"))
+                   my_ceiling(targetoc*100,2), "%.\n"))
       } else {
         cat(paste0("Simulated observer coverage levels do not include range corresponding to ",
                    "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n"))
@@ -82,5 +80,5 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   
   # return recommended minimum observer coverage
   if (targetcv) 
-    return(invisible(list(pobs = my_ceiling(targetoc*100,2), nobs=my_ceiling(targetoc*simlist$te,2))))
+    return(invisible(list(pobs = my_ceiling(targetoc*100,2))))
 }

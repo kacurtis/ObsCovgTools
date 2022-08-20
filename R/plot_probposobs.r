@@ -43,9 +43,8 @@
 #' may want to explore uncertainty in dispersion index and in bycatch per unit 
 #' effort by varying those inputs.
 #' 
-#' @return A list with components:
+#' @return A list with two components:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 
-#'   \item{nobs}{corresponding observed effort.}
 #'   \item{ppos.te}{probability of any bycatch occurring in total effort}
 #' @return Returned invisibly. 
 #' 
@@ -69,7 +68,6 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   if (targetppos) {
     itarget <- min(which(df$ppc >= targetppos/100))
     targetoc <- df$pobs[itarget]
-    targetnoc <- df$nobs[itarget]
   }
   
   # plot
@@ -106,12 +104,11 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
     if (targetppos) 
       cat(paste0("Minimum observer coverage to achieve at least ", targetppos, 
                  "% probability of observing \nbycatch when total bycatch is positive is ", 
-                 my_ceiling(targetoc*100,3), "% (", targetnoc, " trips or sets).\n"))
+                 my_ceiling(targetoc*100,3), "%.\n"))
     cat(paste0("Please review the caveats in the associated documentation.\n"))
   }
   
   # return recommended minimum observer coverage
   return(invisible(list(pobs = ifelse(targetppos, my_ceiling(targetoc*100,3), NA), 
-                        nobs = ifelse(targetppos, my_ceiling(targetoc*te,3), NA),
                         ppos.te = signif(100*ppt,3))))
 }

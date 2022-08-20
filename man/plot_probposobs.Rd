@@ -34,9 +34,8 @@ will be highlighted.}
 \item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
 }
 \value{
-A list with components:
+A list with two components:
   \item{pobs}{minimum observer coverage in terms of percentage.} 
-  \item{nobs}{corresponding observed effort.}
   \item{ppos.te}{probability of any bycatch occurring in total effort}
 
 Returned invisibly.

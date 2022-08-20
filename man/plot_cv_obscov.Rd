@@ -23,9 +23,8 @@ coverage will be highlighted.}
 \item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
 }
 \value{
-A list with components:
-  \item{pobs}{minimum observer coverage in terms of percentage.} 
-  \item{nobs}{corresponding observed effort.}
+A list with one component:
+  \item{pobs}{minimum observer coverage in terms of percentage.}
 
 Returned invisibly.
 }
