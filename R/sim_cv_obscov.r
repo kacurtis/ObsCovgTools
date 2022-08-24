@@ -61,7 +61,7 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
   
   # simulate observer coverage and bycatch estimation
   if (te<20) { oc <- 1:te/te 
-  } else { oc <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,1,0.05)) }
+  } else { oc <- c(seq(0.001,0.005,0.001), seq(0.01,0.05,0.01), seq(0.10,0.95,0.05)) }
   simdat <- tibble::tibble(pobs = rep(oc, nsim), 
                            nobs = round(.data$pobs * te)) %>% 
     dplyr::filter(.data$nobs > 0) %>% 
@@ -84,6 +84,7 @@ sim_cv_obscov <- function(te, bpue, d = 2, nsim = 1000, ...) {
   
   simsum <- simdat %>% dplyr::group_by(.data$pobs) %>% 
     dplyr::summarize(nobs=unique(.data$nobs),
-                     cvsim=sqrt(mean(.data$oberr^2))/bpue)
+                     cvsim=sqrt(mean(.data$oberr^2))/bpue) %>% 
+    rbind(data.frame(pobs=1, nobs=te, cvsim=0))
   return(list(simsum=simsum, simdat=simdat, te=te, bpue=bpue, d=d))
 }

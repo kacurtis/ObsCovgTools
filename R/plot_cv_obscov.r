@@ -34,7 +34,8 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   # check input values
   if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
   
-  # get minimum required observer coverage
+  # get minimum required observer coverage 
+  # (interpolation results in more conservative, i.e., higher, coverage than exact solution due to concave curvature)
   if (targetcv)
     targetoc <- ifelse(simlist$te <= 20,
                        with(simlist$simsum, pobs[min(which(cvsim<=targetcv))]),
