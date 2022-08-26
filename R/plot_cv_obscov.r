@@ -5,11 +5,12 @@
 #' user-specified target CV and percentile. 
 #'   
 #' @param simlist list output from \code{sim_cv_obscov}.
-#' @param targetcv a non-negative number less than 1. Target CV 
-#'   (as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
-#'   coverage will be highlighted.
-#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
-#' @param showplot logical. If plot = FALSE, plotting is suppressed.
+#' @param targetcv a non-negative number less than 1. Target CV (as a proportion). 
+#'   If set to 0, no corresponding minimum observer coverage will be 
+#'   highlighted or returned.
+#' @param silent logical. If \code{TRUE}, print output to terminal is suppressed.
+#' @param showplot logical. If \code{FALSE}, plotting is suppressed.
+#' @param ... additional arguments for compatibility with Shiny. 
 #' 
 #' @details
 #' \strong{Caveat:} \code{plot_cv_obscov} assumes that (1) observer coverage is 
@@ -23,16 +24,21 @@
 #' and in bycatch per unit effort by varying those inputs.See documentation for 
 #' \code{sim_cv_obscov} for additional details.
 #'   
-#' @return A list with one component:
+#' @return If \code{targetcv} is non-zero, a list with one component:
 #'   \item{pobs}{minimum observer coverage in terms of percentage.} 
 #' @return Returned invisibly. 
 #'   
 #' @export 
 plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3, 
-                           showplot = TRUE, silent = FALSE) {
+                           showplot = TRUE, silent = FALSE, ...) {
   
   # check input values
   if(targetcv<0 || targetcv>=1) stop("targetcv must be >= 0 and < 1")
+  
+  # get shiny flag if specified or set to FALSE
+  myArgs <- match.call()
+  if (!("as.shiny" %in% names(myArgs))) as.shiny <- FALSE
+  else as.shiny <- myArgs$as.shiny
   
   # get minimum required observer coverage 
   # (interpolation results in more conservative, i.e., higher, coverage than exact solution due to concave curvature)
@@ -74,9 +80,9 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
                    "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n"))
       }
     }
+    cat(paste0("Results are interpolated from simulation-based projections and ", 
+               "may vary slightly with repetition.\n"))
     cat(paste0("Please review the caveats in the associated documentation.\n"))
-    cat(paste0("Note that results are interpolated from simulation-based projections and may vary slightly \n",
-               "with repetition.\n"))
   }
   
   # return recommended minimum observer coverage

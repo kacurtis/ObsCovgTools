@@ -4,42 +4,36 @@
 \alias{plot_uclnegobs}
 \title{Plot upper confidence limit of total bycatch given none observed}
 \usage{
-plot_uclnegobs(
-  te,
-  d = 2,
-  cl = 95,
-  targetucl = 0,
-  fixedoc = 0,
-  ymax = 100,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_uclnegobs(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
+  ymax = 100, showplot = TRUE, silent = FALSE, ...)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (e.g., trips 
 or sets).}
 
-\item{d}{a number greater than or equal to 1. Dispersion 
-index. The dispersion index corresponds to the variance-to-mean 
-ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
-distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so \code{d = 1} corresponds to Poisson-distributed bycatch, and \code{d > 1} 
+to overdispersed bycatch.}
 
 \item{cl}{a non-negative number less than or equal to 100. Confidence level
 for upper confidence limit of total bycatch (as percentage), given no bycatch 
 observed.}
 
 \item{targetucl}{a non-negative number. Target maximum upper confidence 
-limit for total bycatch given zero bycatch observed. If 0, no corresponding 
-minimum observer coverage will be highlighted.}
+limit for total bycatch given zero bycatch observed. If set to 0, no 
+corresponding minimum observer coverage will be highlighted or returned.}
 
 \item{fixedoc}{a non-negative number between 0 and 100. Percent observer coverage 
 for which to return ucl value.}
 
 \item{ymax}{a positive number. Upper limit for y-axis of plot.}
 
-\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+\item{showplot}{logical. If \code{FALSE}, plotting is suppressed.}
 
-\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
+\item{silent}{logical. If \code{TRUE}, print output to terminal is suppressed.}
+
+\item{...}{additional arguments for compatibility with Shiny.}
 }
 \value{
 A list with components:

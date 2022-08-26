@@ -4,26 +4,24 @@
 \alias{plot_cv_obscov}
 \title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv_obscov(
-  simlist = simlist,
-  targetcv = 0.3,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_cv_obscov(simlist = simlist, targetcv = 0.3, showplot = TRUE,
+  silent = FALSE, ...)
 }
 \arguments{
 \item{simlist}{list output from \code{sim_cv_obscov}.}
 
-\item{targetcv}{a non-negative number less than 1. Target CV 
-(as a proportion). If \eqn{targetcv = 0}, no corresponding minimum observer 
-coverage will be highlighted.}
+\item{targetcv}{a non-negative number less than 1. Target CV (as a proportion). 
+If set to 0, no corresponding minimum observer coverage will be 
+highlighted or returned.}
 
-\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+\item{showplot}{logical. If \code{FALSE}, plotting is suppressed.}
 
-\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
+\item{silent}{logical. If \code{TRUE}, print output to terminal is suppressed.}
+
+\item{...}{additional arguments for compatibility with Shiny.}
 }
 \value{
-A list with one component:
+If \code{targetcv} is non-zero, a list with one component:
   \item{pobs}{minimum observer coverage in terms of percentage.}
 
 Returned invisibly.

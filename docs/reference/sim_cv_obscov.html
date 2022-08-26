@@ -114,10 +114,10 @@ of number of individuals).</p></dd>
 
 
 <dt>d</dt>
-<dd><p>a number greater than or equal to 1. Dispersion 
-index. The dispersion index corresponds to the variance-to-mean 
-ratio of bycatch per unit effort, so \(d = 1\) corresponds to Poisson-
-distributed bycatch, and \(d &gt; 1\) corresponds to overdispersed bycatch.</p></dd>
+<dd><p>a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so <code>d = 1</code> corresponds to Poisson-distributed bycatch, and <code>d &gt; 1</code> 
+to overdispersed bycatch.</p></dd>
 
 
 <dt>nsim</dt>
@@ -142,15 +142,15 @@ distributed bycatch, and \(d &gt; 1\) corresponds to overdispersed bycatch.</p><
   <dt>simdat</dt>
 <dd><p>a tibble with one row per simulation and the following fields: 
   simulated proportion observer coverage (<code>pobs</code>), number of observed 
-  trips/sets (<code>nobs</code>), true (realized) bycatch per unit effort (<code>tbpue</code>), 
+  effort units (<code>nobs</code>), true (realized) bycatch per unit effort (<code>tbpue</code>), 
   observed bycatch per unit effort (<code>obpue</code>), and error of observed bycatch 
   per unit effort (<code>oberr</code> = <code>obpue</code> - <code>tbpue</code>).</p></dd>
 
   <dt>bpue</dt>
-<dd><p>the nominal bycatch per unit effort used in the simulations.</p></dd>
+<dd><p>nominal bycatch per unit effort used in the simulations.</p></dd>
 
   <dt>d</dt>
-<dd><p>the dispersion index used in the simulations.</p></dd>
+<dd><p>dispersion index used in the simulations.</p></dd>
 
 </dl></div>
     <div id="details">

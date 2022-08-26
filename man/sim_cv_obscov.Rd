@@ -13,10 +13,10 @@ or sets).}
 \item{bpue}{a positive number. Bycatch per unit effort (with bycatch in terms 
 of number of individuals).}
 
-\item{d}{a number greater than or equal to 1. Dispersion 
-index. The dispersion index corresponds to the variance-to-mean 
-ratio of bycatch per unit effort, so \eqn{d = 1} corresponds to Poisson-
-distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so \code{d = 1} corresponds to Poisson-distributed bycatch, and \code{d > 1} 
+to overdispersed bycatch.}
 
 \item{nsim}{a positive integer. Number of simulations to run.}
 
@@ -30,11 +30,11 @@ A list with components:
   (\code{cvsim}).} 
   \item{simdat}{a tibble with one row per simulation and the following fields: 
   simulated proportion observer coverage (\code{pobs}), number of observed 
-  trips/sets (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
+  effort units (\code{nobs}), true (realized) bycatch per unit effort (\code{tbpue}), 
   observed bycatch per unit effort (\code{obpue}), and error of observed bycatch 
   per unit effort (\code{oberr} = \code{obpue} - \code{tbpue}).}
-  \item{bpue}{the nominal bycatch per unit effort used in the simulations.}
-  \item{d}{the dispersion index used in the simulations.}
+  \item{bpue}{nominal bycatch per unit effort used in the simulations.}
+  \item{d}{dispersion index used in the simulations.}
 }
 \description{
 \code{sim_cv_obscov} simulates bycatch estimation CVs for a range 

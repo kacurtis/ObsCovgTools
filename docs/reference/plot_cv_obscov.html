@@ -96,12 +96,8 @@ user-specified target CV and percentile.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_cv_obscov</span><span class="op">(</span></span>
-<span>  simlist <span class="op">=</span> <span class="va">simlist</span>,</span>
-<span>  targetcv <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  showplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_cv_obscov</span><span class="op">(</span>simlist <span class="op">=</span> <span class="va">simlist</span>, targetcv <span class="op">=</span> <span class="fl">0.3</span>, showplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  silent <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -111,24 +107,28 @@ user-specified target CV and percentile.</p>
 
 
 <dt>targetcv</dt>
-<dd><p>a non-negative number less than 1. Target CV 
-(as a proportion). If \(targetcv = 0\), no corresponding minimum observer 
-coverage will be highlighted.</p></dd>
+<dd><p>a non-negative number less than 1. Target CV (as a proportion). 
+If set to 0, no corresponding minimum observer coverage will be 
+highlighted or returned.</p></dd>
 
 
 <dt>showplot</dt>
-<dd><p>logical. If plot = FALSE, plotting is suppressed.</p></dd>
+<dd><p>logical. If <code>FALSE</code>, plotting is suppressed.</p></dd>
 
 
 <dt>silent</dt>
-<dd><p>logical. If silent = TRUE, print output to terminal is suppressed.</p></dd>
+<dd><p>logical. If <code>TRUE</code>, print output to terminal is suppressed.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>additional arguments for compatibility with Shiny.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A list with one component:</p>
+<p>If <code>targetcv</code> is non-zero, a list with one component:</p>
 <dl><dt>pobs</dt>
 <dd><p>minimum observer coverage in terms of percentage.</p></dd>
 

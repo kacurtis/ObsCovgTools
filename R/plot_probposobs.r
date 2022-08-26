@@ -8,16 +8,17 @@
 #' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
 #'   or sets).
 #' @param bpue a positive number. Bycatch per unit effort.
-#' @param d a number greater than or equal to 1. Dispersion 
-#'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
-#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#' @param d a number greater than or equal to 1. Dispersion index. The dispersion 
+#'   index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+#'   so \code{d = 1} corresponds to Poisson-distributed bycatch, and \code{d > 1} 
+#'   to overdispersed bycatch.
 #' @param targetppos a non-negative number less than or equal to 100. Target 
 #'   probability of positive observed bycatch (as percentage), given positive 
-#'   bycatch in total effort. If 0, no corresponding minimum observer coverage 
-#'   will be highlighted.
-#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
-#' @param showplot logical. If plot = FALSE, plotting is suppressed.
+#'   bycatch in total effort. If set to 0, no corresponding minimum observer 
+#'   coverage will be highlighted or returned.
+#' @param silent logical. If \code{TRUE}, print output to terminal is suppressed.
+#' @param showplot logical. If \code{FALSE}, plotting is suppressed.
+#' @param ... additional arguments for compatibility with Shiny. 
 #' 
 #' @details  
 #' Probabilities are based on the probability density function for the 
@@ -50,13 +51,18 @@
 #' 
 #' @export 
 plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE, 
-                            silent = FALSE) {
+                            silent = FALSE, ...) {
   
   # check input values
   if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
   if (bpue<=0) stop("bpue must be > 0")
   if (d<1) stop("d must be >= 1")
   if (targetppos<0 || targetppos>100) stop("targetppos must be >= 0 and <= 100")
+  
+  # get shiny flag if specified or set to FALSE
+  myArgs <- match.call()
+  if (!("as.shiny" %in% names(myArgs))) as.shiny <- FALSE
+  else as.shiny <- myArgs$as.shiny
   
   # percent probablity of positive observed bycatch
   if (te<1000) { oc <- 1:te 

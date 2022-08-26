@@ -9,12 +9,12 @@
 #' @param bpue a positive number. Bycatch per unit effort.
 #' @param d a number greater than or equal to 1. Dispersion 
 #'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
-#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#'   ratio of effort-unit-level bycatch, so \code{d = 1} corresponds to Poisson-
+#'   distributed bycatch, and \code{d > 1} corresponds to overdispersed bycatch.
 #'   
 #' @details
 #' Calculated from the probability density at zero of the corresponding Poisson
-#' (\eqn{d = 1}) or negative binomial (\eqn{d < 1}) distribution.
+#' (\code{d = 1}) or negative binomial (\code{d > 1}) distribution.
 #' 
 #' \strong{Caveat:} \code{probnzeros} assumes that (1) observer coverage is 
 #' representative, (2) bycatch (\code{bpue}) is in terms of individuals (not 

@@ -4,14 +4,8 @@
 \alias{plot_probposobs}
 \title{Plot probability of positive bycatch vs observer coverage}
 \usage{
-plot_probposobs(
-  te,
-  bpue,
-  d = 2,
-  targetppos = 95,
-  showplot = TRUE,
-  silent = FALSE
-)
+plot_probposobs(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
+  silent = FALSE, ...)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (e.g., trips 
@@ -19,19 +13,21 @@ or sets).}
 
 \item{bpue}{a positive number. Bycatch per unit effort.}
 
-\item{d}{a number greater than or equal to 1. Dispersion 
-index. The dispersion index corresponds to the variance-to-mean 
-ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
-distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.}
+\item{d}{a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so \code{d = 1} corresponds to Poisson-distributed bycatch, and \code{d > 1} 
+to overdispersed bycatch.}
 
 \item{targetppos}{a non-negative number less than or equal to 100. Target 
 probability of positive observed bycatch (as percentage), given positive 
-bycatch in total effort. If 0, no corresponding minimum observer coverage 
-will be highlighted.}
+bycatch in total effort. If set to 0, no corresponding minimum observer 
+coverage will be highlighted or returned.}
 
-\item{showplot}{logical. If plot = FALSE, plotting is suppressed.}
+\item{showplot}{logical. If \code{FALSE}, plotting is suppressed.}
 
-\item{silent}{logical. If silent = TRUE, print output to terminal is suppressed.}
+\item{silent}{logical. If \code{TRUE}, print output to terminal is suppressed.}
+
+\item{...}{additional arguments for compatibility with Shiny.}
 }
 \value{
 A list with two components:

@@ -141,7 +141,7 @@ server <- function(input, output, session) {
                     bpue = as.numeric(input$bpue.ppos), 
                     d = as.numeric(input$d.ppos),
                     targetppos = as.numeric(input$target.ppos),
-                    silent = TRUE)
+                    silent = TRUE, as.shiny = TRUE)
     
     if (as.logical(input$target.ppos)) {
       rec <- paste0("The probability that any bycatch occurs in the given total ",
@@ -197,7 +197,7 @@ server <- function(input, output, session) {
                                  targetucl = as.numeric(input$target.ucl),
                                  fixedoc = as.numeric(input$fixedoc.ucl),
                                  ymax = as.numeric(input$ymax.ucl),
-                                 silent = TRUE)
+                                 silent = TRUE, as.shiny = TRUE)
     
     if (as.logical(as.numeric(input$target.ucl))) {
       rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
     } else {
       oc.cv.out <- plot_cv_obscov(simlist = simlist(),
                                   targetcv = as.numeric(input$targetcv),
-                                  silent = TRUE)
+                                  silent = TRUE, as.shiny = TRUE)
       if (as.logical(input$targetcv)) {
         if (!is.na(oc.cv.out$pobs)) {
           rec <- paste0("Minimum observer coverage to achieve CV <= ",
@@ -288,8 +288,8 @@ server <- function(input, output, session) {
       } else rec <- ""
       HTML(paste0("<p></p>",rec," Results are interpolated from ",
                   "simulation-based projections and may vary slightly",
-                  " with repetition. Please review the caveats in the",
-                  " About tab."))
+                  " with repetition.", 
+                  " Please review the caveats in the About tab."))
     }
   })
 

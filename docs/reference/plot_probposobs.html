@@ -98,14 +98,8 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_probposobs</span><span class="op">(</span></span>
-<span>  <span class="va">te</span>,</span>
-<span>  <span class="va">bpue</span>,</span>
-<span>  d <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  targetppos <span class="op">=</span> <span class="fl">95</span>,</span>
-<span>  showplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_probposobs</span><span class="op">(</span><span class="va">te</span>, <span class="va">bpue</span>, d <span class="op">=</span> <span class="fl">2</span>, targetppos <span class="op">=</span> <span class="fl">95</span>, showplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  silent <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -120,25 +114,29 @@ or sets).</p></dd>
 
 
 <dt>d</dt>
-<dd><p>a number greater than or equal to 1. Dispersion 
-index. The dispersion index corresponds to the variance-to-mean 
-ratio of effort-unit-level bycatch, so \(d = 1\) corresponds to Poisson-
-distributed bycatch, and \(d &gt; 1\) corresponds to overdispersed bycatch.</p></dd>
+<dd><p>a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so <code>d = 1</code> corresponds to Poisson-distributed bycatch, and <code>d &gt; 1</code> 
+to overdispersed bycatch.</p></dd>
 
 
 <dt>targetppos</dt>
 <dd><p>a non-negative number less than or equal to 100. Target 
 probability of positive observed bycatch (as percentage), given positive 
-bycatch in total effort. If 0, no corresponding minimum observer coverage 
-will be highlighted.</p></dd>
+bycatch in total effort. If set to 0, no corresponding minimum observer 
+coverage will be highlighted or returned.</p></dd>
 
 
 <dt>showplot</dt>
-<dd><p>logical. If plot = FALSE, plotting is suppressed.</p></dd>
+<dd><p>logical. If <code>FALSE</code>, plotting is suppressed.</p></dd>
 
 
 <dt>silent</dt>
-<dd><p>logical. If silent = TRUE, print output to terminal is suppressed.</p></dd>
+<dd><p>logical. If <code>TRUE</code>, print output to terminal is suppressed.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>additional arguments for compatibility with Shiny.</p></dd>
 
 </dl></div>
     <div id="value">

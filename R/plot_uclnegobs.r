@@ -6,21 +6,22 @@
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
 #'   or sets).
-#' @param d a number greater than or equal to 1. Dispersion 
-#'   index. The dispersion index corresponds to the variance-to-mean 
-#'   ratio of effort-unit-level bycatch, so \eqn{d = 1} corresponds to Poisson-
-#'   distributed bycatch, and \eqn{d > 1} corresponds to overdispersed bycatch.
+#' @param d a number greater than or equal to 1. Dispersion index. The dispersion 
+#'   index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+#'   so \code{d = 1} corresponds to Poisson-distributed bycatch, and \code{d > 1} 
+#'   to overdispersed bycatch.
 #' @param cl a non-negative number less than or equal to 100. Confidence level
 #'   for upper confidence limit of total bycatch (as percentage), given no bycatch 
 #'   observed. 
 #' @param targetucl a non-negative number. Target maximum upper confidence 
-#'   limit for total bycatch given zero bycatch observed. If 0, no corresponding 
-#'   minimum observer coverage will be highlighted.
+#'   limit for total bycatch given zero bycatch observed. If set to 0, no 
+#'   corresponding minimum observer coverage will be highlighted or returned.
 #' @param fixedoc a non-negative number between 0 and 100. Percent observer coverage 
 #'   for which to return ucl value.
 #' @param ymax a positive number. Upper limit for y-axis of plot.
-#' @param silent logical. If silent = TRUE, print output to terminal is suppressed.
-#' @param showplot logical. If plot = FALSE, plotting is suppressed.
+#' @param silent logical. If \code{TRUE}, print output to terminal is suppressed.
+#' @param showplot logical. If \code{FALSE}, plotting is suppressed.
+#' @param ... additional arguments for compatibility with Shiny. 
 #' 
 #' @details
 #' Upper confidence limits are based on the probability density function for 
@@ -62,7 +63,7 @@
 #' 
 #' @export 
 plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0, 
-                           ymax = 100, showplot = TRUE, silent = FALSE) {
+                           ymax = 100, showplot = TRUE, silent = FALSE, ...) {
   
   # check input values
   if ((ceiling(te) != floor(te)) || te<=1) stop("te must be a positive integer > 1")
@@ -71,6 +72,11 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   if (fixedoc)
     if (fixedoc<0 || fixedoc>100) stop("fixedoc must be >= 0 and <= 100.")
   if (ymax<=0) stop("ymax must be > 0")
+  
+  # get shiny flag if specified or set to FALSE
+  myArgs <- match.call()
+  if (!("as.shiny" %in% names(myArgs))) as.shiny <- FALSE
+  else as.shiny <- myArgs$as.shiny
   
   # upper confidence limit of bycatch given none observed
   a <- 1 - cl/100

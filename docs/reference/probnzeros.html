@@ -112,8 +112,8 @@ zero bycatch.</p></dd>
 <dt>d</dt>
 <dd><p>a number greater than or equal to 1. Dispersion 
 index. The dispersion index corresponds to the variance-to-mean 
-ratio of effort-unit-level bycatch, so \(d = 1\) corresponds to Poisson-
-distributed bycatch, and \(d &gt; 1\) corresponds to overdispersed bycatch.</p></dd>
+ratio of effort-unit-level bycatch, so <code>d = 1</code> corresponds to Poisson-
+distributed bycatch, and <code>d &gt; 1</code> corresponds to overdispersed bycatch.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -128,7 +128,7 @@ distributed bycatch, and \(d &gt; 1\) corresponds to overdispersed bycatch.</p><
     <div id="details">
     <h2>Details</h2>
     <p>Calculated from the probability density at zero of the corresponding Poisson
-(\(d = 1\)) or negative binomial (\(d &lt; 1\)) distribution.</p>
+(<code>d = 1</code>) or negative binomial (<code>d &gt; 1</code>) distribution.</p>
 <p><strong>Caveat:</strong> <code>probnzeros</code> assumes that (1) observer coverage is 
 representative, (2) bycatch (<code>bpue</code>) is in terms of individuals (not 
 weight) per unit effort, and (3) the specified dispersion index reflects 
