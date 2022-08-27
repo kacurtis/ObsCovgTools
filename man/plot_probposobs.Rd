@@ -31,7 +31,7 @@ coverage will be highlighted or returned.}
 }
 \value{
 A list with two components:
-  \item{pobs}{minimum observer coverage in terms of percentage.} 
+  \item{targetoc}{minimum observer coverage in terms of percentage.} 
   \item{ppos.te}{probability of any bycatch occurring in total effort}
 
 Returned invisibly.

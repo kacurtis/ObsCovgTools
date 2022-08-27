@@ -22,7 +22,7 @@ highlighted or returned.}
 }
 \value{
 If \code{targetcv} is non-zero, a list with one component:
-  \item{pobs}{minimum observer coverage in terms of percentage.}
+  \item{targetoc}{minimum observer coverage in terms of percentage.}
 
 Returned invisibly.
 }
@@ -40,6 +40,6 @@ hierarchical variance (e.g., using dispersion index at trip level if greater
 than that at set level). Violating these assumptions will likely result in 
 negatively biased projections of bycatch estimation CV for a given level of 
 observer coverage. Users may want to explore uncertainty in dispersion index 
-and in bycatch per unit effort by varying those inputs.See documentation for 
+and in bycatch per unit effort by varying those inputs. See documentation for 
 \code{sim_cv_obscov} for additional details.
 }

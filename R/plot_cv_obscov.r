@@ -21,11 +21,11 @@
 #' than that at set level). Violating these assumptions will likely result in 
 #' negatively biased projections of bycatch estimation CV for a given level of 
 #' observer coverage. Users may want to explore uncertainty in dispersion index 
-#' and in bycatch per unit effort by varying those inputs.See documentation for 
+#' and in bycatch per unit effort by varying those inputs. See documentation for 
 #' \code{sim_cv_obscov} for additional details.
 #'   
 #' @return If \code{targetcv} is non-zero, a list with one component:
-#'   \item{pobs}{minimum observer coverage in terms of percentage.} 
+#'   \item{targetoc}{minimum observer coverage in terms of percentage.} 
 #' @return Returned invisibly. 
 #'   
 #' @export 
@@ -42,10 +42,12 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   
   # get minimum required observer coverage 
   # (interpolation results in more conservative, i.e., higher, coverage than exact solution due to concave curvature)
-  if (targetcv)
-    targetoc <- ifelse(simlist$te <= 20,
+  if (targetcv) {
+    targetoc <- 100*ifelse(simlist$te <= 20,
                        with(simlist$simsum, pobs[min(which(cvsim<=targetcv))]),
                        stats::approx(simlist$simsum$cvsim, simlist$simsum$pobs, targetcv)$y)
+    targetoc <- ifelse(targetoc < 10, my_ceiling(targetoc, 1), my_ceiling(targetoc, 2))
+  }
   
   # plot 
   if (showplot) {
@@ -60,7 +62,7 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
     if (targetcv) {
       graphics::abline(h=targetcv, col=2, lwd=2, lty=2)
       graphics::par(xpd=TRUE)
-      graphics::points(targetoc*100, targetcv, pch=8, col=2, cex=1.5, lwd=2)
+      graphics::points(targetoc, targetcv, pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
       legpos <- ifelse(any(simlist$simsum$pobs > 0.7 & simlist$simsum$cvsim > 0.5), 
                        "bottomleft", "topright")
@@ -70,22 +72,27 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   }
   
   # print recommended minimum observer coverage
-  if (!silent) {
-    if (targetcv)  {
-      if (!is.na(targetoc)) {
-        cat(paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, " is ", 
-                   my_ceiling(targetoc*100,2), "%.\n"))
-      } else {
-        cat(paste0("Simulated observer coverage levels do not include range corresponding to ",
-                   "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n"))
-      }
+  if (targetcv)  {
+    if (!is.na(targetoc)) {
+      rec1 <- paste0("Minimum observer coverage to achieve CV \u2264 ", targetcv, 
+                     " is ", format(targetoc, nsmall = ifelse(targetoc < 1, 1, 0)), 
+                     "%.\n")
+    } else {
+      rec1 <- paste0("Simulated observer coverage levels do not include range corresponding to ",
+                 "minimum observer coverage to achieve CV \u2264 ", targetcv, ".\n")
     }
-    cat(paste0("Results are interpolated from simulation-based projections and ", 
-               "may vary slightly with repetition.\n"))
-    cat(paste0("Please review the caveats in the associated documentation.\n"))
-  }
+  } else { rec1 <- "" }
+  rec2 <- paste0("Results are interpolated from simulation-based projections and ", 
+             "may vary slightly with repetition.\n")
+  rec <- paste0(rec1, rec2)
+  if (!as.shiny & !silent) 
+    cat(paste0(rec, "Please review the caveats in the documentation.\n"))
   
   # return recommended minimum observer coverage
-  if (targetcv) 
-    return(invisible(list(pobs = my_ceiling(targetoc*100,2))))
+  if (as.shiny) {
+    return(invisible(list(rec = rec)))
+  } else { 
+    if (targetcv)
+      return(invisible(list(targetoc = targetoc)))
+  }
 }

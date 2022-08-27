@@ -45,7 +45,7 @@
 #' effort by varying those inputs.
 #' 
 #' @return A list with two components:
-#'   \item{pobs}{minimum observer coverage in terms of percentage.} 
+#'   \item{targetoc}{minimum observer coverage in terms of percentage.} 
 #'   \item{ppos.te}{probability of any bycatch occurring in total effort}
 #' @return Returned invisibly. 
 #' 
@@ -115,6 +115,6 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   }
   
   # return recommended minimum observer coverage
-  return(invisible(list(pobs = ifelse(targetppos, my_ceiling(targetoc*100,3), NA), 
+  return(invisible(list(targetoc = ifelse(targetppos, my_ceiling(targetoc*100,3), NA), 
                         ppos.te = signif(100*ppt,3))))
 }

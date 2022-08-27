@@ -276,24 +276,11 @@ server <- function(input, output, session) {
       oc.cv.out <- plot_cv_obscov(simlist = simlist(),
                                   targetcv = as.numeric(input$targetcv),
                                   silent = TRUE, as.shiny = TRUE)
-      if (as.logical(input$targetcv)) {
-        if (!is.na(oc.cv.out$pobs)) {
-          rec <- paste0("Minimum observer coverage to achieve CV <= ",
-                      input$targetcv, " is ",oc.cv.out$pobs,"%.")
-        } else {
-          rec <- paste0("Simulated observer coverage levels do not include ", 
-                        "range corresponding to minimum observer coverage to ",
-                        "achieve CV <= ", input$targetcv, ".\n")
-        }
-      } else rec <- ""
-      HTML(paste0("<p></p>",rec," Results are interpolated from ",
-                  "simulation-based projections and may vary slightly",
-                  " with repetition.", 
+      HTML(paste0("<p></p>",oc.cv.out$rec, 
                   " Please review the caveats in the About tab."))
     }
   })
 
-  
   output$plotsavailable <- reactive(
     !is.null(simlist())
   )
