@@ -24,14 +24,13 @@
 #' Probabilities are based on the probability density function for the 
 #' corresponding Poisson or negative binomial distribution.
 #' 
-#' The probability that any bycatch occurs in the given total effort is shown
-#' by the horizontal black dotted line. The conditional probability of observing 
-#' any bycatch if it occurs is shown by the solid black line.  The product of 
-#' these first two probabilities gives the absolute probability of observing any
-#' bycatch (dashed black line).The minimum observer coverage to achieve the target 
-#' probability of observing bycatch if it occurs (x-axis value of red star) is 
-#' where the conditional bycatch detection probability (solid black line) 
-#' intersects with the target probability (red dash-dot line).
+#' The conditional probability of observing any bycatch if it occurs (solid black 
+#' line) is obtained by dividing the absolute probability of observing any bycatch
+#' (black dashed line) by the probability that any bycatch occurs in the given 
+#' total effort (horizontal black dotted line). The minimum observer coverage to 
+#' achieve the target probability of observing bycatch if it occurs (x-axis value 
+#' of red star) is where the conditional bycatch detection probability (solid black 
+#' line) intersects with the target probability (red dash-dot line).
 #' 
 #' \strong{Caveat:} \code{plot_probposobs} assumes that (1) observer coverage is 
 #' representative, (2) bycatch (\code{bpue}) is in terms of individuals (not 
@@ -64,7 +63,7 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   if (!("as.shiny" %in% names(myArgs))) as.shiny <- FALSE
   else as.shiny <- myArgs$as.shiny
   
-  # percent probablity of positive observed bycatch
+  # percent probability of positive observed bycatch
   if (te<1000) { oc <- 1:te 
   } else { oc <- round(seq(0.001,1,0.001)*te) }
   df <- data.frame(nobs = oc, pobs = oc/te)
@@ -73,7 +72,7 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   df$ppc <- df$pp/ppt
   if (targetppos) {
     itarget <- min(which(df$ppc >= targetppos/100))
-    targetoc <- df$pobs[itarget]
+    targetoc <- 100*ceiling_dec(df$pobs[itarget], 3)
   }
   
   # plot
@@ -91,7 +90,7 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
     if (targetppos) {
       graphics::lines(c(0,100),rep(targetppos,2), col=2, lwd=2, lty=4)
       graphics::par(xpd=TRUE)
-      graphics::points(targetoc*100, 100*df$ppc[itarget], pch=8, col=2, cex=1.5, lwd=2)
+      graphics::points(targetoc, 100*df$ppc[itarget], pch=8, col=2, cex=1.5, lwd=2)
       graphics::par(xpd=FALSE)
       graphics::legend(legpos, lty=c(1,2,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
                        legend=c("in observed effort if total bycatch > 0", "in observed effort",
@@ -104,17 +103,23 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   }
   
   # print recommended minimum observer coverage
-  if (!silent) {
-    cat(paste0("The probability that any bycatch occurs in the given total effort is ", 
-               signif(100*ppt,3), "%.\n"))
-    if (targetppos) 
-      cat(paste0("Minimum observer coverage to achieve at least ", targetppos, 
-                 "% probability of observing \nbycatch when total bycatch is positive is ", 
-                 my_ceiling(targetoc*100,3), "%.\n"))
-    cat(paste0("Please review the caveats in the associated documentation.\n"))
-  }
+  rec1 <- paste0("The probability that any bycatch occurs in the given total effort is ", 
+               signif(100*ppt,3), "%.\n")
+  if (targetppos) {
+    rec2 <- paste0("Minimum observer coverage to achieve at least ", targetppos, 
+                 "% probability of observing bycatch \nwhen total bycatch is positive is ", 
+                 format(targetoc, nsmall=1), "%.\n") }
+  else { rec2 <- "" }
+  rec <- paste0(rec1, rec2)
+  if (!as.shiny & !silent) 
+    cat(paste0(rec, "Please review the caveats in the associated documentation.\n"))
   
   # return recommended minimum observer coverage
-  return(invisible(list(targetoc = ifelse(targetppos, my_ceiling(targetoc*100,3), NA), 
-                        ppos.te = signif(100*ppt,3))))
+  if (as.shiny) {
+    return(invisible(list(rec = rec)))
+  } else { 
+    return(invisible(list(targetoc = ifelse(targetppos, targetoc, NA), 
+                          ppos.te = signif(100*ppt,3))))
+  }
+  
 }

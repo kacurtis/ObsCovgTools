@@ -43,10 +43,10 @@ plot_cv_obscov <- function(simlist = simlist, targetcv = 0.3,
   # get minimum required observer coverage 
   # (interpolation results in more conservative, i.e., higher, coverage than exact solution due to concave curvature)
   if (targetcv) {
-    targetoc <- 100*ifelse(simlist$te <= 20,
+    targetoc <- ifelse(simlist$te <= 20,
                        with(simlist$simsum, pobs[min(which(cvsim<=targetcv))]),
                        stats::approx(simlist$simsum$cvsim, simlist$simsum$pobs, targetcv)$y)
-    targetoc <- ifelse(targetoc < 10, my_ceiling(targetoc, 1), my_ceiling(targetoc, 2))
+    targetoc <- 100*ifelse(targetoc < 0.1, my_ceiling(targetoc, 1), my_ceiling(targetoc, 2))
   }
   
   # plot 

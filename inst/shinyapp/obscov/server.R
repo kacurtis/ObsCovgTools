@@ -143,21 +143,12 @@ server <- function(input, output, session) {
                     targetppos = as.numeric(input$target.ppos),
                     silent = TRUE, as.shiny = TRUE)
     
-    if (as.logical(input$target.ppos)) {
-      rec <- paste0("The probability that any bycatch occurs in the given total ",
-                    "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
-                    "%. Minimum observer coverage to achieve at least ", 
-                    input$target.ppos, "% probability of observing bycatch when",
-                    " total bycatch is positive is ", oc.ppos.out$pobs, "%.")
-    } else rec <- paste0("The probability that any bycatch occurs in the given total ",
-                         "effort (horizontal black dotted line) is ",oc.ppos.out$ppos.te, 
-                         "%.")
-    HTML(paste0(rec,
-                " The conditional probability of observing any bycatch if it occurs ", 
-                "(solid black line) is obtained by dividing the absolute probability",
-                " of observing any bycatch (black dashed line) by the probability ",
-                "that any bycatch occurs in the given total effort. Please review",
-                " the caveats in the About tab."))
+    rec2 <- paste0(" The conditional probability of observing any bycatch if it occurs ", 
+                   "(solid black line) is obtained by dividing the absolute probability",
+                   " of observing any bycatch (black dashed line) by the probability ",
+                   "that any bycatch occurs in the given total effort.")
+    
+    HTML(paste0("<p></p>", oc.ppos.out$rec, rec2, " Please review the caveats in the About tab."))
   })
     
   plotlabels.ucl <- reactiveValues(ucl='')
@@ -199,17 +190,7 @@ server <- function(input, output, session) {
                                  ymax = as.numeric(input$ymax.ucl),
                                  silent = TRUE, as.shiny = TRUE)
     
-    if (as.logical(as.numeric(input$target.ucl))) {
-      rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
-                    " limit of ", input$target.ucl, " is not exceeded when no bycatch is ",
-                    " observed is ", oc.ucl.out$targetoc, "%.\n")
-    } else { rec1 <- "" }
-    if (as.logical(as.numeric(input$fixedoc.ucl))) {
-      rec2 <- paste0("Upper confidence limit for bycatch given none observed in ",
-                     oc.ucl.out$fixedoc, "% (", oc.ucl.out$fixednoc, " trips or sets)",
-                     " coverage is ", oc.ucl.out$fixedoc.ucl, ".\n")
-    } else { rec2 <- "" }
-    HTML(paste0(rec1, rec2, "Please review the caveats in the About tab."))
+    HTML(paste0("<p></p>", oc.ucl.out$rec, "Please review the caveats in the About tab."))
   })
   
   plotlabels.cv <- reactiveValues(cv = '')

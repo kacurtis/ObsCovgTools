@@ -43,7 +43,7 @@
 #' 
 #' @return A list with components:
 #'   \item{ucldat}{a tibble with the following fields for each coverage level included: 
-#'   number of observed trips or sets (\code{nobs}), 
+#'   number of observed effort units (\code{nobs}), 
 #'   proportion observer coverage (\code{pobs}), 
 #'   upper confidence limit of total bycatch given none observed (\code{ucl}),
 #'   and finite population correction (\code{fpc}) used in calculating \code{ucl}.}
@@ -94,13 +94,21 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   # identify target observer coverage if target ucl specified
   if (targetucl) {
     itarget <- min(which(df$ucl <= targetucl))
-    targetoc <- df$pobs[itarget]
+    targetoc <- 100*ceiling_dec(df$pobs[itarget], 3)
   }
   
   if (fixedoc) {
     fixednoc <- round(fixedoc/100 * te)
-    fixedoc <- fixednoc/te
+    fixedoc.new <- 100*round(fixednoc/te, 3)
+    # should return provided fixedoc or is rounded recalculated one closer?
+    fixedoc <- ifelse(abs(fixedoc/100*te-fixednoc) < abs(fixedoc.new/100*te-fixednoc),
+                      fixedoc, fixedoc.new)
+    # how many decimal points in fixedoc?
+    ndecpt.foc <- nchar(strsplit(as.character(fixedoc),".",fixed=TRUE)[[1]][2])
+    ndecpt.foc <- ifelse(is.na(ndecpt.foc), 1, ndecpt.foc)
+    # finite population correction
     fixedoc.fpc <- sqrt((te - fixednoc)/(te-1))
+    # upper confidence limit
     fixedoc.ucl <- fixedoc.fpc * te * solveucl(a=a, d=d, n=fixednoc)
   }
   
@@ -118,7 +126,7 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
                    labels=c(0.1, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 500, 1000, 5000, 10000))
     if (targetucl) {
       graphics::lines(c(0,100),log10(rep(targetucl,2)), col=2, lwd=2, lty=4)
-      graphics::points(targetoc*100, log10(df$ucl[itarget]), pch=8, col=2, cex=1.5, lwd=2)
+      graphics::points(targetoc, log10(df$ucl[itarget]), pch=8, col=2, cex=1.5, lwd=2)
       graphics::legend("topright", lty=c(2,1,3,4,NA), pch=c(NA,NA,NA,NA,8), lwd=2, col=c(1,1,1,2,2), pt.cex=1.5, 
                        legend=c(paste0("d=",dv[1]), paste0("d=",dv[2]), paste0("d=",dv[3]),
                                 "target UCL", "min coverage"))
@@ -129,23 +137,29 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   }
   
   # print recommended minimum observer coverage
-  if (!silent) {
-    if (targetucl) 
-      cat(paste0("Minimum observer coverage to ensure that the upper confidence",
-                 " limit of ", targetucl, " is not exceeded when no bycatch is ",
-                 "observed is ", my_ceiling(targetoc*100,3), "%.\n"))
-    if (fixedoc)
-      cat(paste0("Upper confidence limit for bycatch given none observed in ",
-                 my_ceiling(fixedoc*100,3), "% (", fixednoc, " trips or sets)",
-                 " coverage is ", my_ceiling(fixedoc.ucl,3), ".\n"))
-    cat(paste0("Please review the caveats in the associated documentation.\n"))
-  }
+  if (targetucl) {
+    rec1 <- paste0("Minimum observer coverage to ensure that the upper confidence",
+                 " limit of ", targetucl, " is not \nexceeded when no bycatch is ",
+                 "observed is ", format(targetoc, nsmall=1), "%.\n")
+  } else { rec1 <- "" }
+  if (fixedoc) {
+    rec2 <- paste0("Upper confidence limit for bycatch given none observed in ",
+                 format(fixedoc, nsmall=ndecpt.foc), "% \n(", fixednoc, " effort units)",
+                 " coverage is ", my_ceiling(fixedoc.ucl,3), ".\n")
+  } else { rec2 <- "" }
+  rec <- paste0(rec1, rec2)
+  if (!as.shiny & !silent) 
+    cat(paste0(rec, "Please review the caveats in the associated documentation.\n"))
   
   # return recommended minimum observer coverage
-  return(invisible(list(ucldat=df, targetucl=ifelse(targetucl, targetucl, NA), 
-                        targetoc=ifelse(targetucl, my_ceiling(targetoc*100,3), NA), 
-                        fixedoc=ifelse(fixedoc, my_ceiling(fixedoc*100,3), NA), 
+  if (as.shiny) {
+    return(invisible(list(rec = rec)))
+  } else { 
+    return(invisible(list(ucldat=df, targetucl=ifelse(targetucl, targetucl, NA), 
+                        targetoc=ifelse(targetucl, targetoc, NA), 
+                        fixedoc=ifelse(fixedoc, fixedoc, NA), 
                         fixednoc=ifelse(fixedoc, fixednoc, NA),
                         fixedoc.ucl=ifelse(fixedoc, my_ceiling(fixedoc.ucl,3), NA),
                         te=te, d=d, cl=cl)))
+  }
 }

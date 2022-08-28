@@ -46,14 +46,13 @@ Returned invisibly.
 Probabilities are based on the probability density function for the 
 corresponding Poisson or negative binomial distribution.
 
-The probability that any bycatch occurs in the given total effort is shown
-by the horizontal black dotted line. The conditional probability of observing 
-any bycatch if it occurs is shown by the solid black line.  The product of 
-these first two probabilities gives the absolute probability of observing any
-bycatch (dashed black line).The minimum observer coverage to achieve the target 
-probability of observing bycatch if it occurs (x-axis value of red star) is 
-where the conditional bycatch detection probability (solid black line) 
-intersects with the target probability (red dash-dot line).
+The conditional probability of observing any bycatch if it occurs (solid black 
+line) is obtained by dividing the absolute probability of observing any bycatch
+(black dashed line) by the probability that any bycatch occurs in the given 
+total effort (horizontal black dotted line). The minimum observer coverage to 
+achieve the target probability of observing bycatch if it occurs (x-axis value 
+of red star) is where the conditional bycatch detection probability (solid black 
+line) intersects with the target probability (red dash-dot line).
 
 \strong{Caveat:} \code{plot_probposobs} assumes that (1) observer coverage is 
 representative, (2) bycatch (\code{bpue}) is in terms of individuals (not 

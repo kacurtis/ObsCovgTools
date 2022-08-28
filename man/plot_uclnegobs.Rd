@@ -38,7 +38,7 @@ for which to return ucl value.}
 \value{
 A list with components:
   \item{ucldat}{a tibble with the following fields for each coverage level included: 
-  number of observed trips or sets (\code{nobs}), 
+  number of observed effort units (\code{nobs}), 
   proportion observer coverage (\code{pobs}), 
   upper confidence limit of total bycatch given none observed (\code{ucl}),
   and finite population correction (\code{fpc}) used in calculating \code{ucl}.}
