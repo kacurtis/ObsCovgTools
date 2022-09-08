@@ -31,8 +31,6 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
-
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -45,7 +43,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ObsCovgTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.1</span>
       </span>
     </div>
 
@@ -53,33 +51,33 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="reference/index.html">
-    <span class="far fa-file-code fa-lg"></span>
+    <span class="far fa far fa-file-code fa-lg"></span>
      
     Functions
   </a>
 </li>
 <li>
-  <a href="https://github.com/kacurtis/ObsCovgTools" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+  <a href="https://github.com/kacurtis/ObsCovgTools">
+    <span class="fab fa fab fa-github fa-lg"></span>
      
     Source Code
   </a>
 </li>
 <li>
-  <a href="https://github.com/kacurtis/ObsCovgTools/issues/" class="external-link">
-    <span class="fas fa-question-circle fa-lg"></span>
+  <a href="https://github.com/kacurtis/ObsCovgTools/issues/">
+    <span class="fas fa fas fa-question-circle fa-lg"></span>
      
     Issues
   </a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     News
      
     <span class="caret"></span>
@@ -87,17 +85,16 @@
   <ul class="dropdown-menu" role="menu">
 <li class="dropdown-header">Releases</li>
     <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.1" class="external-link">Version 3.2.1</a>
+      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.1">Version 3.2.1</a>
     </li>
     <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.0" class="external-link">Version 3.2.0</a>
+      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.0">Version 3.2.0</a>
     </li>
     <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.1.1" class="external-link">Version 3.1.1</a>
+      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.1.1">Version 3.1.1</a>
     </li>
     <li class="divider">
-    </li>
-<li>
+    <li>
       <a href="news/index.html">Changelog</a>
     </li>
   </ul>
@@ -105,8 +102,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/kacurtis/ObsCovgTools/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+  <a href="https://github.com/kacurtis/ObsCovgTools/">
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -122,104 +119,101 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div class="section level1">
-<div class="page-header"><h1 id="obscovgtools-">ObsCovgTools <img src="logo.png" width="200" height="231" align="right" style="padding: 10px"><a class="anchor" aria-label="anchor" href="#obscovgtools-"></a>
+<div id="obscovgtools-" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#obscovgtools-" class="anchor"></a>ObsCovgTools <img src="logo.png" width="200" height="231" align="right" style="padding: 10px">
 </h1></div>
 <!-- badges: start -->
 
-<div class="section level3">
-<h3 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
-</h3>
-<p>ObsCovgTools provides tools for evaluating fishery observer coverage, particularly with respect to documenting and estimating rare bycatch. Current functionality includes evaluating observer coverage in terms of (1) probabilities of observing a bycatch event and of any bycatch occurring in total effort, given mean bycatch rate, dispersion index (variance to mean ratio in the bycatch rate), and total fishery effort; (2) upper confidence limit of bycatch when none was observed, given total fishery effort and dispersion index; and (3) bycatch estimation CV (coefficient of variation), given bycatch rate, dispersion index, and total fishery effort. Estimates in all cases are based directly on or simulated from the corresponding Poisson or negative binomial probability distribution.</p>
+<div id="description" class="section level3">
+<h3 class="hasAnchor">
+<a href="#description" class="anchor"></a>Description</h3>
+<p>ObsCovgTools provides tools for evaluating fishery observer coverage, particularly with respect to documenting and estimating rare bycatch. Current functionality includes evaluating observer coverage in terms of</p>
+<p>(1) probabilities of observing a bycatch event and of any bycatch occurring in total effort, given mean bycatch rate, dispersion index (variance to mean ratio in the bycatch rate), and total fishery effort;</p>
+<p>(2) upper confidence limit of bycatch when none was observed, given total fishery effort and dispersion index; and (3) bycatch estimation CV (coefficient of variation), given bycatch rate, dispersion index, and total fishery effort. Estimates in all cases are based directly on or simulated from the corresponding Poisson or negative binomial probability distribution.</p>
 </div>
-<div class="section level3">
-<h3 id="caveat">Caveat<a class="anchor" aria-label="anchor" href="#caveat"></a>
-</h3>
+<div id="caveat" class="section level3">
+<h3 class="hasAnchor">
+<a href="#caveat" class="anchor"></a>Caveat</h3>
 <p>The current implementation of ObsCovgTools assumes that (1) observer coverage is representative, (2) bycatch is in terms of individuals (not weight) per unit effort, and (3) the specified dispersion index reflects the highest level of any hierarchical variance (e.g., using dispersion index at trip level if greater than that at set level). Violating these assumptions may result in negatively biased projections of observer coverage required to meet specific objectives. Users may want to explore uncertainty in dispersion index and in bycatch per unit effort by varying those inputs.</p>
 </div>
-<div class="section level3">
-<h3 id="shiny-app">Shiny app<a class="anchor" aria-label="anchor" href="#shiny-app"></a>
-</h3>
-<p>This package has been implemented as a Shiny web application, coauthored by Howard Coleman, which can be accessed at <a href="https://kacurtis.shinyapps.io/obscov/" class="external-link uri">https://kacurtis.shinyapps.io/obscov/</a>.</p>
+<div id="shiny-app" class="section level3">
+<h3 class="hasAnchor">
+<a href="#shiny-app" class="anchor"></a>Shiny app</h3>
+<p>This package has been implemented as a Shiny web application, coauthored by Howard Coleman, which can be accessed at <a href="https://kacurtis.shinyapps.io/obscov/" class="uri">https://kacurtis.shinyapps.io/obscov/</a>.</p>
 </div>
-<div class="section level3">
-<h3 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
-</h3>
+<div id="citation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#citation" class="anchor"></a>Citation</h3>
 <p>If you use ObsCovgTools results in publications or talks, please cite the primary citation:</p>
-<p>Curtis K. A., Carretta J. V. 2020. ObsCovgTools: Assessing observer coverage needed to document and estimate rare event bycatch. Fisheries Research, 225: 105493. <a href="https://doi.org/10.1016/j.fishres.2020.105493" class="external-link uri">https://doi.org/10.1016/j.fishres.2020.105493</a></p>
+<p>Curtis K. A., Carretta J. V. 2020. ObsCovgTools: Assessing observer coverage needed to document and estimate rare event bycatch. Fisheries Research, 225: 105493. <a href="https://doi.org/10.1016/j.fishres.2020.105493" class="uri">https://doi.org/10.1016/j.fishres.2020.105493</a></p>
 <p>You can also cite the package, updating the version number and year if you use a more recent version:</p>
-<p>Curtis K. A. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for Bycatch Estimation. R package version 3.1.1. <a href="https://kacurtis.github.io/ObsCovgTools" class="external-link uri">https://kacurtis.github.io/ObsCovgTools</a></p>
+<p>Curtis K. A. 2020. ObsCovgTools: Evaluate Fishery Observer Coverage for Bycatch Estimation. R package version 3.1.1. <a href="https://kacurtis.github.io/ObsCovgTools" class="uri">https://kacurtis.github.io/ObsCovgTools</a></p>
 </div>
-<div class="section level3">
-<h3 id="funding">Funding<a class="anchor" aria-label="anchor" href="#funding"></a>
-</h3>
+<div id="funding" class="section level3">
+<h3 class="hasAnchor">
+<a href="#funding" class="anchor"></a>Funding</h3>
 <p>Development of the ObsCovgTools package and the Shiny application was supported by a grant from the National Marine Fisheries Service (NMFS) Office of Science and Technology, through a contract to Ocean Associates, Inc. </p>
 <!-- Do not edit below. This adds the Disclaimer and NMFS footer. -->
 <hr>
 </div>
-<div class="section level2">
-<h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
-</h2>
+<div id="disclaimer" class="section level2">
+<h2 class="hasAnchor">
+<a href="#disclaimer" class="anchor"></a>Disclaimer</h2>
 <p>The United States Department of Commerce (DOC) GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. DOC has relinquished control of the information and no longer has responsibility to protect the integrity, confidentiality, or availability of the information. Any claims against the Department of Commerce stemming from the use of its GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.”</p>
 <hr>
 <p><img src="https://raw.githubusercontent.com/nmfs-general-modeling-tools/nmfspalette/main/man/figures/noaa-fisheries-rgb-2line-horizontal-small.png" width="200" style="height: 75px !important;" alt="NOAA Fisheries"></p>
-<p><a href="https://www.commerce.gov/" class="external-link">U.S. Department of Commerce</a> | <a href="https://www.noaa.gov" class="external-link">National Oceanographic and Atmospheric Administration</a> | <a href="https://www.fisheries.noaa.gov/" class="external-link">NOAA Fisheries</a></p>
+<p><a href="https://www.commerce.gov/">U.S. Department of Commerce</a> | <a href="https://www.noaa.gov">National Oceanographic and Atmospheric Administration</a> | <a href="https://www.fisheries.noaa.gov/">NOAA Fisheries</a></p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2 data-toc-skip>Links</h2>
+<h2>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/kacurtis/ObsCovgTools/" class="external-link">Browse source code</a></li>
-</ul>
-</div>
-
-<div class="license">
-<h2 data-toc-skip>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a> plus file <a href="LICENSE-text.html">LICENSE</a>
+<li>Browse source code at <br><a href="https://github.com/kacurtis/ObsCovgTools/">https://​github.com/​kacurtis/​ObsCovgTools/​</a>
 </li>
 </ul>
 </div>
-
-
-<div class="citation">
-<h2 data-toc-skip>Citation</h2>
+<div class="license">
+<h2>License</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing ObsCovgTools</a></li>
+<li>
+<a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a> plus file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
-
+<div class="citation">
+<h2>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html">Citing ObsCovgTools</a></li>
+</ul>
+</div>
 <div class="developers">
-<h2 data-toc-skip>Developers</h2>
+<h2>Developers</h2>
 <ul class="list-unstyled">
 <li>Alex Curtis <br><small class="roles"> Maintainer </small>  </li>
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
+  <div class="dev-status">
+<h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/kacurtis/ObsCovgTools/releases" class="external-link"><img src="https://img.shields.io/github/v/release/kacurtis/ObsCovgTools" alt="GitHub release (latest by date)"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.3603464" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3603464.svg" alt="DOI"></a></li>
+<li><a href="https://github.com/kacurtis/ObsCovgTools/releases"><img src="https://img.shields.io/github/v/release/kacurtis/ObsCovgTools" alt="GitHub release (latest by date)"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.3603464"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3603464.svg" alt="DOI"></a></li>
 </ul>
 </div>
-
-  </div>
+</div>
 </div>
 
 
       <footer><div class="copyright">
-  <p></p>
-<p>Developed by Alex Curtis.</p>
+  <p>Developed by Alex Curtis.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
@@ -227,8 +221,6 @@
 
   
 
-
-  
 
   </body>
 </html>

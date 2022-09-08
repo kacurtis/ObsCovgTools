@@ -30,3 +30,11 @@ vignettes/*.pdf
 .Rproj.user
 .Rbuildignore
 ObsCovgTools.Rproj
+# renv files
+/renv/.gitignore
+/renv/library/
+/renv/local/
+/renv/cellar/
+/renv/lock/
+/renv/python/
+/renv/staging/
