@@ -9,6 +9,11 @@ ui <- fluidPage(
   titlePanel(title=div(img(src="logo.png", height=120, width=104), "Observer coverage simulator - 3.2.1"),
              windowTitle="Observer coverage simulator"),
   tabsetPanel(id="alltabs",
+              tabPanel("New URL", value="noaaurl",
+                       tags$h3("The observer coverage simulator has a new home!"),
+                       HTML("<p>Please bookmark and use the new URL:</p><p><a href='https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a'>https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a</a></p>")
+                              
+              ),
               tabPanel("Objective: Probability of Positive Bycatch", value="ppos", 
                        fluidRow(
                          column(3, wellPanel(

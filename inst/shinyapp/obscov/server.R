@@ -112,6 +112,13 @@ check.ymax.ucl.inst.lab <- function(input) {
 
 server <- function(input, output, session) {
   
+  observe({
+    if (session$clientData$url_hostname!="kacurtis.shinyapps.io") {
+      hideTab(inputId = "alltabs", target = "noaaurl")
+    }
+  })
+
+  
   plotlabels.ppos <- reactiveValues(ppos='')
   
   ## validation functions for user inputs to ppos tab
@@ -133,6 +140,7 @@ server <- function(input, output, session) {
   })
   
   output$ppos_obscov_plot_label <- renderText({
+    
     validate(check.te.inst.lab(input$te.ppos), 
              check.bpue.inst.lab(input$bpue.ppos), 
              check.d.inst.lab(input$d.ppos))
@@ -150,10 +158,11 @@ server <- function(input, output, session) {
     
     HTML(paste0("<p></p>", oc.ppos.out$rec, rec2, " Please review the caveats in the About tab."))
   })
+  
     
   plotlabels.ucl <- reactiveValues(ucl='')
   
-  ## validation functions for user inputs to ppos tab
+  ## validation functions for user inputs to ucl tab
   
   output$ucl_obscov_plot <- renderPlot({
     
@@ -192,6 +201,7 @@ server <- function(input, output, session) {
     
     HTML(paste0("<p></p>", oc.ucl.out$rec, "Please review the caveats in the About tab."))
   })
+  
   
   plotlabels.cv <- reactiveValues(cv = '')
   
