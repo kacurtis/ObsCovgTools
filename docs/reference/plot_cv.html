@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run Shiny interface with ObsCovgTools — run_shiny • ObsCovgTools</title>
+<title>Plot bycatch estimation CV vs. observer coverage — plot_cv • ObsCovgTools</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -48,8 +48,10 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Run Shiny interface with ObsCovgTools — run_shiny" />
-<meta property="og:description" content="run_shiny runs a shiny application for the main functions in ObsCovgTools." />
+<meta property="og:title" content="Plot bycatch estimation CV vs. observer coverage — plot_cv" />
+<meta property="og:description" content="plot_cv plots projected bycatch estimation CVs vs observer 
+coverage, and returns minimum observer coverage needed to achieve 
+user-specified target CV and percentile." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -139,25 +141,77 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run Shiny interface with ObsCovgTools</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kacurtis/ObsCovgTools/blob/master/R/run_shiny.r'><code>R/run_shiny.r</code></a></small>
-    <div class="hidden name"><code>run_shiny.Rd</code></div>
+    <h1>Plot bycatch estimation CV vs. observer coverage</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kacurtis/ObsCovgTools/blob/master/R/plot_cv.r'><code>R/plot_cv.r</code></a></small>
+    <div class="hidden name"><code>plot_cv.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>run_shiny</code> runs a shiny application for the main functions in ObsCovgTools.</p>
+    <p><code>plot_cv</code> plots projected bycatch estimation CVs vs observer 
+coverage, and returns minimum observer coverage needed to achieve 
+user-specified target CV and percentile.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>run_shiny</span>()</pre>
+    <pre class="usage"><span class='fu'>plot_cv</span>(<span class='no'>te</span>, <span class='no'>bpue</span>, <span class='kw'>d</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>targetcv</span> <span class='kw'>=</span> <span class='fl'>0.3</span>, <span class='kw'>showplot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>te</th>
+      <td><p>an integer greater than 1. Total effort in fishery (e.g., trips 
+or sets).</p></td>
+    </tr>
+    <tr>
+      <th>bpue</th>
+      <td><p>a positive number. Bycatch per unit effort.</p></td>
+    </tr>
+    <tr>
+      <th>d</th>
+      <td><p>a number greater than or equal to 1. Dispersion index. The dispersion 
+index corresponds to the variance-to-mean ratio of effort-unit-level bycatch, 
+so <code>d = 1</code> corresponds to Poisson-distributed bycatch, and <code>d &gt; 1</code> 
+to overdispersed bycatch.</p></td>
+    </tr>
+    <tr>
+      <th>targetcv</th>
+      <td><p>a non-negative number less than 1. Target CV (as a proportion). 
+If set to 0, no corresponding minimum observer coverage will be 
+highlighted or returned.</p></td>
+    </tr>
+    <tr>
+      <th>showplot</th>
+      <td><p>logical. If <code>FALSE</code>, plotting is suppressed.</p></td>
+    </tr>
+    <tr>
+      <th>silent</th>
+      <td><p>logical. If <code>TRUE</code>, print output to terminal is suppressed.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments for compatibility with Shiny.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>None</p>
+    <p>If <code>targetcv</code> is non-zero, a list with one component:</p>
+<dt>targetoc</dt><dd><p>minimum observer coverage in terms of percentage.</p></dd>
+
+Returned invisibly.
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Note: Estimated run times in Bycatch Estimation CV tab only apply to execution
-on shinyapps.io server (see README)</p>
+    <p><strong>Caveat:</strong> <code>plot_cv</code> assumes that (1) observer coverage is 
+representative, (2) bycatch (<code>bpue</code>) is in terms of individuals (not 
+weight) per unit effort, and (3) the specified dispersion index reflects 
+the highest level of any hierarchical variance (e.g., using dispersion index 
+at trip level if greater than that at set level). Violating these assumptions 
+will likely result in negatively biased projections of bycatch estimation CV 
+for a given level of observer coverage. More conservative projections can be 
+obtained by using a higher dispersion index <code>d</code>. Users may want to 
+explore uncertainty in dispersion index and in bycatch per unit effort by 
+varying those inputs.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

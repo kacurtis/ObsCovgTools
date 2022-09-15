@@ -3,7 +3,9 @@
 #' \code{plot_probposobs} plots (1) probability of observing at least one bycatch
 #'   event vs observer coverage and (2) probability of any bycatch occurring in 
 #'   total fishery effort, given total fishery effort, bycatch per unit effort, 
-#'   and dispersion index. 
+#'   and dispersion index. The function returns returns minimum observer coverage 
+#'   needed to achieve user-specified probability of observing bycatch if it 
+#'   occurs.
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
 #'   or sets).
@@ -63,13 +65,14 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
   if (!("as.shiny" %in% names(myArgs))) as.shiny <- FALSE
   else as.shiny <- myArgs$as.shiny
   
-  # percent probability of positive observed bycatch
+  # get probability of positive observed bycatch for range of observer coverage
   if (te<1000) { oc <- 1:te 
   } else { oc <- round(seq(0.001,1,0.001)*te) }
   df <- data.frame(nobs = oc, pobs = oc/te)
   df$pp <- 1-probnzeros(df$nobs, bpue, d)   # probability of positive observed bycatch
   ppt <- utils::tail(df$pp,1)   # probability of positive bycatch in total effort
   df$ppc <- df$pp/ppt
+  # get minimum required observer coverage if targetppos provided
   if (targetppos) {
     itarget <- min(which(df$ppc >= targetppos/100))
     targetoc <- 100*ceiling_dec(df$pobs[itarget], 3)
@@ -80,7 +83,8 @@ plot_probposobs <- function(te, bpue, d = 2, targetppos = 95, showplot = TRUE,
     opar <- graphics::par(no.readonly = TRUE)
     graphics::par(xpd=TRUE)
     graphics::plot(100*df$pobs, 100*(df$ppc), type="l", lty=1, lwd=2,
-                   xlim=c(0,100), ylim=c(0,100), xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
+                   xlim=c(0,100), ylim=c(0,100), 
+                   xaxs="i", yaxs="i", xaxp=c(0,100,10), yaxp=c(0,100,10),
                    xlab="Observer Coverage (%)", ylab="Probability of Positive Bycatch (%)",
                    main="Probability of Positive Bycatch")
     graphics::lines(x=c(0,100),y=rep(100*ppt,2),lwd=3, lty=3)

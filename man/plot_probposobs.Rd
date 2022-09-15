@@ -40,7 +40,9 @@ Returned invisibly.
 \code{plot_probposobs} plots (1) probability of observing at least one bycatch
   event vs observer coverage and (2) probability of any bycatch occurring in 
   total fishery effort, given total fishery effort, bycatch per unit effort, 
-  and dispersion index.
+  and dispersion index. The function returns returns minimum observer coverage 
+  needed to achieve user-specified probability of observing bycatch if it 
+  occurs.
 }
 \details{
 Probabilities are based on the probability density function for the 

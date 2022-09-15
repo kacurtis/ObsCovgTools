@@ -59,7 +59,10 @@ Returned invisibly.
 \description{
 \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
   observer coverage when no bycatch is observed, given total fishery effort, 
-  dispersion index, and confidence level.
+  dispersion index, and confidence level. The function returns (1) minimum 
+  observer coverage needed to fall within user-specified upper confidence 
+  limit for bycatch when none was observed, and/or (2) the upper confidence 
+  limit for bycatch given specified observer coverage and no observed bycatch.
 }
 \details{
 Upper confidence limits are based on the probability density function for 

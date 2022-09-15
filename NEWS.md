@@ -1,3 +1,8 @@
+# ObsCovgTools 3.3.0
+
+* Implemented an analytical solution for CV corresponding to observer coverage, combining sim_cv_obscov.r and plot_cv_obscov.r into one function analogous to those for the other two management objectives. Elimination of Monte Carlo simulations provides major efficiency gains and increases precision of result. 
+
+
 # ObsCovgTools 3.2.1-2
 
 * Added a `NEWS.md` file to track changes to the package.

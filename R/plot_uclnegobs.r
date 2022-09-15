@@ -2,7 +2,10 @@
 #' 
 #' \code{plot_uclnegobs} plots upper confidence limit of total bycatch vs 
 #'   observer coverage when no bycatch is observed, given total fishery effort, 
-#'   dispersion index, and confidence level.
+#'   dispersion index, and confidence level. The function returns (1) minimum 
+#'   observer coverage needed to fall within user-specified upper confidence 
+#'   limit for bycatch when none was observed, and/or (2) the upper confidence 
+#'   limit for bycatch given specified observer coverage and no observed bycatch. 
 #'   
 #' @param te an integer greater than 1. Total effort in fishery (e.g., trips 
 #'   or sets).
@@ -91,7 +94,7 @@ plot_uclnegobs <- function(te, d = 2, cl = 95, targetucl = 0, fixedoc = 0,
   df$ucl <- df$fpc * te * solveucl(a=a, d=dv[2], n=df$nobs)
   ucl.dh <- df$fpc * te * solveucl(a=a, d=dv[3], n=df$nobs)
   
-  # identify target observer coverage if target ucl specified
+  # get minimum required observer coverage if target ucl specified
   if (targetucl) {
     itarget <- min(which(df$ucl <= targetucl))
     targetoc <- 100*ceiling_dec(df$pobs[itarget], 3)

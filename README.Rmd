@@ -23,9 +23,8 @@ mean bycatch rate, dispersion index (variance to mean ratio in the bycatch rate)
 and total fishery effort; (2) upper confidence limit of bycatch when none was 
 observed, given total fishery effort and dispersion index; and (3) bycatch 
 estimation CV (coefficient of variation), given bycatch rate, dispersion 
-index, and total fishery effort. Estimates in all cases are based directly on or
-simulated from the corresponding Poisson or negative binomial probability 
-distribution.
+index, and total fishery effort. Estimates in all cases are based directly on the 
+corresponding Poisson or negative binomial probability distribution.
 
 ### Caveat
 

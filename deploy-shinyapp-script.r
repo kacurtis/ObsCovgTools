@@ -3,4 +3,4 @@
 devtools::install_github("kacurtis/ObsCovgTools")
 rsconnect::deployApp(appDir="inst/shinyapp/obscov", appName="obscov")
 
-# add two separate servers (account, server variables)
+# may need to add server info if more than one to choose from (account, server variables)

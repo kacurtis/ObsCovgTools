@@ -19,14 +19,6 @@ fixedoc.ucl.msg <- "Percent observer coverage for which to return UCL should be 
 
 ymax.ucl.msg <- "Upper limit for y-axis should be a number greater than zero."
 
-processing.title <- HTML(paste0("<center>Computing - ",
-                                "please wait...</center>"))
-processing.msg <- HTML(paste0("<center>Reload your browser to cancel processing.", 
-                              "<br>(To the left of the address bar, press Reload and then Stop Loading).",
-                              "<center>"))
-
-progress.caption <- "Simulation progress"
-
 check.te.inst <- function(input) {
   if (is.na(as.numeric(input)) || 
       ((as.numeric(input)) <= 1) ||
@@ -211,76 +203,39 @@ server <- function(input, output, session) {
   
   plotlabels.cv <- reactiveValues(cv = '')
   
-  simlist <- reactive({
-    if (input$submit.cv > 0) {
-      isolate({
-
-        ## validation of user inputs
-        
-        if (is.na(as.numeric(input$te)) ||
-              ((te <- as.numeric(input$te)) < 2) ||
-              (te != as.integer(te))) {
-          showModal(modalDialog(title=total.effort.title,
-                                 total.effort.msg,
-                                 easyClose=TRUE))
-          return()
-        }
-
-        if (is.na(as.numeric(input$bpue)) ||
-              ((bpue <- as.numeric(input$bpue)) <= 0)) {
-          showModal(modalDialog(title=bpue.title,
-                                 bpue.msg,
-                                 easyClose=TRUE))
-          return()
-        }
-
-        if (is.na(as.numeric(input$d)) ||
-              ((d <- as.numeric(input$d)) < 1)) {
-          showModal(modalDialog(title=dispersion.title,
-                                 dispersion.msg,
-                                 easyClose=TRUE))
-          return()
-        }
-
-        showModal(modalDialog(
-          title=processing.title,
-          processing.msg,
-          footer=NULL))
-        withProgress(message=progress.caption,
-                     value=0,
-                     {
-                       x <- sim_cv_obscov(te=te, bpue=bpue, d=d,
-                                          shiny.progress=TRUE)
-                     })
-        removeModal()
-        x
-      })
-    }
+  output$cv_obscov_plot <- renderPlot({
+    
+    ## validation of user inputs
+    
+    validate(check.te.inst(input$te.cv), 
+             check.bpue.inst(input$bpue.cv), 
+             check.d.inst(input$d.cv))
+    
+    plotlabels.cv$cv <- capture.output(
+      plot_cv(te = as.numeric(input$te.cv), 
+              bpue = as.numeric(input$bpue.cv), 
+              d = as.numeric(input$d.cv),
+              targetcv = as.numeric(input$target.cv)))
+    
   })
   
-  output$cv_obscov_plot <- renderPlot({
-    if (!is.null(simlist())) {
-      plot_cv_obscov(simlist = simlist(),
-                     targetcv = as.numeric(input$targetcv),
-                     silent = TRUE)
-    }
-  })
-
   output$cv_obscov_plot_label <- renderText({
-    if (is.null(simlist())) {
-      ''
-    } else {
-      oc.cv.out <- plot_cv_obscov(simlist = simlist(),
-                                  targetcv = as.numeric(input$targetcv),
-                                  silent = TRUE, as.shiny = TRUE)
-      HTML(paste0("<p></p>",oc.cv.out$rec, 
-                  " Please review the caveats in the About tab."))
-    }
+    
+    validate(check.te.inst.lab(input$te.cv), 
+             check.bpue.inst.lab(input$bpue.cv), 
+             check.d.inst.lab(input$d.cv))
+    
+    oc.cv.out <- plot_cv(te = as.numeric(input$te.cv), 
+                                   bpue = as.numeric(input$bpue.cv), 
+                                   d = as.numeric(input$d.cv),
+                                   targetcv = as.numeric(input$target.cv),
+                                   silent = TRUE, as.shiny = TRUE)
+    
+    HTML(paste0("<p></p>", oc.cv.out$rec, 
+                " Please review the caveats in the About tab."))
   })
-
-  output$plotsavailable <- reactive(
-    !is.null(simlist())
-  )
-  outputOptions(output, 'plotsavailable', suspendWhenHidden=FALSE)
+  
+  
+  outputOptions(output, suspendWhenHidden=FALSE)
 }
 

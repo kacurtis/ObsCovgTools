@@ -52,7 +52,9 @@
 <meta property="og:description" content="plot_probposobs plots (1) probability of observing at least one bycatch
   event vs observer coverage and (2) probability of any bycatch occurring in 
   total fishery effort, given total fishery effort, bycatch per unit effort, 
-  and dispersion index." />
+  and dispersion index. The function returns returns minimum observer coverage 
+  needed to achieve user-specified probability of observing bycatch if it 
+  occurs." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -85,7 +87,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ObsCovgTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.1-2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.3.0</span>
       </span>
     </div>
 
@@ -118,28 +120,8 @@
     Issues
   </a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    News
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li class="dropdown-header">Releases</li>
-    <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.1">Version 3.2.1</a>
-    </li>
-    <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.2.0">Version 3.2.0</a>
-    </li>
-    <li>
-      <a href="https://github.com/kacurtis/ObsCovgTools/releases/tag/v3.1.1">Version 3.1.1</a>
-    </li>
-    <li class="divider"></li>
-    <li>
-      <a href="../news/index.html">Changelog</a>
-    </li>
-  </ul>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -171,7 +153,9 @@
     <p><code>plot_probposobs</code> plots (1) probability of observing at least one bycatch
   event vs observer coverage and (2) probability of any bycatch occurring in 
   total fishery effort, given total fishery effort, bycatch per unit effort, 
-  and dispersion index.</p>
+  and dispersion index. The function returns returns minimum observer coverage 
+  needed to achieve user-specified probability of observing bycatch if it 
+  occurs.</p>
     </div>
 
     <pre class="usage"><span class='fu'>plot_probposobs</span>(<span class='no'>te</span>, <span class='no'>bpue</span>, <span class='kw'>d</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>targetppos</span> <span class='kw'>=</span> <span class='fl'>95</span>, <span class='kw'>showplot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
