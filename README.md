@@ -14,27 +14,33 @@ date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://g
 ObsCovgTools provides tools for evaluating fishery observer coverage,
 particularly with respect to documenting and estimating rare bycatch.
 Current functionality includes evaluating observer coverage in terms of
-(1) probabilities of observing a bycatch event and of any bycatch
-occurring in total effort, given mean bycatch rate, dispersion index
-(variance to mean ratio in the bycatch rate), and total fishery effort;
-(2) upper confidence limit of bycatch when none was observed, given
-total fishery effort and dispersion index; and (3) bycatch estimation CV
-(coefficient of variation), given bycatch rate, dispersion index, and
-total fishery effort. Estimates in all cases are based directly on or
-simulated from the corresponding Poisson or negative binomial
-probability distribution.
+
+1.  probabilities of observing a bycatch event and of any bycatch
+    occurring in total effort, given mean bycatch rate, dispersion index
+    (variance to mean ratio in the bycatch rate), and total fishery
+    effort;
+2.  upper confidence limit of bycatch when none was observed, given
+    total fishery effort and dispersion index; and
+3.  bycatch estimation CV (coefficient of variation), given bycatch
+    rate, dispersion index, and total fishery effort.
+
+Estimates in all cases are based directly on the corresponding Poisson
+or negative binomial probability distribution.
 
 ### Caveat
 
-The current implementation of ObsCovgTools assumes that (1) observer
-coverage is representative, (2) bycatch is in terms of individuals (not
-weight) per unit effort, and (3) the specified dispersion index reflects
-the highest level of any hierarchical variance (e.g., using dispersion
-index at trip level if greater than that at set level). Violating these
-assumptions may result in negatively biased projections of observer
-coverage required to meet specific objectives. Users may want to explore
-uncertainty in dispersion index and in bycatch per unit effort by
-varying those inputs.
+The ObsCovgTools package assumes that
+
+-   observer coverage is representative,
+-   bycatch is in terms of individuals (not weight) per unit effort, and
+-   the specified dispersion index reflects the highest level of any
+    hierarchical variance (e.g., using dispersion index at trip level if
+    greater than that at set level).
+
+Violating these assumptions may result in negatively biased projections
+of observer coverage required to meet specific objectives. Users may
+want to explore uncertainty in dispersion index and in bycatch per unit
+effort by varying those inputs.
 
 ### Shiny app
 

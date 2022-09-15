@@ -24,10 +24,10 @@
 #' weight) per unit effort, and (3) the specified dispersion index reflects 
 #' the highest level of any hierarchical variance (e.g., using dispersion index 
 #' at trip level if greater than that at set level). Violating these assumptions 
-#' will likely result in negatively biased projections of bycatch estimation CV 
-#' for a given level of observer coverage. More conservative projections can be 
-#' obtained by using a higher dispersion index \code{d}. Users may want to 
-#' explore uncertainty in dispersion index and in bycatch per unit effort by 
+#' will likely result in negatively biased projections of the observer coverage 
+#' needed to meet a specified objective. More conservative (higher) projections 
+#' can be obtained by using a higher dispersion index \code{d}. Users may want 
+#' to explore uncertainty in dispersion index and in bycatch per unit effort by 
 #' varying those inputs.
 #'   
 #' @return If \code{targetcv} is non-zero, a list with one component:

@@ -154,7 +154,7 @@ server <- function(input, output, session) {
                    " of observing any bycatch (black dashed line) by the probability ",
                    "that any bycatch occurs in the given total effort.")
     
-    HTML(paste0("<p></p>", oc.ppos.out$rec, rec2, " Please review the caveats in the About tab."))
+    HTML(paste0("<p></p><ul><li>", oc.ppos.out$rec, "</li><li>", rec2, "</li><li>Please review the caveats in the About tab.</li></ul>"))
   })
   
     
@@ -196,8 +196,11 @@ server <- function(input, output, session) {
                                  fixedoc = as.numeric(input$fixedoc.ucl),
                                  ymax = as.numeric(input$ymax.ucl),
                                  silent = TRUE, as.shiny = TRUE)
-    
-    HTML(paste0("<p></p>", oc.ucl.out$rec, "Please review the caveats in the About tab."))
+    if (oc.ucl.out$rec=="")
+      HTML(paste0("<p></p><ul><li>Please review the caveats in the About tab.</li></ul>"))
+    else 
+      HTML(paste0("<p></p><ul><li>", oc.ucl.out$rec, 
+                  "</li><li>Please review the caveats in the About tab.</li></ul>"))
   })
   
   
@@ -231,8 +234,11 @@ server <- function(input, output, session) {
                                    targetcv = as.numeric(input$target.cv),
                                    silent = TRUE, as.shiny = TRUE)
     
-    HTML(paste0("<p></p>", oc.cv.out$rec, 
-                " Please review the caveats in the About tab."))
+    if (oc.cv.out$rec=="")
+      HTML(paste0("<p></p><ul><li>Please review the caveats in the About tab.</li></ul>"))
+    else
+      HTML(paste0("<p></p><ul><li>", oc.cv.out$rec, 
+                  "</li><li>Please review the caveats in the About tab.</li></ul>"))
   })
   
   

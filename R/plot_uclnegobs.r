@@ -38,11 +38,11 @@
 #' effort,and (3) the specified dispersion index reflects the highest level of 
 #' any hierarchical variance (e.g., using dispersion index at trip level if 
 #' greater than that at set level). Violating these assumptions will likely 
-#' result in negatively biased projections of the upper confidence limit of total 
-#' bycatch given zero observed. More conservative projections can be obtained by 
-#' using a higher dispersion index \code{d}. Users may want to explore 
-#' uncertainty in dispersion index and in bycatch per unit effort by varying 
-#' those inputs.
+#' result in negatively biased projections of the observer coverage needed to 
+#' meet a specified objective. More conservative (higher) projections can be 
+#' obtained by using a higher dispersion index \code{d}. Users may want to 
+#' explore uncertainty in dispersion index and in bycatch per unit effort by 
+#' varying those inputs.
 #' 
 #' @return A list with components:
 #'   \item{ucldat}{a tibble with the following fields for each coverage level included: 

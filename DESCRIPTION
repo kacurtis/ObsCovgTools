@@ -2,7 +2,7 @@ Package: ObsCovgTools
 Type: Package
 Title: Evaluate Fishery Observer Coverage for Bycatch Estimation
 Version: 3.3.0
-Date: 2022-09-14
+Date: 2022-09-15
 URL: https://kacurtis.github.io/ObsCovgTools, https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.4.0)
 Imports: 
