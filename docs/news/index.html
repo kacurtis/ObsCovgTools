@@ -147,6 +147,9 @@
 <a href="#obscovgtools-330" class="anchor"></a>ObsCovgTools 3.3.0</h1>
 <ul>
 <li>Implemented an analytical solution for CV corresponding to observer coverage, replacing sim_cv_obscov.r and plot_cv_obscov.r with a single function analogous to those for the other two management objectives. Elimination of Monte Carlo simulations provides major efficiency gains and increases precision of results.</li>
+<li>Calculation of the precision of bycatch estimates: Given bycatch per unit effort <span class="math inline"><em>r</em></span>, dispersion index <span class="math inline"><em>d</em></span>, and total effort <span class="math inline"><em>N</em></span>, variance is given by <span class="math inline"><em>s</em><sup>2</sup> = <em>d</em><em>r</em></span>, and the expected coefficient of variation of bycatch estimates for observed effort <span class="math inline"><em>n</em></span>, corrected for sampling from a finite population per Cochran (1973), is <span class="math display">$$CV={ \sqrt{{ s^2 {{N-n} \over {N-1}}} \over n} \over r}$$</span>
+</li>
+<li>This also resulted in removing the previous dependency on the Runuran package.</li>
 </ul>
 </div>
     <div id="obscovgtools-321-2" class="section level1">
