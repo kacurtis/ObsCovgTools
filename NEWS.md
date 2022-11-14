@@ -1,6 +1,10 @@
 # ObsCovgTools 3.3.0
 
-* Implemented an analytical solution for CV corresponding to observer coverage, replacing sim_cv_obscov.r and plot_cv_obscov.r with a single function analogous to those for the other two management objectives. Elimination of Monte Carlo simulations provides major efficiency gains and increases precision of results. 
+* Implemented an analytical solution for CV corresponding to observer coverage, replacing sim_cv_obscov.r and plot_cv_obscov.r with a single function analogous to those for the other two management objectives. Elimination of Monte Carlo simulations provides major efficiency gains and increases precision of results.
+* Calculation of the precision of bycatch estimates:
+Given bycatch per unit effort $r$, dispersion index $d$, and total effort $N$, variance is given by $s^2=dr$, 
+and the expected coefficient of variation of bycatch estimates for observed effort $n$, corrected for sampling from a finite population per Cochran (1973), is 
+$$CV={ \sqrt{{ s^2 {{N-n} \over {N-1}}} \over n} \over r}$$
 
 
 # ObsCovgTools 3.2.1-2
