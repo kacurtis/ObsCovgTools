@@ -10,7 +10,7 @@ output:
 
 <!-- badges: start -->
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3603464.svg)](https://doi.org/10.5281/zenodo.3603464)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7083329.svg)](https://doi.org/10.5281/zenodo.7083329)
 <!-- badges: end -->
 
 ### Description

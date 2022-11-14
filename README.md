@@ -6,7 +6,7 @@
 
 [![GitHub release (latest by
 date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3603464.svg)](https://doi.org/10.5281/zenodo.3603464)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7083329.svg)](https://doi.org/10.5281/zenodo.7083329)
 <!-- badges: end -->
 
 ### Description
@@ -15,13 +15,13 @@ ObsCovgTools provides tools for evaluating fishery observer coverage,
 particularly with respect to documenting and estimating rare bycatch.
 Current functionality includes evaluating observer coverage in terms of
 
-1.  probabilities of observing a bycatch event and of any bycatch
+1)  probabilities of observing a bycatch event and of any bycatch
     occurring in total effort, given mean bycatch rate, dispersion index
     (variance to mean ratio in the bycatch rate), and total fishery
     effort;
-2.  upper confidence limit of bycatch when none was observed, given
+2)  upper confidence limit of bycatch when none was observed, given
     total fishery effort and dispersion index; and
-3.  bycatch estimation CV (coefficient of variation), given bycatch
+3)  bycatch estimation CV (coefficient of variation), given bycatch
     rate, dispersion index, and total fishery effort.
 
 Estimates in all cases are based directly on the corresponding Poisson
