@@ -5,6 +5,7 @@
 Given bycatch per unit effort $r$, dispersion index $d$, and total effort $N$, variance is given by $s^2=dr$, 
 and the expected coefficient of variation of bycatch estimates for observed effort $n$, corrected for sampling from a finite population per Cochran (1973), is 
 $$CV={ \sqrt{{ s^2 {{N-n} \over {N-1}}} \over n} \over r}$$
+* This also resulted in removing the previous dependency on the Runuran package.
 
 
 # ObsCovgTools 3.2.1-2
