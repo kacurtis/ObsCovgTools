@@ -46,7 +46,7 @@ effort by varying those inputs.
 
 This package has been implemented as a Shiny web application, coauthored
 by Howard Coleman, which can be accessed at
-<https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a>
+<https://connect.fisheries.noaa.gov/ObsCovg/>
 
 ### Citation
 
