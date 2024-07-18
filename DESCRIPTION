@@ -1,15 +1,11 @@
 Package: ObsCovgTools
 Type: Package
 Title: Evaluate Fishery Observer Coverage for Bycatch Estimation
-Version: 3.3.0
-Date: 2022-09-15
+Version: 3.4.0
+Date: 2024-07-18
 URL: https://kacurtis.github.io/ObsCovgTools, https://github.com/kacurtis/ObsCovgTools
 Depends: R (>= 3.4.0)
 Imports: 
-	dplyr,
-	magrittr,
-	rlang,
-	tibble
 Suggests: 
   shiny
 Author: K. Alexandra Curtis
@@ -21,6 +17,6 @@ Description: Tools for evaluating observer coverage with respect to documenting
   (coefficient of variation). 
 License: GPL-3 plus file LICENSE
 ByteCompile: TRUE
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Roxygen: list(old_usage = TRUE)

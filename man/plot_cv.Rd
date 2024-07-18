@@ -4,7 +4,8 @@
 \alias{plot_cv}
 \title{Plot bycatch estimation CV vs. observer coverage}
 \usage{
-plot_cv(te, bpue, d = 2, targetcv = 0.3, showplot = TRUE, silent = FALSE, ...)
+plot_cv(te, bpue, d = 2, targetcv = 0.3, showplot = TRUE,
+  silent = FALSE, ...)
 }
 \arguments{
 \item{te}{an integer greater than 1. Total effort in fishery (e.g., trips 

@@ -6,7 +6,7 @@
 
 [![GitHub release (latest by
 date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7083329.svg)](https://doi.org/10.5281/zenodo.7083329)
+[![DOI](https://zenodo.org/badge/37004191.svg)](https://zenodo.org/badge/latestdoi/37004191%7D)
 <!-- badges: end -->
 
 ### Description
@@ -31,11 +31,11 @@ or negative binomial probability distribution.
 
 The ObsCovgTools package assumes that
 
--   observer coverage is representative,
--   bycatch is in terms of individuals (not weight) per unit effort, and
--   the specified dispersion index reflects the highest level of any
-    hierarchical variance (e.g., using dispersion index at trip level if
-    greater than that at set level).
+- observer coverage is representative,
+- bycatch is in terms of individuals (not weight) per unit effort, and
+- the specified dispersion index reflects the highest level of any
+  hierarchical variance (e.g., using dispersion index at trip level if
+  greater than that at set level).
 
 Violating these assumptions may result in negatively biased projections
 of observer coverage required to meet specific objectives. Users may
@@ -47,6 +47,9 @@ effort by varying those inputs.
 This package has been implemented as a Shiny web application, coauthored
 by Howard Coleman, which can be accessed at
 <https://connect.fisheries.noaa.gov/ObsCovg/>
+
+(If you encounter an error at that link, you can also try
+<https://kacurtis.shinyapps.io/obscov/>)
 
 ### Citation
 

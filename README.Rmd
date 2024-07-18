@@ -10,7 +10,7 @@ output:
 
 <!-- badges: start -->
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7083329.svg)](https://doi.org/10.5281/zenodo.7083329)
+[![DOI](https://zenodo.org/badge/37004191.svg)](https://zenodo.org/badge/latestdoi/37004191})
 <!-- badges: end -->
 
 ### Description
@@ -36,7 +36,9 @@ Violating these assumptions may result in negatively biased projections of obser
 ### Shiny app
 
 This package has been implemented as a Shiny web application, coauthored by 
-Howard Coleman, which can be accessed at https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a
+Howard Coleman, which can be accessed at https://connect.fisheries.noaa.gov/ObsCovg/
+
+(If you encounter an error at that link, you can also try https://kacurtis.shinyapps.io/obscov/)
 
 ### Citation
 
