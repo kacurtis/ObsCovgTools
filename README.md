@@ -6,7 +6,7 @@
 
 [![GitHub release (latest by
 date)](https://img.shields.io/github/v/release/kacurtis/ObsCovgTools)](https://github.com/kacurtis/ObsCovgTools/releases)
-[![DOI](https://zenodo.org/badge/37004191.svg)](https://zenodo.org/badge/latestdoi/37004191%7D)
+[![DOI](https://zenodo.org/badge/131074481.svg)](https://zenodo.org/doi/10.5281/zenodo.3603463)
 <!-- badges: end -->
 
 ### Description
