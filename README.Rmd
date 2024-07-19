@@ -40,6 +40,15 @@ Howard Coleman, which can be accessed at https://connect.fisheries.noaa.gov/ObsC
 
 (If you encounter an error at that link, you can also try https://kacurtis.shinyapps.io/obscov/)
 
+### Installation
+
+You can install or update {ObsCovgTools} from [GitHub](https://github.com/kacurtis/ObsCovgTools) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("kacurtis/ObsCovgTools")
+```
+
 ### Citation
 
 If you use ObsCovgTools results in publications or talks, please cite the primary citation:
@@ -62,7 +71,7 @@ and Technology, through a contract to Ocean Associates, Inc.
 ****
 
 ```{r add-disclaimer, echo=FALSE, results='asis'}
-url <- "https://raw.githubusercontent.com/nmfs-fish-tools/Resources/master/Disclaimer.md"
+url <- "https://raw.githubusercontent.com/SWFSC/SWFSC-Template/main/README.md"
 childtext <- readLines(url)
 Encoding(childtext) <- "UTF-8"
 cat(childtext, sep="\n")

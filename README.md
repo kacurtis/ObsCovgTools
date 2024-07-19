@@ -51,6 +51,16 @@ by Howard Coleman, which can be accessed at
 (If you encounter an error at that link, you can also try
 <https://kacurtis.shinyapps.io/obscov/>)
 
+### Installation
+
+You can install or update {ObsCovgTools} from
+[GitHub](https://github.com/kacurtis/ObsCovgTools) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("kacurtis/ObsCovgTools")
+```
+
 ### Citation
 
 If you use ObsCovgTools results in publications or talks, please cite
@@ -78,21 +88,20 @@ Associates, Inc. 
 
 ------------------------------------------------------------------------
 
-## Disclaimer
-
-The United States Department of Commerce (DOC) GitHub project code is
-provided on an ‘as is’ basis and the user assumes responsibility for its
-use. DOC has relinquished control of the information and no longer has
-responsibility to protect the integrity, confidentiality, or
-availability of the information. Any claims against the Department of
-Commerce stemming from the use of its GitHub project will be governed by
-all applicable Federal law. Any reference to specific commercial
-products, processes, or services by service mark, trademark,
-manufacturer, or otherwise, does not constitute or imply their
-endorsement, recommendation or favoring by the Department of Commerce.
-The Department of Commerce seal and logo, or the seal and logo of a DOC
-bureau, shall not be used in any manner to imply endorsement of any
-commercial product or activity by DOC or the United States Government.”
+**Disclaimer** This repository is a scientific product and is not
+official communication of the National Oceanic and Atmospheric
+Administration, or the United States Department of Commerce. All NOAA
+GitHub project code is provided on an ‘as is’ basis and the user assumes
+responsibility for its use. Any claims against the Department of
+Commerce or Department of Commerce bureaus stemming from the use of this
+GitHub project will be governed by all applicable Federal law. Any
+reference to specific commercial products, processes, or services by
+service mark, trademark, manufacturer, or otherwise, does not constitute
+or imply their endorsement, recommendation or favoring by the Department
+of Commerce. The Department of Commerce seal and logo, or the seal and
+logo of a DOC bureau, shall not be used in any manner to imply
+endorsement of any commercial product or activity by DOC or the United
+States Government.
 
 ------------------------------------------------------------------------
 
