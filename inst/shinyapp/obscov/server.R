@@ -109,7 +109,7 @@ server <- function(input, output, session) {
       prependTab(inputId = "alltabs", 
                  tabPanel("New URL", 
                           tags$h3("The observer coverage simulator has a new home!"),
-                          HTML("<p>Please bookmark and use the new URL:</p><p><a href='https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a'>https://connect.fisheries.noaa.gov/content/bb44513d-4956-44dd-b0a6-673c9f2a3e3a</a></p>")
+                          HTML("<p>Please bookmark and use the new URL:</p><p><a href='https://connect.fisheries.noaa.gov/ObsCovg/'>https://connect.fisheries.noaa.gov/ObsCovg/</a></p>")
                           
                  ),
                  select = TRUE)
