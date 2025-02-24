@@ -45,8 +45,8 @@ Howard Coleman, which can be accessed at https://connect.fisheries.noaa.gov/ObsC
 You can install or update {ObsCovgTools} from [GitHub](https://github.com/kacurtis/ObsCovgTools) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("kacurtis/ObsCovgTools")
+# install.packages("pak")
+pak::pkg_install("kacurtis/ObsCovgTools")
 ```
 
 ### Citation
